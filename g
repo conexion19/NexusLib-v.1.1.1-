@@ -2619,7 +2619,7 @@ Components.Tab = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 10),
+				CornerRadius = UDim.new(0, 6),
 			}),
 			New("TextLabel", {
 				AnchorPoint = Vector2.new(0, 0.5),
@@ -3183,6 +3183,7 @@ Components.Tab = (function()
 		TabModule.Tabs[Tab].SetTransparency(0.89)
 		TabModule.Tabs[Tab].Selected = true
 
+		Window.TabDisplay.Text = TabModule.Tabs[Tab].Name
 		Window.SelectorPosMotor:setGoal(Spring(TabModule:GetCurrentTabPos(), { frequency = 6 }))
 
 		if PreviousTab > 0 and PreviousTab ~= Tab and TabModule.Tabs[PreviousTab] and TabModule.Tabs[Tab] then
@@ -3950,61 +3951,74 @@ Components.TitleBar = (function()
 			return Button
 		end
 
-TitleBar.Frame = New("Frame", {
-    Size = UDim2.new(1, 0, 0, 42),
-    BackgroundTransparency = 1,
-    Parent = Config.Parent,
-}, {
+		TitleBar.Frame = New("Frame", {
+			Size = UDim2.new(1, 0, 0, 42),
+			BackgroundTransparency = 1,
+			Parent = Config.Parent,
+		}, {
+			New("Frame", {
+				Size = UDim2.new(1, -16, 1, 0),
+				Position = UDim2.new(0, 12, 0, 0),
+				BackgroundTransparency = 1,
+			}, {
+				New("UIListLayout", {
+					Padding = UDim.new(0, 5),
+					FillDirection = Enum.FillDirection.Horizontal,
+					SortOrder = Enum.SortOrder.LayoutOrder,
+					VerticalAlignment = Enum.VerticalAlignment.Center,
+				}),
 
-    New("Frame", {
-        Size = UDim2.new(1, 0, 1, 0),
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 0, 0, 0),
-    }, {
-        New("Frame", {
-            AnchorPoint = Vector2.new(0.5, 0.5),
-            Position = UDim2.new(0.5, 0, 0.5, 0),
-            BackgroundTransparency = 1,
-            AutomaticSize = Enum.AutomaticSize.XY,
-        }, {
-            New("UIListLayout", {
-                Padding = UDim.new(0, 5),
-                FillDirection = Enum.FillDirection.Horizontal,
-                SortOrder = Enum.SortOrder.LayoutOrder,
-                VerticalAlignment = Enum.VerticalAlignment.Center,
-            }),
+				Config.Icon and New("ImageLabel", {
+					Image = Config.Icon,
+					Size = UDim2.fromOffset(20, 20),
+					BackgroundTransparency = 1,
+					LayoutOrder = 1,
+					ThemeTag = {
+						ImageColor3 = "Text",
+					},
+				}) or nil,
 
-            Config.Icon and New("ImageLabel", {
-                Image = Config.Icon,
-                Size = UDim2.fromOffset(20, 20),
-                BackgroundTransparency = 1,
-                LayoutOrder = 1,
-                ThemeTag = {
-                    ImageColor3 = "Text",
-                },
-            }) or nil,
+				New("TextLabel", {
+					RichText = true,
+					Text = Config.Title,
+					FontFace = Font.new(
+						"rbxasset://fonts/families/GothamSSm.json",
+						Enum.FontWeight.Regular,
+						Enum.FontStyle.Normal
+					),
+					TextSize = 12,
+					TextXAlignment = "Left",
+					TextYAlignment = "Center",
+					Size = UDim2.fromScale(0, 1),
+					AutomaticSize = Enum.AutomaticSize.X,
+					BackgroundTransparency = 1,
+					LayoutOrder = Config.Icon and 2 or 1,
+					ThemeTag = {
+						TextColor3 = "Text",
+					},
+				}),
+				Config.SubTitle and New("TextLabel", {
+					RichText = true,
+					Text = Config.SubTitle,
+					TextTransparency = 0.4,
+					FontFace = Font.new(
+						"rbxasset://fonts/families/GothamSSm.json",
+						Enum.FontWeight.Regular,
+						Enum.FontStyle.Normal
+					),
+					TextSize = 12,
+					TextXAlignment = "Left",
+					TextYAlignment = "Center",
+					Size = UDim2.fromScale(0, 1),
+					AutomaticSize = Enum.AutomaticSize.X,
+					BackgroundTransparency = 1,
+					LayoutOrder = Config.Icon and 3 or 2,
+					ThemeTag = {
+						TextColor3 = "Text",
+					},
+				}) or nil,
 
-            New("TextLabel", {
-                RichText = true,
-                Text = Config.Title,
-                FontFace = Font.new(
-                    "rbxasset://fonts/families/GothamSSm.json",
-                    Enum.FontWeight.Regular,
-                    Enum.FontStyle.Normal
-                ),
-                TextSize = 12,
-                TextXAlignment = "Center",
-                TextYAlignment = "Center",
-                Size = UDim2.fromScale(0, 1),
-                AutomaticSize = Enum.AutomaticSize.X,
-                BackgroundTransparency = 1,
-                LayoutOrder = Config.Icon and 2 or 1,
-                ThemeTag = {
-                    TextColor3 = "Text",
-                },
-            }),
-        })
-    }),
+			}),
 			New("Frame", {
 				BackgroundTransparency = 0.5,
 				Size = UDim2.new(1, 0, 0, 1),
@@ -4460,6 +4474,36 @@ Components.Window = (function()
 		local searchHeight = 28
 		local totalOffset = (Window.ShowSearch and searchHeight or 0) + imageOffset
 
+		local TabFrame = New("Frame", {
+			Size = UDim2.new(0, Window.TabWidth, 1, Window.ShowSearch and -63 or -31),
+			Position = UDim2.new(0, 12, 0, Window.ShowSearch and 54 or 19),
+			BackgroundTransparency = 1,
+			ClipsDescendants = true,
+		}, {
+			ImageFrame,
+			SearchFrame,
+			Window.TabHolder,
+			Selector,
+		})
+
+		Window.TabFrame = TabFrame
+
+		Window.TabDisplay = New("TextLabel", {
+			RichText = true,
+			Text = "Tab",
+			TextTransparency = 0,
+			FontFace = Font.new("rbxassetid://12187365364", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal),
+			TextSize = 28,
+			TextXAlignment = "Left",
+			TextYAlignment = "Center",
+			Size = UDim2.new(1, -16, 0, 28),
+			Position = UDim2.fromOffset(Window.TabWidth + 26, 56),
+			BackgroundTransparency = 1,
+			ThemeTag = {
+				TextColor3 = "Text",
+			},
+		})
+
 		Window.ContainerHolder = New("Frame", {
 			Size = UDim2.fromScale(1, 1),
 			BackgroundTransparency = 1,
@@ -4547,6 +4591,7 @@ Components.Window = (function()
 		end
 		
 		table.insert(rootChildren, Window.AcrylicPaint.Frame)
+		table.insert(rootChildren, Window.TabDisplay)
 		table.insert(rootChildren, Window.ContainerCanvas)
 		table.insert(rootChildren, TabFrame)
 		table.insert(rootChildren, ResizeStartFrame)
@@ -9563,7 +9608,7 @@ Library.CreateWindow = function(self, Config)
 	Library.Theme = Config.Theme or "Dark"
 
 	if Config.BackgroundImage == nil then
-		Config.BackgroundImage = "rbxassetid://13196113628"
+		Config.BackgroundImage = "rbxassetid://10590477450"
 	end
 
 	if Config.BackgroundTransparency == nil then
