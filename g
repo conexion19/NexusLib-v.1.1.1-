@@ -4514,16 +4514,16 @@ Components.Window = (function()
 			Size = UDim2.fromScale(1, 1),
 			BackgroundTransparency = 1,
 		})
-
-		Window.ContainerCanvas = New("Frame", {
-			Size = UDim2.new(1, -Window.TabWidth - 32, 1, -102),
-			Position = UDim2.fromOffset(Window.TabWidth + 26, 90),
-			BackgroundTransparency = 1,
-			ClipsDescendants = true,
-		}, {
-			Window.ContainerAnim,
-			Window.ContainerHolder
-		})
+		
+Window.ContainerCanvas = New("Frame", {
+    Size = UDim2.new(1, -Window.TabWidth - 32, 1, -50), -- Еще выше
+    Position = UDim2.fromOffset(Window.TabWidth + 26, 40), -- Еще выше
+    BackgroundTransparency = 1,
+    ClipsDescendants = true,
+}, {
+    Window.ContainerAnim,
+    Window.ContainerHolder
+})
 
 		local backgroundTransparency = Config.BackgroundTransparency
 		if backgroundTransparency == nil then
