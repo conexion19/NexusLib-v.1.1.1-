@@ -4840,53 +4840,52 @@ Window.Root = New("Frame", {
 
 		local OldSizeX
 		local OldSizeY
-		Window.Maximize = function(Value, NoPos, Instant)
-			Window.Maximized = Value
-			Window.TitleBar.MaxButton.Frame.Icon.Image = Value and Components.Assets.Restore or Components.Assets.Max
+Window.Maximize = function(Value, NoPos, Instant)
+    Window.Maximized = Value
+    -- // Window.TitleBar.MaxButton.Frame.Icon.Image = Value and Components.Assets.Restore or Components.Assets.Max // ЗАКОММЕНТИРОВАТЬ
+    if Value then
+        OldSizeX = Window.Size.X.Offset
+        OldSizeY = Window.Size.Y.Offset
+    end
+    local SizeX = Value and Camera.ViewportSize.X or OldSizeX
+    local SizeY = Value and Camera.ViewportSize.Y or OldSizeY
+    SizeMotor:setGoal({
+        X = Flipper[Instant and "Instant" or "Spring"].new(SizeX, { frequency = 6 }),
+        Y = Flipper[Instant and "Instant" or "Spring"].new(SizeY, { frequency = 6 }),
+    })
+    Window.Size = UDim2.fromOffset(SizeX, SizeY)
 
-			if Value then
-				OldSizeX = Window.Size.X.Offset
-				OldSizeY = Window.Size.Y.Offset
-			end
-			local SizeX = Value and Camera.ViewportSize.X or OldSizeX
-			local SizeY = Value and Camera.ViewportSize.Y or OldSizeY
-			SizeMotor:setGoal({
-				X = Flipper[Instant and "Instant" or "Spring"].new(SizeX, { frequency = 6 }),
-				Y = Flipper[Instant and "Instant" or "Spring"].new(SizeY, { frequency = 6 }),
-			})
-			Window.Size = UDim2.fromOffset(SizeX, SizeY)
+    if not NoPos then
+        PosMotor:setGoal({
+            X = Spring(Value and 0 or Window.Position.X.Offset, { frequency = 6 }),
+            Y = Spring(Value and 0 or Window.Position.Y.Offset, { frequency = 6 }),
+        })
+    end
+end
 
-			if not NoPos then
-				PosMotor:setGoal({
-					X = Spring(Value and 0 or Window.Position.X.Offset, { frequency = 6 }),
-					Y = Spring(Value and 0 or Window.Position.Y.Offset, { frequency = 6 }),
-				})
-			end
-		end
+Creator.AddSignal(Window.TitleBar.Frame.InputBegan, function(Input)
+    if
+        Input.UserInputType == Enum.UserInputType.MouseButton1
+        or Input.UserInputType == Enum.UserInputType.Touch
+    then
+        Dragging = true
+        MousePos = Input.Position
+        StartPos = Window.Root.Position
 
-		Creator.AddSignal(Window.TitleBar.Frame.InputBegan, function(Input)
-			if
-				Input.UserInputType == Enum.UserInputType.MouseButton1
-				or Input.UserInputType == Enum.UserInputType.Touch
-			then
-				Dragging = true
-				MousePos = Input.Position
-				StartPos = Window.Root.Position
+        --[[ // if Window.Maximized then // ЗАКОММЕНТИРОВАТЬ или УДАЛИТЬ
+        //     StartPos = UDim2.fromOffset(
+        //         Mouse.X - (Mouse.X * ((OldSizeX - 100) / Window.Root.AbsoluteSize.X)),
+        //         Mouse.Y - (Mouse.Y * (OldSizeY / Window.Root.AbsoluteSize.Y))
+        //     )
+        // end --]]
 
-				if Window.Maximized then
-					StartPos = UDim2.fromOffset(
-						Mouse.X - (Mouse.X * ((OldSizeX - 100) / Window.Root.AbsoluteSize.X)),
-						Mouse.Y - (Mouse.Y * (OldSizeY / Window.Root.AbsoluteSize.Y))
-					)
-				end
-
-				Input.Changed:Connect(function()
-					if Input.UserInputState == Enum.UserInputState.End then
-						Dragging = false
-					end
-				end)
-			end
-		end)
+        Input.Changed:Connect(function()
+            if Input.UserInputState == Enum.UserInputState.End then
+                Dragging = false
+            end
+        end)
+    end
+end)
 
 		Creator.AddSignal(Window.TitleBar.Frame.InputChanged, function(Input)
 			if
@@ -4907,19 +4906,19 @@ Window.Root = New("Frame", {
 			end
 		end)
 
-		Creator.AddSignal(UserInputService.InputChanged, function(Input)
-			if Input == DragInput and Dragging then
-				local Delta = Input.Position - MousePos
-				Window.Position = UDim2.fromOffset(StartPos.X.Offset + Delta.X, StartPos.Y.Offset + Delta.Y)
-				PosMotor:setGoal({
-					X = Instant(Window.Position.X.Offset),
-					Y = Instant(Window.Position.Y.Offset),
-				})
+Creator.AddSignal(UserInputService.InputChanged, function(Input)
+    if Input == DragInput and Dragging then
+        local Delta = Input.Position - MousePos
+        Window.Position = UDim2.fromOffset(StartPos.X.Offset + Delta.X, StartPos.Y.Offset + Delta.Y)
+        PosMotor:setGoal({
+            X = Instant(Window.Position.X.Offset),
+            Y = Instant(Window.Position.Y.Offset),
+        })
 
-				if Window.Maximized then
-					Window.Maximize(false, true, true)
-				end
-			end
+        -- // if Window.Maximized then // 
+        -- //     Window.Maximize(false, true, true)
+        -- // end
+    end
 
 			if
 				(Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch)
