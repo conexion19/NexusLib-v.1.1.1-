@@ -3960,7 +3960,7 @@ Components.TitleBar = (function()
                 Position = UDim2.new(0, 0, 0, 0),
             }, {
                 New("UIListLayout", {
-                    Padding = UDim.new(0, 0),
+                    Padding = UDim.new(0, 2), -- Уменьшили расстояние между Title и SubTitle
                     FillDirection = Enum.FillDirection.Vertical,
                     SortOrder = Enum.SortOrder.LayoutOrder,
                     HorizontalAlignment = Enum.HorizontalAlignment.Center,
