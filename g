@@ -4036,10 +4036,13 @@ Components.TitleBar = (function()
                 },
             })
         end)
-        TitleBar.MaxButton = BarButton(Components.Assets.Max, UDim2.new(1, -40, 0, 4), TitleBar.Frame, function()
-            Config.Window.Maximize(not Config.Window.Maximized)
-        end)
-        TitleBar.MinButton = BarButton(Components.Assets.Min, UDim2.new(1, -80, 0, 4), TitleBar.Frame, function()
+        
+        -- УБРАЛ кнопку Maximize - она больше не создается
+        // TitleBar.MaxButton = BarButton(Components.Assets.Max, UDim2.new(1, -40, 0, 4), TitleBar.Frame, function()
+        //     Config.Window.Maximize(not Config.Window.Maximized)
+        // end)
+        
+        TitleBar.MinButton = BarButton(Components.Assets.Min, UDim2.new(1, -40, 0, 4), TitleBar.Frame, function() // Сдвинул MinButton на место MaxButton
             Library.Window:Minimize()
         end)
 
