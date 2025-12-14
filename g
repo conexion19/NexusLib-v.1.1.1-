@@ -9723,7 +9723,7 @@ Library.CreateWindow = function(self, Config)
 local snowfallConfig = Config.SnowfallConfig or {
     Count = 50,     
     Speed = 20,       
-    Sway = 0,
+    Sway = 30,
     Color = Color3.fromRGB(255, 255, 255), 
     Intensity = 0.7  
 }
@@ -11100,7 +11100,7 @@ function Library:AddSnowfallToWindow(Config)
                 snowflake.Text = "❄"
                 snowflake.TextColor3 = snowflakeColor -- Чисто белый
                 snowflake.TextSize = math.random(10, 16)
-                snowflake.BackgroundTransparency = 0.5
+                snowflake.BackgroundTransparency = 1
                 snowflake.Font = Enum.Font.SourceSans
                 snowflake.Size = UDim2.new(0, snowflake.TextSize + 4, 0, snowflake.TextSize + 4)
                 
