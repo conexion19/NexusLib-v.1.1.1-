@@ -9723,7 +9723,7 @@ Library.CreateWindow = function(self, Config)
 local snowfallConfig = Config.SnowfallConfig or {
     Count = 55,     
     Speed = 10,     
-    Intensity = 0.5,
+    Intensity = 1,
     Color = Color3.fromRGB(255, 255, 255) 
 }
 
