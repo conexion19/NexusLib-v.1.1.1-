@@ -9717,26 +9717,29 @@ Library.CreateWindow = function(self, Config)
 
 	Library:SetTheme(Config.Theme)
 
--- Автоматически добавляем снегопад
-if Config.AutoSnowfall ~= false then
-    task.wait(0.2) -- Ждем создание всех элементов
-    
-    Library:AddSnowfallToWindow({
-        Count = Config.SnowflakeCount or 100,
-        Speed = Config.SnowfallSpeed or 70,
-        Sway = Config.SnowfallSway or 30,
-        Color = Color3.fromRGB(255, 255, 255) -- Белый
-    })
-    
-    -- Автонастройка под тему
-    if Library.Snowfall then
-        if Config.Theme == "Light" then
-            Library.Snowfall:SetIntensity(0.6) -- Меньше интенсивности для светлой темы
-        elseif Config.Theme == "AMOLED" then
-            Library.Snowfall:SetIntensity(0.9) -- Ярче для черной темы
+    if Config.Snowfall ~= false then 
+        task.wait(0.1) 
+
+        local snowfallConfig = Config.SnowfallConfig or {
+            Count = 80,
+            Speed = 10,
+            Sway = 20,
+            Color = Color3.fromRGB(255, 255, 255),
+            Intensity = 0.7
+        }
+        
+        -- Проверяем тему для выбора цвета снежинок
+        if Config.Theme == "Dark" or Config.Theme == "Darker" or Config.Theme == "AMOLED" then
+            snowfallConfig.Color = Color3.fromRGB(200, 220, 255) -- Светлее для темных тем
+        elseif Config.Theme == "Light" then
+            snowfallConfig.Color = Color3.fromRGB(100, 120, 150) -- Темнее для светлой темы
+        elseif Config.Theme == "Bloody" then
+            snowfallConfig.Color = Color3.fromRGB(255, 150, 150) -- Красноватый снег
         end
+        
+        -- Добавляем снегопад
+        Library:AddSnowfallToWindow(snowfallConfig)
     end
-end
     
     InterfaceManager:SetTheme(Config.Theme)
     Library:SetTheme(Config.Theme)
@@ -11079,100 +11082,56 @@ function Library:AddSnowfallToWindow(Config)
   function Library:AddSnowfallToWindow(Config)
     if not Library.Window then return end
     
+    Я решил использовать этот код падения снежинок  - function Library:AddSnowfallToWindow(Config)
+    if not Library.Window then return end
+    
     local snowfall = {}
     Config = Config or {}
     
-    -- Создаем модуль снегопада
+    -- Создаем модуль снегопада прямо здесь (встроенный)
     local SnowModule = {}
     
+    -- Встроенная реализация снегопада
     function SnowModule:Init(Parent, Config)
         local snowContainer = Instance.new("Frame")
         snowContainer.Name = "SnowfallEffect"
         snowContainer.Size = UDim2.new(1, 0, 1, 0)
         snowContainer.BackgroundTransparency = 1
-        snowContainer.ClipsDescendants = true -- ОБРЕЗАЕМ СНЕЖИНКИ ПО ГРАНИЦАМ РАМКИ
         snowContainer.Parent = Parent
         
-        local snowflakeCount = Config.SnowflakeCount or 80
-        local snowflakeColor = Config.Color or Color3.fromRGB(255, 255, 255) -- БЕЛЫЙ ЦВЕТ
-        local fallSpeed = Config.FallSpeed or 60
-        local swayAmount = Config.SwayAmount or 25
+        local snowflakeCount = Config.SnowflakeCount or 50
+        local snowflakeColor = Config.Color or Color3.fromRGB(255, 255, 255)
+        local fallSpeed = Config.FallSpeed or 50
+        local swayAmount = Config.SwayAmount or 20
         
         local snowflakes = {}
         local connections = {}
         
-        -- Создание снежинок с РАЗНЫМИ параметрами
+        -- Создание снежинок
         for i = 1, snowflakeCount do
             local snowflake = Instance.new("Frame")
             snowflake.Name = "Snowflake"..i
             snowflake.BackgroundColor3 = snowflakeColor
             snowflake.BorderSizePixel = 0
+            snowflake.Size = UDim2.new(0, math.random(2, 6), 0, math.random(2, 6))
             
-            -- РАЗНЫЕ РАЗМЕРЫ: от очень маленьких до средних
-            local sizeType = math.random(1, 4)
-            local size
-            if sizeType == 1 then       -- Очень маленькие (едва заметные)
-                size = math.random(1, 2)
-            elseif sizeType == 2 then   -- Маленькие
-                size = math.random(2, 4)
-            elseif sizeType == 3 then   -- Средние
-                size = math.random(4, 6)
-            else                       -- Крупные (редкие)
-                size = math.random(6, 8)
-            end
-            
-            snowflake.Size = UDim2.new(0, size, 0, size)
-            
-            -- РАЗНАЯ ФОРМА: не все круглые
             local corner = Instance.new("UICorner")
-            if math.random(1, 3) == 1 then -- 1/3 - квадратные
-                corner.CornerRadius = UDim.new(0, 1)
-            elseif math.random(1, 2) == 1 then -- Овальные
-                corner.CornerRadius = UDim.new(0.5, 0)
-            else -- Круглые
-                corner.CornerRadius = UDim.new(1, 0)
-            end
+            corner.CornerRadius = UDim.new(1, 0)
             corner.Parent = snowflake
             
-            -- РАЗНАЯ ПРОЗРАЧНОСТЬ: от едва заметных до ярких
-            local transparencyType = math.random(1, 5)
-            local transparency
-            if transparencyType == 1 then      -- Едва заметные (дальние)
-                transparency = math.random(75, 90) / 100
-            elseif transparencyType == 2 then  -- Полупрозрачные
-                transparency = math.random(60, 75) / 100
-            elseif transparencyType == 3 then  -- Средние
-                transparency = math.random(45, 60) / 100
-            elseif transparencyType == 4 then  -- Яркие
-                transparency = math.random(30, 45) / 100
-            else                               -- Очень яркие (ближние)
-                transparency = math.random(15, 30) / 100
-            end
+            snowflake.BackgroundTransparency = math.random(30, 80) / 100
             
-            snowflake.BackgroundTransparency = transparency
-            
-            -- НАЧАЛЬНАЯ ПОЗИЦИЯ: начинаем немного ВЫШЕ границы интерфейса
             snowflake.Position = UDim2.new(
-                math.random() * 0.98, -- 98% чтобы не касаться краев
+                math.random() * 0.95, 
                 0, 
-                math.random() * -0.3 - 0.1, -- Начинаем выше, но не слишком далеко
+                math.random() * -0.5, 
                 0
             )
             snowflake.Parent = snowContainer
             
-            -- РАЗНАЯ СКОРОСТЬ: маленькие падают медленнее, большие - быстрее
-            local baseSpeed = fallSpeed * (size / 6) -- Зависит от размера
-            local speed = math.random(baseSpeed * 0.7, baseSpeed * 1.3)
-            
-            -- РАЗНОЕ ПОКАЧИВАНИЕ
+            local speed = math.random(fallSpeed * 0.5, fallSpeed * 1.5)
             local sway = math.random(-swayAmount, swayAmount)
-            local swaySpeed = math.random(8, 20) / 100 -- Разная скорость покачивания
-            
-            -- НЕКОТОРЫЕ СНЕЖИНКИ ВРАЩАЮТСЯ
-            local rotationSpeed = 0
-            if math.random(1, 3) == 1 then -- 1/3 снежинок вращается
-                rotationSpeed = math.random(-50, 50)
-            end
+            local swaySpeed = math.random(1, 3) / 100
             
             snowflakes[i] = {
                 frame = snowflake,
@@ -11180,9 +11139,7 @@ function Library:AddSnowfallToWindow(Config)
                 sway = sway,
                 swaySpeed = swaySpeed,
                 swayOffset = math.random() * 100,
-                transparency = transparency,
-                rotationSpeed = rotationSpeed,
-                size = size
+                transparency = snowflake.BackgroundTransparency
             }
         end
         
@@ -11196,46 +11153,19 @@ function Library:AddSnowfallToWindow(Config)
             for _, snowflake in ipairs(snowflakes) do
                 local frame = snowflake.frame
                 local currentPos = frame.Position
-                
-                -- Покачивание из стороны в сторону
                 local swayX = math.sin(tick() * snowflake.swaySpeed + snowflake.swayOffset) * snowflake.sway
                 
-                -- Движение вниз
                 local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 100)
                 
-                -- Вращение (если есть)
-                if snowflake.rotationSpeed ~= 0 then
-                    frame.Rotation = frame.Rotation + (snowflake.rotationSpeed * deltaTime)
-                end
-                
-                -- Если снежинка ушла ЗА НИЖНЮЮ ГРАНИЦУ
-                if newY > 1.05 then
-                    -- Возвращаем наверх с НОВЫМИ ПАРАМЕТРАМИ
-                    newY = math.random() * -0.4 - 0.1 -- Выше начала
-                    
-                    -- Иногда меняем размер при возрождении
-                    if math.random(1, 10) == 1 then
-                        local newSize = math.random(2, 8)
-                        snowflake.size = newSize
-                        frame.Size = UDim2.new(0, newSize, 0, newSize)
-                    end
-                    
-                    -- Иногда меняем прозрачность
-                    if math.random(1, 8) == 1 then
-                        local newTransparency = math.random(15, 85) / 100
-                        snowflake.transparency = newTransparency
-                        frame.BackgroundTransparency = newTransparency
-                    end
-                    
-                    -- Новая позиция
+                if newY > 1 then
+                    newY = -0.1
                     frame.Position = UDim2.new(
-                        math.random() * 0.98, -- 98% ширины
+                        math.random() * 0.95,
                         swayX,
-                        newY,
+                        -0.1,
                         0
                     )
                 else
-                    -- Обычное движение
                     frame.Position = UDim2.new(
                         currentPos.X.Scale,
                         swayX,
@@ -11254,31 +11184,13 @@ function Library:AddSnowfallToWindow(Config)
         function SnowInstance:SetIntensity(intensity)
             intensity = math.clamp(intensity, 0, 1)
             for _, snowflake in ipairs(snowflakes) do
-                -- Сохраняем оригинальную прозрачность, но масштабируем интенсивностью
-                local targetTransparency = 1 - (intensity * (1 - snowflake.transparency))
-                snowflake.frame.BackgroundTransparency = targetTransparency
+                snowflake.frame.BackgroundTransparency = 1 - (intensity * (1 - snowflake.transparency))
             end
         end
         
-        function SnowInstance:SetSpeed(speedMultiplier)
+        function SnowInstance:SetSpeed(speed)
             for _, snowflake in ipairs(snowflakes) do
-                snowflake.speed = snowflake.speed * speedMultiplier
-            end
-        end
-        
-        function SnowInstance:SetBlizzardMode(active)
-            if active then
-                for _, snowflake in ipairs(snowflakes) do
-                    snowflake.speed = snowflake.speed * 2.5
-                    snowflake.sway = snowflake.sway * 2
-                    snowflake.frame.BackgroundTransparency = math.max(0.1, snowflake.transparency * 0.7)
-                end
-            else
-                for _, snowflake in ipairs(snowflakes) do
-                    snowflake.speed = snowflake.speed / 2.5
-                    snowflake.sway = snowflake.sway / 2
-                    snowflake.frame.BackgroundTransparency = snowflake.transparency
-                end
+                snowflake.speed = speed * math.random(0.5, 1.5)
             end
         end
         
@@ -11289,10 +11201,6 @@ function Library:AddSnowfallToWindow(Config)
             snowContainer:Destroy()
         end
         
-        function SnowInstance:GetSnowflakeCount()
-            return #snowflakes
-        end
-        
         return SnowInstance
     end
     
@@ -11301,16 +11209,15 @@ function Library:AddSnowfallToWindow(Config)
     snowContainer.Name = "SnowfallContainer"
     snowContainer.Size = UDim2.new(1, 0, 1, 0)
     snowContainer.BackgroundTransparency = 1
-    snowContainer.ClipsDescendants = true -- ВАЖНО: обрезаем снежинки по границам
     snowContainer.ZIndex = 1 -- Ниже основного контента, но выше фона
     snowContainer.Parent = Library.Window.Root
     
     -- Инициализируем снегопад
     snowfall.instance = SnowModule:Init(snowContainer, {
         SnowflakeCount = Config.Count or 80,
-        Color = Color3.fromRGB(255, 255, 255), -- ТОЧНО БЕЛЫЙ
+        Color = Config.Color or Color3.fromRGB(230, 240, 255),
         FallSpeed = Config.Speed or 60,
-        SwayAmount = Config.Sway or 25
+        SwayAmount = Config.Sway or 15
     })
     
     -- Функции управления
@@ -11324,15 +11231,9 @@ function Library:AddSnowfallToWindow(Config)
         end
     end
     
-    function snowfall:SetSpeed(speedMultiplier)
+    function snowfall:SetSpeed(speed)
         if snowfall.instance and snowfall.instance.SetSpeed then
-            snowfall.instance:SetSpeed(speedMultiplier)
-        end
-    end
-    
-    function snowfall:SetBlizzardMode(active)
-        if snowfall.instance and snowfall.instance.SetBlizzardMode then
-            snowfall.instance:SetBlizzardMode(active)
+            snowfall.instance:SetSpeed(speed)
         end
     end
     
@@ -11343,20 +11244,9 @@ function Library:AddSnowfallToWindow(Config)
         snowContainer:Destroy()
     end
     
-    function snowfall:GetInfo()
-        if snowfall.instance then
-            return {
-                Count = snowfall.instance:GetSnowflakeCount(),
-                Visible = snowContainer.Visible
-            }
-        end
-        return nil
-    end
-    
     Library.Snowfall = snowfall
     return snowfall
 end
--- ==================== КОНЕЦ УЛУЧШЕННОГО СНЕГОПАДА ====================
 
 if RunService:IsStudio() then task.wait(0.01) end
-return Library, SaveManager, InterfaceManager, Mobile
+return Library, SaveManager, InterfaceManager, Mobile 
