@@ -11080,8 +11080,6 @@ function Library:AddSnowfallToWindow(Config)
         
         local snowflakeCount = Config.Count or 50
         local fallSpeed = Config.Speed or 60
-        local useUnicodeFlakes = Config.UseUnicode or false
-        local unicodeFlakeRatio = Config.UnicodeRatio or 0.3
         local intensity = Config.Intensity or 0.9
         
         -- Чисто белый цвет для всех снежинок
@@ -11090,75 +11088,40 @@ function Library:AddSnowfallToWindow(Config)
         local snowflakes = {}
         local connections = {}
         
+        -- Создание круглых снежинок
         for i = 1, snowflakeCount do
-            local isUnicode = useUnicodeFlakes and math.random() < unicodeFlakeRatio
+            -- Круглая снежинка
+            local snowflake = Instance.new("Frame")
+            snowflake.Name = "SnowflakeCircle"..i
+            snowflake.BackgroundColor3 = snowflakeColor -- Чисто белый
+            snowflake.BorderSizePixel = 0
             
-            if isUnicode then
-                -- Снежинка ❄
-                local snowflake = Instance.new("TextLabel")
-                snowflake.Name = "SnowflakeUnicode"..i
-                snowflake.Text = "❄"
-                snowflake.TextColor3 = snowflakeColor -- Чисто белый
-                snowflake.TextSize = math.random(10, 16)
-                snowflake.BackgroundTransparency = 1
-                snowflake.Font = Enum.Font.SourceSans
-                snowflake.Size = UDim2.new(0, snowflake.TextSize + 4, 0, snowflake.TextSize + 4)
-                
-                local baseTransparency = math.random(30, 80) / 100
-                snowflake.TextTransparency = baseTransparency
-                
-                snowflake.Position = UDim2.new(
-                    math.random() * 0.95, 
-                    0, 
-                    math.random() * -0.5, 
-                    0
-                )
-                snowflake.Parent = snowContainer
-                
-                local speed = math.random(fallSpeed * 0.5, fallSpeed * 1.5)
-                
-                snowflakes[i] = {
-                    frame = snowflake,
-                    speed = speed,
-                    transparency = baseTransparency,
-                    isUnicode = true,
-                    size = snowflake.TextSize
-                }
-            else
-                -- Круглая снежинка
-                local snowflake = Instance.new("Frame")
-                snowflake.Name = "SnowflakeCircle"..i
-                snowflake.BackgroundColor3 = snowflakeColor -- Чисто белый
-                snowflake.BorderSizePixel = 0
-                
-                local size = math.random(3, 7)
-                snowflake.Size = UDim2.new(0, size, 0, size)
-                
-                local corner = Instance.new("UICorner")
-                corner.CornerRadius = UDim.new(1, 0)
-                corner.Parent = snowflake
-                
-                local baseTransparency = math.random(30, 80) / 100
-                snowflake.BackgroundTransparency = baseTransparency
-                
-                snowflake.Position = UDim2.new(
-                    math.random() * 0.95, 
-                    0, 
-                    math.random() * -0.5, 
-                    0
-                )
-                snowflake.Parent = snowContainer
-                
-                local speed = math.random(fallSpeed * 0.5, fallSpeed * 1.5)
-                
-                snowflakes[i] = {
-                    frame = snowflake,
-                    speed = speed,
-                    transparency = baseTransparency,
-                    isUnicode = false,
-                    size = size
-                }
-            end
+            local size = math.random(3, 7)
+            snowflake.Size = UDim2.new(0, size, 0, size)
+            
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(1, 0) -- Полностью круглые
+            corner.Parent = snowflake
+            
+            local baseTransparency = math.random(30, 80) / 100
+            snowflake.BackgroundTransparency = baseTransparency
+            
+            snowflake.Position = UDim2.new(
+                math.random() * 0.95, 
+                0, 
+                math.random() * -0.5, 
+                0
+            )
+            snowflake.Parent = snowContainer
+            
+            local speed = math.random(fallSpeed * 0.5, fallSpeed * 1.5)
+            
+            snowflakes[i] = {
+                frame = snowflake,
+                speed = speed,
+                transparency = baseTransparency,
+                size = size
+            }
         end
         
         -- Границы контейнера
@@ -11179,35 +11142,30 @@ function Library:AddSnowfallToWindow(Config)
                 local frame = snowflake.frame
                 local currentPos = frame.Position
                 
-                -- Прямое вертикальное падение без покачивания
+                -- Прямое вертикальное падение
                 local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 100)
                 local newX = currentPos.X.Scale
                 
+                -- Проверка горизонтальных границ
                 if newX < containerBounds.left then
                     newX = containerBounds.right
                 elseif newX > containerBounds.right then
                     newX = containerBounds.left
                 end
                 
+                -- Если снежинка ушла за нижнюю границу
                 if newY > containerBounds.bottom then
                     newY = containerBounds.top - 0.1
                     newX = math.random() * 0.95
                     
-                    if snowflake.isUnicode then
-                        frame.TextSize = math.random(10, 16)
-                        snowflake.size = frame.TextSize
-                    else
-                        local newSize = math.random(3, 7)
-                        frame.Size = UDim2.new(0, newSize, 0, newSize)
-                        snowflake.size = newSize
-                    end
+                    -- Меняем размер при перерождении
+                    local newSize = math.random(3, 7)
+                    frame.Size = UDim2.new(0, newSize, 0, newSize)
+                    snowflake.size = newSize
                     
+                    -- Новая прозрачность при перерождении
                     local newTransparency = math.random(30, 80) / 100
-                    if snowflake.isUnicode then
-                        frame.TextTransparency = newTransparency
-                    else
-                        frame.BackgroundTransparency = newTransparency
-                    end
+                    frame.BackgroundTransparency = newTransparency
                     snowflake.transparency = newTransparency
                 end
                 
@@ -11228,11 +11186,7 @@ function Library:AddSnowfallToWindow(Config)
             intensity = math.clamp(intensity, 0, 1)
             for _, snowflake in ipairs(snowflakes) do
                 local targetTransparency = 1 - (intensity * (1 - snowflake.transparency))
-                if snowflake.isUnicode then
-                    snowflake.frame.TextTransparency = targetTransparency
-                else
-                    snowflake.frame.BackgroundTransparency = targetTransparency
-                end
+                snowflake.frame.BackgroundTransparency = targetTransparency
             end
         end
         
@@ -11254,6 +11208,7 @@ function Library:AddSnowfallToWindow(Config)
         return SnowInstance
     end
     
+    -- Создаем контейнер для снега
     local snowContainer = Instance.new("Frame")
     snowContainer.Name = "SnowfallContainer"
     snowContainer.Size = UDim2.new(1, 0, 1, 0)
@@ -11262,14 +11217,14 @@ function Library:AddSnowfallToWindow(Config)
     snowContainer.ClipsDescendants = true
     snowContainer.Parent = Library.Window.Root
     
+    -- Инициализируем снегопад
     snowfall.instance = SnowModule:Init(snowContainer, {
         Count = Config.Count or 80,
         Speed = Config.Speed or 60,
-        UseUnicode = Config.UseUnicode or true,
-        UnicodeRatio = Config.UnicodeRatio or 0.3,
         Intensity = Config.Intensity or 0.9
     })
     
+    -- Функции управления
     function snowfall:SetVisible(visible)
         snowContainer.Visible = visible
     end
