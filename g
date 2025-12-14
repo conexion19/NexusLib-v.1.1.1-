@@ -9497,8 +9497,10 @@ end
         InterfaceManager:SaveSettings()
     end)
     Library.MinimizeKeybind = MenuKeybind
-end
 
+  end
+
+end
 
 Library.CreateWindow = function(self, Config)
 
