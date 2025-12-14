@@ -11070,19 +11070,12 @@ AddSignal(MobileMinimizeButton.MouseButton1Click, function()
 
 		Library.Window:Minimize()
 
-
-	end
-
-
+    end
 end)
 
+-- ==================== СНЕГОПАД ====================
+-- Функция для добавления снегопада в окно
 function Library:AddSnowfallToWindow(Config)
-    if not Library.Window then return end
-    
-  function Library:AddSnowfallToWindow(Config)
-    if not Library.Window then return end
-    
-    Я решил использовать этот код падения снежинок  - function Library:AddSnowfallToWindow(Config)
     if not Library.Window then return end
     
     local snowfall = {}
@@ -11247,6 +11240,7 @@ function Library:AddSnowfallToWindow(Config)
     Library.Snowfall = snowfall
     return snowfall
 end
+-- ==================== КОНЕЦ СНЕГОПАДА ====================
 
 if RunService:IsStudio() then task.wait(0.01) end
-return Library, SaveManager, InterfaceManager, Mobile 
+return Library, SaveManager, InterfaceManager, Mobile
