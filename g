@@ -22,6 +22,8 @@ local RenderStepped = RunService.RenderStepped
 
 local ProtectGui = protectgui or (syn and syn.protect_gui) or function() end
 
+_G.SnowfallEnabled = true
+
 local Themes = {
 	Names = {
 		"Dark",
@@ -9395,20 +9397,17 @@ function InterfaceManager:BuildInterfaceSection(tab)
         end
     })
 
-    -- TOGGLE ДЛЯ СНЕГА - исправленная версия
-    section:AddToggle("SnowfallToggle", {
-        Title = "Snowfall Effect",
-        Description = "Toggle snowfall animation in the window",
-        Default = Settings.SnowfallEnabled or true,
-        Callback = function(Value)
-            -- Проверяем, существует ли снегопад
-            if Library and Library.Snowfall and Library.Snowfall.SetVisible then
-                Library.Snowfall:SetVisible(Value)
-                Settings.SnowfallEnabled = Value
-                InterfaceManager:SaveSettings()
-            end
+section:AddToggle("SnowfallToggle", {
+    Title = "Snowfall Effect",
+    Description = "Toggle snowfall animation in the window",
+    Default = _G.SnowfallEnabled or true,
+    Callback = function(Value)
+        if Library and Library.Snowfall and Library.Snowfall.SetVisible then
+            Library.Snowfall:SetVisible(Value)
+            _G.SnowfallEnabled = Value
         end
-    })
+    end
+})
 
     local MenuKeybind = section:AddKeybind("MenuKeybind", { 
         Title = "Minimize Bind", 
@@ -9586,9 +9585,13 @@ if Config.Snowfall ~= false then
         Speed = 20,
     }
     
-    Library:AddSnowfallToWindow(snowfallConfig)
-
-end
+        Library:AddSnowfallToWindow(snowfallConfig)
+        
+        -- Устанавливаем видимость из глобальной переменной
+        if Library.Snowfall then
+            Library.Snowfall:SetVisible(_G.SnowfallEnabled or true)
+        end
+    end
     
     InterfaceManager:SetTheme(Config.Theme)
     Library:SetTheme(Config.Theme)
@@ -10937,6 +10940,8 @@ function Library:AddSnowfallToWindow(Config)
         snowContainer.ClipsDescendants = true
         snowContainer.Parent = Parent
         
+       snowContainer.Visible = _G.SnowfallEnabled or true
+
         -- Используем значение из Config или по умолчанию true
         local initialVisibility = Config.Enabled or true
         snowContainer.Visible = initialVisibility
