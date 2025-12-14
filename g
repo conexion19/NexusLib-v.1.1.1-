@@ -9721,9 +9721,9 @@ Library.CreateWindow = function(self, Config)
         task.wait(0.5) 
 
 local snowfallConfig = Config.SnowfallConfig or {
-    Count = 100,     
-    Speed = 40,     
-    Intensity = 0.8,
+    Count = 55,     
+    Speed = 10,     
+    Intensity = 0.5,
     Color = Color3.fromRGB(255, 255, 255) 
 }
 
