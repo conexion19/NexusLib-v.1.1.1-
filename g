@@ -9213,19 +9213,12 @@ local InterfaceManager = {} do
 	InterfaceManager.Folder = "FluentSettings"
 
 
-	InterfaceManager.Settings = {
-
-
-		Acrylic = true,
-
-
-		Transparency = true,
-
-
-		MenuKeybind = "M"
-
-
-	}
+InterfaceManager.Settings = {
+    Acrylic = true,
+    Transparency = true,
+    MenuKeybind = "M",
+    SnowfallEnabled = true 
+}
 
 
 
@@ -9336,50 +9329,22 @@ local InterfaceManager = {} do
 	end
 
 
-
-
-
-	function InterfaceManager:LoadSettings()
-
-
-		local path = self.Folder .. "/options.json"
-
-
-		if isfile(path) then
-
-
-			local data = readfile(path)
-
-
-
-
-
-			if not RunService:IsStudio() then local success, decoded = pcall(httpService.JSONDecode, httpService, data) end
-
-
-
-
-
-			if success then
-
-
-				for i, v in next, decoded do
-
-
-					InterfaceManager.Settings[i] = v
-
-
-				end
-
-
-			end
-
-
-		end
-
-
-	end
-
+function InterfaceManager:LoadSettings()
+    local path = self.Folder .. "/options.json"
+    if isfile(path) then
+        local data = readfile(path)
+        
+        if not RunService:IsStudio() then 
+            local success, decoded = pcall(httpService.JSONDecode, httpService, data)
+            
+            if success then
+                for i, v in next, decoded do
+                    InterfaceManager.Settings[i] = v
+                end
+            end
+        end
+    end
+end
 
 	function InterfaceManager:BuildInterfaceSection(tab)
 
@@ -9500,70 +9465,45 @@ local InterfaceManager = {} do
 
 			Description = "Adjusts the window transparency.",
 
-
 			Default = 1,
-
-
 			Min = 0,
-
-
 			Max = 3,
-
-
 			Rounding = 1,
-
 
 			Callback = function(Value)
 
-
 				Library:SetWindowTransparency(Value)
-
 
 			end
 
-
 		})
 
+    section:AddToggle("SnowfallToggle", {
+        Title = "Snowfall Effect",
+        Description = "",
+        Default = Settings.SnowfallEnabled or false,
+        Callback = function(Value)
+            if Library.Snowfall then
+                Library.Snowfall:SetVisible(Value)
+            end
+            Settings.SnowfallEnabled = Value
+            InterfaceManager:SaveSettings()
+        end
+    })
 
-
-
-
-
-
-
-		local MenuKeybind = section:AddKeybind("MenuKeybind", { Title = "Minimize Bind", Default = Library.MinimizeKey.Name or Settings.MenuKeybind })
-
-
-		MenuKeybind:OnChanged(function()
-
-
-			Settings.MenuKeybind = MenuKeybind.Value
-
-
-			InterfaceManager:SaveSettings()
-
-
-		end)
-
-
-		Library.MinimizeKeybind = MenuKeybind
-
-
-	end
-
-
+    local MenuKeybind = section:AddKeybind("MenuKeybind", { Title = "Minimize Bind", Default = Library.MinimizeKey.Name or Settings.MenuKeybind })
+    MenuKeybind:OnChanged(function()
+        Settings.MenuKeybind = MenuKeybind.Value
+        InterfaceManager:SaveSettings()
+    end)
+    Library.MinimizeKeybind = MenuKeybind
 end
-
-
-
 
 
 Library.CreateWindow = function(self, Config)
 
 
 	assert(Config.Title, "Window - Missing Title")
-
-
 
 
 
@@ -11075,31 +11015,31 @@ function Library:AddSnowfallToWindow(Config)
         snowContainer.ClipsDescendants = true
         snowContainer.Parent = Parent
         
+        -- Начальная видимость из настроек
+        local initialVisibility = InterfaceManager.Settings.SnowfallEnabled or Config.Enabled or true
+        snowContainer.Visible = initialVisibility
+        
         local snowflakeCount = Config.Count or 50
         local fallSpeed = Config.Speed or 60
         
-        -- Яркий белый цвет для всех снежинок
         local snowflakeColor = Color3.fromRGB(255, 255, 255)
         
         local snowflakes = {}
         local connections = {}
         
-        -- Создание круглых снежинок
         for i = 1, snowflakeCount do
             local snowflake = Instance.new("Frame")
             snowflake.Name = "SnowflakeCircle"..i
-            snowflake.BackgroundColor3 = snowflakeColor -- Яркий белый
+            snowflake.BackgroundColor3 = snowflakeColor
             snowflake.BorderSizePixel = 0
             
-            -- Разные размеры снежинок
             local size = math.random(2, 6)
             snowflake.Size = UDim2.new(0, size, 0, size)
             
             local corner = Instance.new("UICorner")
-            corner.CornerRadius = UDim.new(1, 0) -- Полностью круглые
+            corner.CornerRadius = UDim.new(1, 0)
             corner.Parent = snowflake
             
-            -- Нет прозрачности - всегда яркие
             snowflake.BackgroundTransparency = 0
             
             snowflake.Position = UDim2.new(
@@ -11119,7 +11059,6 @@ function Library:AddSnowfallToWindow(Config)
             }
         end
         
-        -- Границы контейнера
         local containerBounds = {
             left = 0,
             right = 1,
@@ -11129,6 +11068,8 @@ function Library:AddSnowfallToWindow(Config)
         
         local lastUpdate = tick()
         local connection = game:GetService("RunService").Heartbeat:Connect(function()
+            if not snowContainer.Visible then return end
+            
             local currentTime = tick()
             local deltaTime = currentTime - lastUpdate
             lastUpdate = currentTime
@@ -11137,23 +11078,19 @@ function Library:AddSnowfallToWindow(Config)
                 local frame = snowflake.frame
                 local currentPos = frame.Position
                 
-                -- Прямое вертикальное падение
                 local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 100)
                 local newX = currentPos.X.Scale
                 
-                -- Проверка горизонтальных границ
                 if newX < containerBounds.left then
                     newX = containerBounds.right
                 elseif newX > containerBounds.right then
                     newX = containerBounds.left
                 end
                 
-                -- Если снежинка ушла за нижнюю границу
                 if newY > containerBounds.bottom then
                     newY = containerBounds.top - 0.1
                     newX = math.random() * 0.95
                     
-                    -- Меняем размер при перерождении
                     local newSize = math.random(2, 6)
                     frame.Size = UDim2.new(0, newSize, 0, newSize)
                     snowflake.size = newSize
@@ -11172,11 +11109,12 @@ function Library:AddSnowfallToWindow(Config)
         
         local SnowInstance = {}
         
-        function SnowInstance:SetIntensity(intensity)
-            -- Этот метод теперь не нужен, так как нет прозрачности
-            -- Оставляем для совместимости
-            intensity = math.clamp(intensity, 0, 1)
-            -- Ничего не делаем, снежинки всегда яркие
+        function SnowInstance:SetVisible(visible)
+            snowContainer.Visible = visible
+        end
+        
+        function SnowInstance:IsVisible()
+            return snowContainer.Visible
         end
         
         function SnowInstance:SetSpeed(speed)
@@ -11195,7 +11133,6 @@ function Library:AddSnowfallToWindow(Config)
         return SnowInstance
     end
     
-    -- Создаем контейнер для снега
     local snowContainer = Instance.new("Frame")
     snowContainer.Name = "SnowfallContainer"
     snowContainer.Size = UDim2.new(1, 0, 1, 0)
@@ -11204,19 +11141,23 @@ function Library:AddSnowfallToWindow(Config)
     snowContainer.ClipsDescendants = true
     snowContainer.Parent = Library.Window.Root
     
-    -- Инициализируем снегопад
     snowfall.instance = SnowModule:Init(snowContainer, {
         Count = Config.Count or 80,
-        Speed = Config.Speed or 60
+        Speed = Config.Speed or 60,
+        Enabled = InterfaceManager.Settings.SnowfallEnabled or true
     })
     
-    -- Функции управления
     function snowfall:SetVisible(visible)
-        snowContainer.Visible = visible
+        if snowfall.instance then
+            snowfall.instance:SetVisible(visible)
+        end
     end
     
-    function snowfall:SetIntensity(intensity)
-        -- Ничего не делаем, снежинки всегда яркие
+    function snowfall:IsVisible()
+        if snowfall.instance then
+            return snowfall.instance:IsVisible()
+        end
+        return false
     end
     
     function snowfall:SetSpeed(speed)
