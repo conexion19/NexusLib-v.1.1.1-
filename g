@@ -9629,8 +9629,8 @@ Library.CreateWindow = function(self, Config)
     if Config.Snowfall ~= false then
         Library.WindowSnowfallEnabled = true
         Library.WindowSnowfallConfig = Config.SnowfallConfig or {
-            Count = 50,
-            Speed = 10
+            Count = 40,
+            Speed = 9.5
         }
 
     else
@@ -9744,8 +9744,8 @@ Library.CreateWindow = function(self, Config)
     table.insert(Library.Windows, Window)
     
     Window.SnowfallConfig = Config.SnowfallConfig or {
-        Count = 50,
-        Speed = 10
+        Count = 40,
+        Speed = 9.5
     }
 
 	InterfaceManager:SetTheme(Config.Theme)
@@ -9757,8 +9757,8 @@ Library.CreateWindow = function(self, Config)
         task.wait(0.5) 
 
 local snowfallConfig = Config.SnowfallConfig or {
-   Count = 50,     
-   Speed = 10,      
+   Count = 40,     
+   Speed = 9.5      
 }
 
         Library:AddSnowfallToWindow(snowfallConfig)
@@ -9771,10 +9771,10 @@ local snowfallConfig = Config.SnowfallConfig or {
     local snowfallEnabled = InterfaceManager.Settings.Snowfall == nil and true or InterfaceManager.Settings.Snowfall
     
     if Config.Snowfall ~= false and snowfallEnabled then
-        task.wait(0.5)
+        task.wait(0.6)
         Library:AddSnowfallToWindow(Config.SnowfallConfig or {
-            Count = 70,
-            Speed = 10
+            Count = 40,
+            Speed = 9.5
         })
     end
     
@@ -11253,8 +11253,8 @@ function Library:AddSnowfallToWindow(Config)
     
     -- Инициализируем снегопад
     snowfall.instance = SnowModule:Init(snowContainer, {
-        Count = Config.Count or 80,
-        Speed = Config.Speed or 60
+        Count = Config.Count or 40,
+        Speed = Config.Speed or 9.5
     })
     
     -- Функции управления
