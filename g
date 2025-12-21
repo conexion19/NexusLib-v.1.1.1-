@@ -11085,15 +11085,14 @@ AddSignal(MobileMinimizeButton.MouseButton1Click, function()
     end
 end)
 
-function Library:AddSnowfallToWindow(Config)
+function Library:AddSnowfallToWindow()
     if not Library.Window then return end
     
     local snowfall = {}
-    Config = Config or {}
     
     local SnowModule = {}
     
-    function SnowModule:Init(Parent, Config)
+    function SnowModule:Init(Parent)
         local snowContainer = Instance.new("Frame")
         snowContainer.Name = "SnowfallEffect"
         snowContainer.Size = UDim2.new(1, 0, 1, 0)
@@ -11102,8 +11101,8 @@ function Library:AddSnowfallToWindow(Config)
         snowContainer.Parent = Parent
         
         -- ФИКСИРОВАННЫЕ ЗНАЧЕНИЯ
-        local snowflakeCount = 55  -- Всегда 30 снежинок
-        local fallSpeed = 11        -- Всегда скорость 5
+        local snowflakeCount = 60 -- Всегда 30 снежинок
+        local fallSpeed = 15        -- Всегда скорость 5
         
         local snowflakeColor = Color3.fromRGB(255, 255, 255)
         
@@ -11156,23 +11155,20 @@ function Library:AddSnowfallToWindow(Config)
                 local currentPos = frame.Position
                 
                 -- Движение вниз
-                local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 50)  -- Быстрее
+                local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 50)
                 local newX = currentPos.X.Scale + (snowflake.wind * deltaTime / 100)
                 
                 -- Если снежинка ушла за нижнюю границу
-                if newY > 1.1 then  -- Немного ниже контейнера для плавного исчезновения
-                    -- Создаем новую снежинку сверху
-                    newY = -0.1  -- Начинаем выше контейнера
-                    newX = math.random() * 0.95  -- Новая случайная позиция по X
+                if newY > 1.1 then
+                    -- "Возрождаем" снежинку сверху
+                    newY = -0.1
+                    newX = math.random() * 0.95
                     
-                    -- Случайный размер для новой снежинки
                     local newSize = math.random(2, 6)
                     frame.Size = UDim2.new(0, newSize, 0, newSize)
                     snowflake.size = newSize
                     
-                    -- Новая случайная скорость
                     snowflake.speed = fallSpeed * math.random(0.8, 1.2)
-                    -- Новый случайный ветер
                     snowflake.wind = (math.random() - 0.5) * 0.5
                 end
                 
@@ -11196,14 +11192,6 @@ function Library:AddSnowfallToWindow(Config)
         
         local SnowInstance = {}
         
-        function SnowInstance:SetIntensity(intensity)
-            -- Ничего не меняем
-        end
-        
-        function SnowInstance:SetSpeed(speed)
-            -- Не меняем, фиксированная скорость
-        end
-        
         function SnowInstance:Destroy()
             for _, conn in ipairs(connections) do
                 conn:Disconnect()
@@ -11222,21 +11210,10 @@ function Library:AddSnowfallToWindow(Config)
     snowContainer.ClipsDescendants = true
     snowContainer.Parent = Library.Window.Root
     
-    snowfall.instance = SnowModule:Init(snowContainer, {
-        Count = 60,
-        Speed = 11
-    })
+    snowfall.instance = SnowModule:Init(snowContainer)
     
     function snowfall:SetVisible(visible)
         snowContainer.Visible = visible
-    end
-    
-    function snowfall:SetIntensity(intensity)
-        -- Ничего не делаем
-    end
-    
-    function snowfall:SetSpeed(speed)
-        -- Не меняем скорость
     end
     
     function snowfall:Destroy()
