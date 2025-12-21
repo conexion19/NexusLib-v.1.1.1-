@@ -9223,8 +9223,6 @@ local InterfaceManager = {} do
 
 		MenuKeybind = "M",
 
-		 Snowfall = true
-
 
 	}
 
@@ -9337,28 +9335,17 @@ function InterfaceManager:SaveSettings()
 end
 
 
-
-
-
 function InterfaceManager:LoadSettings()
     local path = self.Folder .. "/options.json"
     if isfile(path) then
         local data = readfile(path)
         
-        local success = false
-        local decoded = nil
-        
         if not RunService:IsStudio() then 
-            success, decoded = pcall(httpService.JSONDecode, httpService, data)
-        else
-            -- Для Studio просто создаем пустые настройки
-            success = true
-            decoded = {}
-        end
-        
-        if success and decoded then
-            for i, v in next, decoded do
-                InterfaceManager.Settings[i] = v
+            local success, decoded = pcall(httpService.JSONDecode, httpService, data)
+            if success then
+                for i, v in next, decoded do
+                    InterfaceManager.Settings[i] = v
+                end
             end
         end
     end
@@ -9471,33 +9458,6 @@ end
 
 
 		end
-
-
-
--- Добавьте этот код для управления снегопадом
-    local SnowfallToggle = section:AddToggle("SnowfallToggle", {
-        Title = "Snowfall",
-        Description = "Enables or disables falling snow effect.",
-        Default = Settings.Snowfall == nil and true or Settings.Snowfall, -- По умолчанию включено
-        Callback = function(Value)
-            Settings.Snowfall = Value
-            InterfaceManager:SaveSettings()
-            
-            -- Управление снегопадом в окне
-            if Library.Window and Library.Snowfall then
-                Library.Snowfall:SetVisible(Value)
-                
-                -- Если снегопад включен и еще не создан, создаем его
-                if Value and not Library.Snowfall.instance then
-                    if Library.Window.SnowfallConfig then
-                        Library:AddSnowfallToWindow(Library.Window.SnowfallConfig)
-                    else
-                        Library:AddSnowfallToWindow({Count = 40, Speed = 9.5})
-                    end
-                end
-            end
-        end
-    })
 
 
 		section:AddSlider("WindowTransparency", {
