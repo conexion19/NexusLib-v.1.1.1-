@@ -11102,8 +11102,8 @@ function Library:AddSnowfallToWindow(Config)
         snowContainer.Parent = Parent
         
         -- ФИКСИРОВАННЫЕ ЗНАЧЕНИЯ
-        local snowflakeCount = 30  -- Всегда 30 снежинок
-        local fallSpeed = 5        -- Всегда скорость 5
+        local snowflakeCount = 55  -- Всегда 30 снежинок
+        local fallSpeed = 11        -- Всегда скорость 5
         
         local snowflakeColor = Color3.fromRGB(255, 255, 255)
         
@@ -11223,8 +11223,8 @@ function Library:AddSnowfallToWindow(Config)
     snowContainer.Parent = Library.Window.Root
     
     snowfall.instance = SnowModule:Init(snowContainer, {
-        Count = 50,
-        Speed = 9
+        Count = 60,
+        Speed = 11
     })
     
     function snowfall:SetVisible(visible)
