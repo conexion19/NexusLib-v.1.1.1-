@@ -9341,29 +9341,27 @@ end
 
 
 function InterfaceManager:LoadSettings()
-
     local path = self.Folder .. "/options.json"
     if isfile(path) then
-
         local data = readfile(path)
         
+        local success = false
+        local decoded = nil
+        
         if not RunService:IsStudio() then 
-
-            local success, decoded = pcall(httpService.JSONDecode, httpService, data) 
+            success, decoded = pcall(httpService.JSONDecode, httpService, data)
+        else
+            -- Для Studio просто создаем пустые настройки
+            success = true
+            decoded = {}
         end
         
-        if success then
-
+        if success and decoded then
             for i, v in next, decoded do
-
                 InterfaceManager.Settings[i] = v
-
             end
-
         end
-	
     end
-
 end
 
 
