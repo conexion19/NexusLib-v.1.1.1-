@@ -11068,131 +11068,51 @@ AddSignal(MobileMinimizeButton.MouseButton1Click, function()
 
 end)
 
---[[
-    АВТОМАТИЧЕСКИЕ СНЕЖИНКИ ДЛЯ FLUENT INTERFACE
-    Добавляются автоматически после загрузки интерфейса
---]]
-
--- Создаем простую систему снежинок
-local function CreateSnowflakes()
-    -- Ждем пока GUI создастся
-    if not Library.GUI then
-        task.wait(0.5)
-    end
-    
-    -- Создаем контейнер для снежинок
-    local SnowContainer = Creator.New("Frame", {
-        Size = UDim2.fromScale(1, 1),
-        BackgroundTransparency = 1,
-        ClipsDescendants = false,
-        Parent = Library.GUI,
-        Name = "SnowflakesContainer",
-        ZIndex = 15
-    })
-    
-    -- Массив для хранения снежинок
-    local Snowflakes = {}
-    local SnowflakeCount = 60 -- Количество снежинок
-    
-    -- Создаем снежинки
-    for i = 1, SnowflakeCount do
-        -- Случайные параметры
-        local size = math.random(4, 12)
-        local speed = math.random(30, 70)
-        local opacity = math.random(40, 90) / 100
-        
-        -- Начальная позиция
-        local camera = workspace.CurrentCamera
-        local viewportSize = camera.ViewportSize
-        local x = math.random(-50, viewportSize.X + 50)
-        local y = math.random(-50, -size)
-        
-        -- Создаем круглую снежинку
-        local snowflake = Creator.New("Frame", {
-            Size = UDim2.fromOffset(size, size),
-            Position = UDim2.fromOffset(x, y),
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-            BackgroundTransparency = 1 - opacity,
-            BorderSizePixel = 0,
-            ZIndex = 15,
-            Parent = SnowContainer
-        })
-        
-        -- Делаем круглой
-        Creator.New("UICorner", {
-            CornerRadius = UDim.new(1, 0)
-        }).Parent = snowflake
-        
-        -- Параметры снежинки
-        local snowflakeData = {
-            Gui = snowflake,
-            X = x,
-            Y = y,
-            Size = size,
-            Speed = speed,
-            Wind = math.random(-8, 8) * 0.1,
-            Wobble = {
-                Amplitude = math.random(1, 3),
-                Speed = math.random(1, 3) * 0.1,
-                Offset = math.random(0, 100)
-            }
-        }
-        
-        table.insert(Snowflakes, snowflakeData)
-    end
-    
-    -- Функция обновления снежинок
-    local connection = RunService.RenderStepped:Connect(function(deltaTime)
-        local camera = workspace.CurrentCamera
-        local viewportSize = camera.ViewportSize
-        local currentTime = tick()
-        
-        for _, snowflake in ipairs(Snowflakes) do
-            if snowflake.Gui and snowflake.Gui.Parent then
-                -- Движение вниз
-                snowflake.Y = snowflake.Y + snowflake.Speed * deltaTime
-                
-                -- Движение вбок (ветер)
-                snowflake.X = snowflake.X + snowflake.Wind * deltaTime
-                
-                -- Легкое колебание
-                local wobbleX = math.sin((currentTime + snowflake.Wobble.Offset) * snowflake.Wobble.Speed) * snowflake.Wobble.Amplitude
-                snowflake.X = snowflake.X + wobbleX * deltaTime
-                
-                -- Обновляем позицию
-                snowflake.Gui.Position = UDim2.fromOffset(snowflake.X, snowflake.Y)
-                
-                -- Если снежинка ушла за нижнюю границу
-                if snowflake.Y > viewportSize.Y then
-                    snowflake.X = math.random(-50, viewportSize.X + 50)
-                    snowflake.Y = math.random(-50, -snowflake.Size)
-                    snowflake.Speed = math.random(30, 70)
-                    snowflake.Wind = math.random(-8, 8) * 0.1
-                end
-            end
-        end
-    end)
-    
-    -- Автоматическая адаптация к размеру экрана
-    workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(function()
-        -- Просто сбрасываем позиции снежинок при изменении размера
-        for _, snowflake in ipairs(Snowflakes) do
-            if snowflake.Gui then
-                local viewportSize = workspace.CurrentCamera.ViewportSize
-                snowflake.X = math.random(-50, viewportSize.X + 50)
-                snowflake.Y = math.random(-50, -snowflake.Size)
-                snowflake.Gui.Position = UDim2.fromOffset(snowflake.X, snowflake.Y)
-            end
-        end
-    end)
-    
-    print("[Fluent] Снежинки созданы автоматически")
-end
-
--- Запускаем создание снежинок после небольшой задержки
+-- СНЕЖИНКИ ВНУТРИ ОКНА (МИНИМАЛЬНАЯ ВЕРСИЯ)
 task.spawn(function()
-    task.wait(0.7) -- Ждем полной загрузки интерфейса
-    CreateSnowflakes()
+    repeat task.wait(0.1) until Library.Window and Library.Window.ContainerHolder
+    task.wait(0.5)
+    
+    local Container = Library.Window.ContainerHolder
+    local SnowContainer = Instance.new("Frame")
+    SnowContainer.Size = UDim2.fromScale(1, 1)
+    SnowContainer.BackgroundTransparency = 1
+    SnowContainer.ClipsDescendants = true
+    SnowContainer.Parent = Container
+    SnowContainer.ZIndex = 0
+    
+    for i = 1, 30 do
+        local size = math.random(2, 5)
+        local flake = Instance.new("Frame")
+        flake.Size = UDim2.fromOffset(size, size)
+        flake.Position = UDim2.fromOffset(
+            math.random(0, Container.AbsoluteSize.X - size),
+            math.random(-20, -size)
+        )
+        flake.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        flake.BackgroundTransparency = math.random(60, 95) / 100
+        flake.BorderSizePixel = 0
+        flake.ZIndex = 0
+        flake.Parent = SnowContainer
+        
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(1, 0)
+        corner.Parent = flake
+    end
+    
+    -- Простая анимация
+    game:GetService("RunService").RenderStepped:Connect(function(delta)
+        for _, child in pairs(SnowContainer:GetChildren()) do
+            if child:IsA("Frame") then
+                local pos = child.Position
+                local newY = pos.Y.Offset + 30 * delta
+                if newY > Container.AbsoluteSize.Y then
+                    newY = -child.AbsoluteSize.Y
+                end
+                child.Position = UDim2.new(pos.X.Scale, pos.X.Offset, 0, newY)
+            end
+        end
+    end)
 end)
 
 if RunService:IsStudio() then task.wait(0.01) end
