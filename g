@@ -11085,15 +11085,14 @@ AddSignal(MobileMinimizeButton.MouseButton1Click, function()
     end
 end)
 
-function Library:AddSnowfallToWindow(Config)
+function Library:AddSnowfallToWindow()
     if not Library.Window then return end
     
     local snowfall = {}
-    Config = Config or {}
     
     local SnowModule = {}
     
-    function SnowModule:Init(Parent, Config)
+    function SnowModule:Init(Parent)
         local snowContainer = Instance.new("Frame")
         snowContainer.Name = "SnowfallEffect"
         snowContainer.Size = UDim2.new(1, 0, 1, 0)
@@ -11101,19 +11100,14 @@ function Library:AddSnowfallToWindow(Config)
         snowContainer.ClipsDescendants = true
         snowContainer.Parent = Parent
         
-        -- ФИКСИРОВАННЫЕ ЗНАЧЕНИЯ
-        local snowflakeCount = 30  -- Всегда 30 снежинок
-        local fallSpeed = 5        -- Всегда скорость 5
-        
-        local snowflakeColor = Color3.fromRGB(255, 255, 255)
-        
         local snowflakes = {}
         local connections = {}
         
-        for i = 1, snowflakeCount do
+        -- Функция создания новой снежинки
+        local function createSnowflake()
             local snowflake = Instance.new("Frame")
-            snowflake.Name = "SnowflakeCircle"..i
-            snowflake.BackgroundColor3 = snowflakeColor
+            snowflake.Name = "Snowflake"
+            snowflake.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             snowflake.BorderSizePixel = 0
             
             local size = math.random(2, 6)
@@ -11127,26 +11121,30 @@ function Library:AddSnowfallToWindow(Config)
             snowflake.Position = UDim2.new(
                 math.random() * 0.95, 
                 0, 
-                math.random() * -0.5, 
+                -0.1,  -- Начинаем чуть выше контейнера
                 0
             )
             snowflake.Parent = snowContainer
             
-            local speed = fallSpeed * math.random(0.8, 1.2) -- Небольшие вариации вокруг 5
+            local speed = 5 * math.random(0.8, 1.2)  -- Фиксированная скорость 5
+            local wind = (math.random() - 0.5) * 0.5
             
-            snowflakes[i] = {
+            return {
                 frame = snowflake,
                 speed = speed,
+                wind = wind,
                 size = size
             }
         end
         
-        local containerBounds = {
-            left = 0,
-            right = 1,
-            top = 0,
-            bottom = 1
-        }
+        -- Создаем начальные снежинки (фиксированно 30)
+        for i = 1, 30 do
+            table.insert(snowflakes, createSnowflake())
+        end
+        
+        -- Таймер для создания новых снежинок
+        local spawnTimer = 0
+        local targetSnowflakeCount = 30  -- Фиксированное количество снежинок
         
         local lastUpdate = tick()
         local connection = game:GetService("RunService").Heartbeat:Connect(function()
@@ -11154,26 +11152,42 @@ function Library:AddSnowfallToWindow(Config)
             local deltaTime = currentTime - lastUpdate
             lastUpdate = currentTime
             
-            for _, snowflake in ipairs(snowflakes) do
+            spawnTimer = spawnTimer + deltaTime
+            
+            -- Создаем новые снежинки, если нужно
+            if spawnTimer > 0.1 and #snowflakes < targetSnowflakeCount then  -- Каждые 0.1 сек создаем новую
+                table.insert(snowflakes, createSnowflake())
+                spawnTimer = 0
+            end
+            
+            -- Обновляем существующие снежинки
+            for i = #snowflakes, 1, -1 do
+                local snowflake = snowflakes[i]
                 local frame = snowflake.frame
-                local currentPos = frame.Position
                 
-                local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 100)
-                local newX = currentPos.X.Scale
-                
-                if newX < containerBounds.left then
-                    newX = containerBounds.right
-                elseif newX > containerBounds.right then
-                    newX = containerBounds.left
+                if not frame or not frame.Parent then
+                    table.remove(snowflakes, i)
+                    continue
                 end
                 
-                if newY > containerBounds.bottom then
-                    newY = containerBounds.top - 0.1
-                    newX = math.random() * 0.95
-                    
-                    local newSize = math.random(2, 6)
-                    frame.Size = UDim2.new(0, newSize, 0, newSize)
-                    snowflake.size = newSize
+                local currentPos = frame.Position
+                
+                -- Движение вниз
+                local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 50)
+                local newX = currentPos.X.Scale + (snowflake.wind * deltaTime / 100)
+                
+                -- Если снежинка ушла за нижнюю границу - удаляем
+                if newY > 1.1 then
+                    frame:Destroy()
+                    table.remove(snowflakes, i)
+                    continue
+                end
+                
+                -- Проверка границ по X
+                if newX < -0.05 then
+                    newX = 0.95
+                elseif newX > 0.95 then
+                    newX = -0.05
                 end
                 
                 frame.Position = UDim2.new(
@@ -11189,21 +11203,14 @@ function Library:AddSnowfallToWindow(Config)
         
         local SnowInstance = {}
         
-        function SnowInstance:SetIntensity(intensity)
-            -- Ничего не меняем, так как снежинки всегда яркие
-        end
-        
-        function SnowInstance:SetSpeed(speed)
-            -- Фиксированная скорость, не меняем
-            -- Можно оставить для совместимости, но не будет влиять
-            for _, snowflake in ipairs(snowflakes) do
-                snowflake.speed = 10 * math.random(0.8, 1.2) -- Всегда 5
-            end
-        end
-        
         function SnowInstance:Destroy()
             for _, conn in ipairs(connections) do
                 conn:Disconnect()
+            end
+            for _, snowflake in ipairs(snowflakes) do
+                if snowflake.frame and snowflake.frame.Parent then
+                    snowflake.frame:Destroy()
+                end
             end
             snowContainer:Destroy()
         end
@@ -11219,22 +11226,10 @@ function Library:AddSnowfallToWindow(Config)
     snowContainer.ClipsDescendants = true
     snowContainer.Parent = Library.Window.Root
     
-    -- ВСЕГДА 30 снежинок со скоростью 5
-    snowfall.instance = SnowModule:Init(snowContainer, {
-        Count = 50,     -- Фиксированное значение
-        Speed = 10       -- Фиксированное значение
-    })
+    snowfall.instance = SnowModule:Init(snowContainer)
     
     function snowfall:SetVisible(visible)
         snowContainer.Visible = visible
-    end
-    
-    function snowfall:SetIntensity(intensity)
-        -- Ничего не делаем
-    end
-    
-    function snowfall:SetSpeed(speed)
-        -- Не меняем скорость, всегда 5
     end
     
     function snowfall:Destroy()
@@ -11247,7 +11242,6 @@ function Library:AddSnowfallToWindow(Config)
     Library.Snowfall = snowfall
     return snowfall
 end
--- ==================== КОНЕЦ СНЕГОПАДА ====================
 
 if RunService:IsStudio() then task.wait(0.01) end
 return Library, SaveManager, InterfaceManager, Mobile
