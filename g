@@ -9476,44 +9476,29 @@ end
 
 
 
+-- Добавьте этот код для управления снегопадом
     local SnowfallToggle = section:AddToggle("SnowfallToggle", {
-
         Title = "Snowfall",
-
         Description = "Enables or disables falling snow effect.",
-
-        Default = Settings.Snowfall == nil and true or Settings.Snowfall, 
-
+        Default = Settings.Snowfall == nil and true or Settings.Snowfall, -- По умолчанию включено
         Callback = function(Value)
-
             Settings.Snowfall = Value
-
             InterfaceManager:SaveSettings()
             
+            -- Управление снегопадом в окне
             if Library.Window and Library.Snowfall then
-
                 Library.Snowfall:SetVisible(Value)
                 
-        
+                -- Если снегопад включен и еще не создан, создаем его
                 if Value and not Library.Snowfall.instance then
-
                     if Library.Window.SnowfallConfig then
-
                         Library:AddSnowfallToWindow(Library.Window.SnowfallConfig)
-
                     else
-
-                        Library:AddSnowfallToWindow({Count = 70, Speed = 10})
-
+                        Library:AddSnowfallToWindow({Count = 40, Speed = 9.5})
                     end
-
                 end
-
             end
-
         end
-
-
     })
 
 
@@ -9749,8 +9734,6 @@ Library.CreateWindow = function(self, Config)
     }
 
 	InterfaceManager:SetTheme(Config.Theme)
-
-
 	Library:SetTheme(Config.Theme)
 
     if Config.Snowfall ~= false then 
@@ -11262,8 +11245,16 @@ function Library:AddSnowfallToWindow(Config)
         snowContainer.Visible = visible
     end
     
-    function snowfall:SetIntensity(intensity)
-        -- Ничего не делаем, снежинки всегда яркие
+     function snowfall:SetIntensity(intensity)
+        -- Изменение прозрачности снежинок
+        intensity = math.clamp(intensity, 0, 1)
+        local targetTransparency = 1 - intensity
+        
+        for i, child in ipairs(snowContainer:GetChildren()) do
+            if child:IsA("Frame") then
+                child.BackgroundTransparency = targetTransparency
+            end
+        end
     end
     
     function snowfall:SetSpeed(speed)
