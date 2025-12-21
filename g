@@ -11194,7 +11194,7 @@ function Library:AddSnowfallToWindow(Config)
     
     -- Инициализируем снегопад
     snowfall.instance = SnowModule:Init(snowContainer, {
-        Count = Config.Count or 40,
+        Count = Config.Count or 38,
         Speed = Config.Speed or 9.5
     })
     
