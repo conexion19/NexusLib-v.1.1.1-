@@ -1,4 +1,5 @@
-local Lighting = game:GetService("Lighting")
+
+смотри вот мой код библеотеки - local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -11285,4 +11286,4 @@ end
 -- ==================== КОНЕЦ СНЕГОПАДА ====================
 
 if RunService:IsStudio() then task.wait(0.01) end
-return Library, SaveManager, InterfaceManager, Mobile. 
+return Library, SaveManager, InterfaceManager, Mobile
