@@ -3945,11 +3945,23 @@ Components.TitleBar = (function()
             return Button
         end
 
+        local LogoIcon = New("ImageLabel", {
+            Name = "Logo",
+            Size = UDim2.new(0, 45, 0, 45),
+            Position = UDim2.new(0, 2, 0.5, -21),
+            BackgroundTransparency = 1,
+            Image = "rbxassetid://111390226361567",
+            ImageColor3 = Color3.fromRGB(255, 255, 255),
+        })
+
         TitleBar.Frame = New("Frame", {
             Size = UDim2.new(1, 0, 0, 42),
             BackgroundTransparency = 1,
             Parent = Config.Parent,
         }, {
+            -- Logo no canto esquerdo (com animação)
+            LogoIcon,
+
             -- Простой центральный контейнер
             New("Frame", {
                 Size = UDim2.new(1, 0, 1, 0),
@@ -9708,15 +9720,20 @@ Library.CreateWindow = function(self, Config)
 	Library:SetTheme(Config.Theme)
     
     InterfaceManager:LoadSettings()
-    local snowfallEnabled = InterfaceManager.Settings.Snowfall == nil and true or InterfaceManager.Settings.Snowfall
     
-    if snowfallEnabled then
-        task.wait(0.6)
-        Library:AddSnowfallToWindow({
-            Count = 38,
-            Speed = 9.5
-        })
-    end
+    task.spawn(function()
+        task.wait(1)
+        if Library.Window and Library.Window.Root then
+            local snowfallEnabled = InterfaceManager.Settings.Snowfall == nil and true or InterfaceManager.Settings.Snowfall
+            Library:AddSnowfallToWindow({
+                Count = 38,
+                Speed = 9.5
+            })
+            if not snowfallEnabled and Library.Snowfall then
+                Library.Snowfall:SetVisible(false)
+            end
+        end
+    end)
     
     return Window
 end
@@ -11048,6 +11065,7 @@ end)
 
 function Library:AddSnowfallToWindow(Config)
     if not Library.Window then return end
+    if not Library.Window.Root then return end
     
     if Library.Snowfall then
         return Library.Snowfall
@@ -11075,19 +11093,17 @@ function Library:AddSnowfallToWindow(Config)
         local connections = {}
 
         for i = 1, snowflakeCount do
-            local snowflake = Instance.new("Frame")
-            snowflake.Name = "SnowflakeCircle"..i
-            snowflake.BackgroundColor3 = snowflakeColor -- Яркий белый
+            local snowflake = Instance.new("ImageLabel")
+            snowflake.Name = "Snowflake"..i
+            snowflake.BackgroundTransparency = 1
             snowflake.BorderSizePixel = 0
+            snowflake.Image = "rbxassetid://124338537670236"
+            snowflake.ImageColor3 = snowflakeColor
+            snowflake.ImageTransparency = 0.1
+            snowflake.ScaleType = Enum.ScaleType.Fit
             
-            local size = math.random(2, 6)
+            local size = math.random(10, 18)
             snowflake.Size = UDim2.new(0, size, 0, size)
-            
-            local corner = Instance.new("UICorner")
-            corner.CornerRadius = UDim.new(1, 0) -- Полностью круглые
-            corner.Parent = snowflake
-            
-            snowflake.BackgroundTransparency = 0
             
             snowflake.Position = UDim2.new(
                 math.random() * 0.95, 
@@ -11136,7 +11152,7 @@ function Library:AddSnowfallToWindow(Config)
                     newY = containerBounds.top - 0.1
                     newX = math.random() * 0.95
                     
-                    local newSize = math.random(2, 6)
+                    local newSize = math.random(10, 18)
                     frame.Size = UDim2.new(0, newSize, 0, newSize)
                     snowflake.size = newSize
                 end
