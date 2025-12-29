@@ -9572,7 +9572,7 @@ Library.CreateWindow = function(self, Config)
     if Config.Snowfall ~= false then
         Library.WindowSnowfallEnabled = true
         Library.WindowSnowfallConfig = Config.SnowfallConfig or {
-            Count = 40,
+            Count = 38,
             Speed = 9.5
         }
 
@@ -11028,7 +11028,6 @@ AddSignal(MinimizeButton.MouseButton1Click, function()
 
 
 end)
-
 
 
 
