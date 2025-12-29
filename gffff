@@ -1,3 +1,4 @@
+print("rwque")
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -10998,7 +10999,6 @@ Creator.AddSignal(RunService.Heartbeat, function()
 
 		end
 
-
 		activeMin.Position = UDim2.new(0, newX, 0, newY)
 
 
@@ -11049,6 +11049,7 @@ end)
 function Library:AddSnowfallToWindow(Config)
     if not Library.Window then return end
     
+    -- Evitar criar múltiplas instâncias de snowfall
     if Library.Snowfall then
         return Library.Snowfall
     end
