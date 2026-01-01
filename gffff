@@ -4045,10 +4045,7 @@ Components.TitleBar = (function()
                 },
             })
         end)
-        TitleBar.MaxButton = BarButton(Components.Assets.Max, UDim2.new(1, -40, 0, 4), TitleBar.Frame, function()
-            Config.Window.Maximize(not Config.Window.Maximized)
-        end)
-        TitleBar.MinButton = BarButton(Components.Assets.Min, UDim2.new(1, -80, 0, 4), TitleBar.Frame, function()
+        TitleBar.MinButton = BarButton(Components.Assets.Min, UDim2.new(1, -40, 0, 4), TitleBar.Frame, function()
             Library.Window:Minimize()
         end)
 
@@ -4063,7 +4060,6 @@ Components.Window = (function()
 	return function(Config)
 		local Window = {
 			Minimized = false,
-			Maximized = false,
 			Size = Config.Size,
 			CurrentPos = 0,
 			TabWidth = 0,
@@ -4844,32 +4840,6 @@ Window.Root = New("Frame", {
 			UpdateContainerPosition()
 		end)
 
-		local OldSizeX
-		local OldSizeY
-		Window.Maximize = function(Value, NoPos, Instant)
-			Window.Maximized = Value
-			Window.TitleBar.MaxButton.Frame.Icon.Image = Value and Components.Assets.Restore or Components.Assets.Max
-
-			if Value then
-				OldSizeX = Window.Size.X.Offset
-				OldSizeY = Window.Size.Y.Offset
-			end
-			local SizeX = Value and Camera.ViewportSize.X or OldSizeX
-			local SizeY = Value and Camera.ViewportSize.Y or OldSizeY
-			SizeMotor:setGoal({
-				X = Flipper[Instant and "Instant" or "Spring"].new(SizeX, { frequency = 6 }),
-				Y = Flipper[Instant and "Instant" or "Spring"].new(SizeY, { frequency = 6 }),
-			})
-			Window.Size = UDim2.fromOffset(SizeX, SizeY)
-
-			if not NoPos then
-				PosMotor:setGoal({
-					X = Spring(Value and 0 or Window.Position.X.Offset, { frequency = 6 }),
-					Y = Spring(Value and 0 or Window.Position.Y.Offset, { frequency = 6 }),
-				})
-			end
-		end
-
 		Creator.AddSignal(Window.TitleBar.Frame.InputBegan, function(Input)
 			if
 				Input.UserInputType == Enum.UserInputType.MouseButton1
@@ -4878,13 +4848,6 @@ Window.Root = New("Frame", {
 				Dragging = true
 				MousePos = Input.Position
 				StartPos = Window.Root.Position
-
-				if Window.Maximized then
-					StartPos = UDim2.fromOffset(
-						Mouse.X - (Mouse.X * ((OldSizeX - 100) / Window.Root.AbsoluteSize.X)),
-						Mouse.Y - (Mouse.Y * (OldSizeY / Window.Root.AbsoluteSize.Y))
-					)
-				end
 
 				Input.Changed:Connect(function()
 					if Input.UserInputState == Enum.UserInputState.End then
@@ -4921,10 +4884,6 @@ Window.Root = New("Frame", {
 					X = Instant(Window.Position.X.Offset),
 					Y = Instant(Window.Position.Y.Offset),
 				})
-
-				if Window.Maximized then
-					Window.Maximize(false, true, true)
-				end
 			end
 
 			if
