@@ -4957,6 +4957,18 @@ Window.Root = New("Frame", {
 			Window.Minimized = not Window.Minimized
 			Window.Root.Visible = not Window.Minimized
 
+			if game.GameId == 93978595733734 and InterfaceManager.Settings.AutoCursorUnlock then
+				pcall(function()
+					if Window.Minimized then
+						UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+						UserInputService.MouseIconEnabled = false
+					else
+						UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+						UserInputService.MouseIconEnabled = true
+					end
+				end)
+			end
+
 			for _, Option in next, Library.Options do
 				if Option and Option.Type == "Dropdown" and Option.Opened then
 					pcall(function()
@@ -9195,6 +9207,9 @@ local InterfaceManager = {} do
 		MenuKeybind = "M",
 
 
+		AutoCursorUnlock = false,
+
+
 	}
 
 
@@ -9476,10 +9491,31 @@ end
 			end
 		})
 
-
-
-
-
+		if game.GameId == 93978595733734 then
+			section:AddToggle("AutoCursorUnlock", {
+				Title = "Auto Cursor Unlock",
+				Description = "Automatically show cursor when UI opens and hide when closed.",
+				Default = Settings.AutoCursorUnlock or false,
+				Callback = function(Value)
+					Settings.AutoCursorUnlock = Value
+					InterfaceManager:SaveSettings()
+					
+					if Library.Window then
+						if Value and not Library.Window.Minimized then
+							pcall(function()
+								UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+								UserInputService.MouseIconEnabled = true
+							end)
+						elseif not Value then
+							pcall(function()
+								UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+								UserInputService.MouseIconEnabled = false
+							end)
+						end
+					end
+				end
+			})
+		end
 
 
 
