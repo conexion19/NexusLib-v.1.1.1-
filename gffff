@@ -11134,7 +11134,7 @@ local connection = game:GetService("RunService").Heartbeat:Connect(function()
         local frame = snowflake.frame
         local currentPos = frame.Position
 
-        local newY = currentPos.Y.Scale + (snowflake.speed * 0.03)  
+        local newY = currentPos.Y.Scale + (snowflake.speed * 0.01)  
         local newX = currentPos.X.Scale
         
         if newX < containerBounds.left then
