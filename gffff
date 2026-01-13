@@ -1,4 +1,3 @@
-print("1")
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -11110,7 +11109,7 @@ function Library:AddSnowfallToWindow(Config)
             snowflake.Parent = innerContainer
             
             local speed = math.random(fallSpeed * 0.5, fallSpeed * 1.5)
-            local windSpeed = math.random(0.15, 0.35)
+            local windSpeed = math.random(0.3, 0.6)
             
             snowflakes[i] = {
                 frame = snowflake,
@@ -11148,7 +11147,7 @@ function Library:AddSnowfallToWindow(Config)
                     frame.Size = UDim2.new(0, newSize, 0, newSize)
                     snowflake.size = newSize
                     snowflake.speed = math.random(fallSpeed * 0.5, fallSpeed * 1.5)
-                    snowflake.windSpeed = math.random(0.15, 0.35)
+                    snowflake.windSpeed = math.random(0.3, 0.6)
                 end
                 
                 frame.Position = UDim2.new(
