@@ -11105,7 +11105,7 @@ function Library:AddSnowfallToWindow(Config)
             )
             snowflake.Parent = innerContainer
             
-            local speed = math.random(fallSpeed * 1, fallSpeed * 2)
+            local speed = math.random(fallSpeed * 0.4, fallSpeed * 1.2)
             
             snowflakes[i] = {
                 frame = snowflake,
