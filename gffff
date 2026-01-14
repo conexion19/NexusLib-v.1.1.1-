@@ -11131,15 +11131,9 @@ function Library:AddSnowfallToWindow(Config)
                 local frame = snowflake.frame
                 local currentPos = frame.Position
 
-                local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 105)
-              
-local windTime = tick() * 1.5
-local windEffect = math.sin(windTime + (i * 0.3)) * 0.25 
-local newX = currentPos.X.Scale + windEffect * deltaTime * 20
-
-
-if newX < -0.1 then newX = 0.9 end
-if newX > 1.1 then newX = 0.1 end
+                local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 110)
+                local newX = currentPos.X.Scale
+                
                 
                 if newX < containerBounds.left then
                     newX = containerBounds.right
