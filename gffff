@@ -11131,7 +11131,7 @@ function Library:AddSnowfallToWindow(Config)
                 local frame = snowflake.frame
                 local currentPos = frame.Position
 
-                local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 60)
+                local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 86)
                 local newX = currentPos.X.Scale
                 
                 if newX < containerBounds.left then
