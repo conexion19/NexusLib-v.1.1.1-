@@ -2612,7 +2612,7 @@ Components.Tab = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 0),
+				CornerRadius = UDim.new(0, 4),
 			}),
 			New("TextLabel", {
 				AnchorPoint = Vector2.new(0, 0.5),
@@ -2807,7 +2807,7 @@ Components.Tab = (function()
 				},
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 0),
+					CornerRadius = UDim.new(0, 4),
 				}),
 				New("UIStroke", {
 					Transparency = 1,
@@ -3308,7 +3308,7 @@ Components.Button = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 0),
+				CornerRadius = UDim.new(0, 6),
 			}),
 		})
 
@@ -3320,7 +3320,7 @@ Components.Button = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 0),
+				CornerRadius = UDim.new(0, 6),
 			}),
 			New("UIStroke", {
 				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
@@ -3376,7 +3376,7 @@ Components.Dialog = (function()
 			Parent = Dialog.Window.Root,
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 0),
+				CornerRadius = UDim.new(0, 8),
 			}),
 		})
 
@@ -3448,7 +3448,7 @@ Components.Dialog = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 0),
+				CornerRadius = UDim.new(0, 8),
 			}),
 			New("UIStroke", {
 				Transparency = 0.5,
@@ -3905,7 +3905,7 @@ Components.TitleBar = (function()
                 },
             }, {
                 New("UICorner", {
-                    CornerRadius = UDim.new(0, 0),
+                    CornerRadius = UDim.new(0, 6),
                 }),
                 New("ImageLabel", {
                     Image = Icon,
@@ -4095,10 +4095,12 @@ Components.Window = (function()
 			},
 		}, {
 			New("UICorner", {
-			CornerRadius = UDim.new(0, 0),
-			Size = UDim2.fromOffset(20, 20),
-			BackgroundTransparency = 1,
-			Position = UDim2.new(1, -20, 1, -2),
+				CornerRadius = UDim.new(0, 4),
+			}),
+			New("Frame", {
+				Size = UDim2.fromOffset(20, 20),
+				BackgroundTransparency = 1,
+				Position = UDim2.new(1, -20, 1, -2),
 		})
 
 		local SearchElements = {}
@@ -4340,7 +4342,7 @@ Components.Window = (function()
 			Visible = true,
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 0),
+				CornerRadius = UDim.new(0, 4),
 			}),
 		}) or nil
 
@@ -4541,7 +4543,7 @@ Window.ContainerCanvas = New("Frame", {
 				ScaleType = Enum.ScaleType.Stretch,
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 0),
+					CornerRadius = UDim.new(0, 4),
 				}),
 			})
 			Window.BackgroundImage = BackgroundImageFrame
@@ -5032,7 +5034,7 @@ Window.Root = New("Frame", {
 					Parent = Window.Root,
 				}, {
 					New("UICorner", {
-						CornerRadius = UDim.new(0, 0),
+						CornerRadius = UDim.new(0, 4),
 					}),
 				})
 				Window.BackgroundImage = BackgroundImageFrame
@@ -5257,7 +5259,7 @@ ElementsTable.Toggle = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 0),
+				CornerRadius = UDim.new(0, 8),
 			}),
 			ToggleBorder,
 			ToggleCircle,
@@ -5522,7 +5524,7 @@ ElementsTable.Dropdown = (function()
 			SearchBar,
 			DropdownScrollFrame,
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 0),
+				CornerRadius = UDim.new(0, 6),
 			}),
 			New("UIStroke", {
 				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
@@ -5999,9 +6001,9 @@ local DropdownHolderCanvas = New("Frame", {
 					ButtonSelector,
 					ButtonLabel,
 					New("UICorner", {
-					CornerRadius = UDim.new(0, 0),
-
-				local Selected
+					CornerRadius = UDim.new(0, 4),
+				}),
+			})
 
 				if Config.Multi then
 					Selected = Dropdown.Value[Value]
@@ -6797,7 +6799,7 @@ ElementsTable.Colorpicker = (function()
 			Parent = ColorpickerFrame.Frame,
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 0),
+				CornerRadius = UDim.new(0, 4),
 			}),
 		})
 
@@ -6812,7 +6814,7 @@ ElementsTable.Colorpicker = (function()
 			TileSize = UDim2.fromOffset(40, 40),
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 0),
+				CornerRadius = UDim.new(0, 4),
 			}),
 			DisplayFrameColor,
 		})
@@ -6887,7 +6889,7 @@ ElementsTable.Colorpicker = (function()
 				BackgroundTransparency = Colorpicker.Transparency,
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 0),
+					CornerRadius = UDim.new(0, 4),
 				}),
 			})
 			local OldColorFrameChecker = New("ImageLabel", {
@@ -6901,7 +6903,7 @@ ElementsTable.Colorpicker = (function()
 				Parent = Dialog.Root,
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 0),
+					CornerRadius = UDim.new(0, 4),
 				}),
 				New("UIStroke", {
 					Thickness = 2,
@@ -6916,7 +6918,7 @@ ElementsTable.Colorpicker = (function()
 				BackgroundTransparency = 0,
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 0),
+					CornerRadius = UDim.new(0, 4),
 				}),
 			})
 
@@ -6931,7 +6933,7 @@ ElementsTable.Colorpicker = (function()
 				Parent = Dialog.Root,
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 0),
+					CornerRadius = UDim.new(0, 4),
 				}),
 				New("UIStroke", {
 					Thickness = 2,
@@ -9907,7 +9909,7 @@ function Library:CreateMinimizer(Config)
 				New("UIAspectRatioConstraint", { AspectRatio = 1, AspectType = Enum.AspectType.FitWithinMaxSize }),
 
 
-				New("UICorner", { CornerRadius = UDim.new(0, 0) })
+				New("UICorner", { CornerRadius = UDim.new(0, 6) })
 
 
 			}),
@@ -10607,7 +10609,7 @@ local MinimizeButton = New("TextButton", {
 		New("UICorner", {
 
 
-			CornerRadius = UDim.new(0, 0),
+			CornerRadius = UDim.new(0, 4),
 
 
 		}),
