@@ -2041,7 +2041,7 @@ function AcrylicPaint()
 			}),
 
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 8),
+				CornerRadius = UDim.new(0, 0),
 			}),
 
 			New("Frame", {
@@ -2053,39 +2053,39 @@ function AcrylicPaint()
 				},
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 8),
-				}),
+				CornerRadius = UDim.new(0, 0),
+			}),
+		}),
+
+		New("Frame", {
+			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+			BackgroundTransparency = 0.4,
+			Size = UDim2.fromScale(1, 1),
+		}, {
+			New("UICorner", {
+				CornerRadius = UDim.new(0, 0),
 			}),
 
-			New("Frame", {
-				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-				BackgroundTransparency = 0.4,
-				Size = UDim2.fromScale(1, 1),
-			}, {
-				New("UICorner", {
-					CornerRadius = UDim.new(0, 8),
-				}),
-
-				New("UIGradient", {
-					Rotation = 90,
-					ThemeTag = {
-						Color = "AcrylicGradient",
-					},
-				}),
+			New("UIGradient", {
+				Rotation = 90,
+				ThemeTag = {
+					Color = "AcrylicGradient",
+				},
 			}),
+		}),
 
-			New("ImageLabel", {
-				Image = "rbxassetid://9968344105",
-				ImageTransparency = 0.98,
-				ScaleType = Enum.ScaleType.Tile,
-				TileSize = UDim2.new(0, 128, 0, 128),
-				Size = UDim2.fromScale(1, 1),
-				BackgroundTransparency = 1,
-			}, {
-				New("UICorner", {
-					CornerRadius = UDim.new(0, 8),
-				}),
+		New("ImageLabel", {
+			Image = "rbxassetid://9968344105",
+			ImageTransparency = 0.98,
+			ScaleType = Enum.ScaleType.Tile,
+			TileSize = UDim2.new(0, 128, 0, 128),
+			Size = UDim2.fromScale(1, 1),
+			BackgroundTransparency = 1,
+		}, {
+			New("UICorner", {
+				CornerRadius = UDim.new(0, 0),
 			}),
+		}),
 
 			New("ImageLabel", {
 				Image = "rbxassetid://9968344227",
@@ -2099,7 +2099,7 @@ function AcrylicPaint()
 				},
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 8),
+					CornerRadius = UDim.new(0, 0),
 				}),
 			}),
 
@@ -2109,7 +2109,7 @@ function AcrylicPaint()
 				ZIndex = 2,
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 8),
+					CornerRadius = UDim.new(0, 0),
 				}),
 				New("UIStroke", {
 					Transparency = 0.5,
@@ -2614,7 +2614,7 @@ Components.Tab = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 6),
+				CornerRadius = UDim.new(0, 0),
 			}),
 			New("TextLabel", {
 				AnchorPoint = Vector2.new(0, 0.5),
@@ -2809,7 +2809,7 @@ Components.Tab = (function()
 				},
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 6),
+					CornerRadius = UDim.new(0, 0),
 				}),
 				New("UIStroke", {
 					Transparency = 1,
@@ -3310,7 +3310,7 @@ Components.Button = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
+				CornerRadius = UDim.new(0, 0),
 			}),
 		})
 
@@ -3322,7 +3322,7 @@ Components.Button = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
+				CornerRadius = UDim.new(0, 0),
 			}),
 			New("UIStroke", {
 				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
@@ -3378,7 +3378,7 @@ Components.Dialog = (function()
 			Parent = Dialog.Window.Root,
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 8),
+				CornerRadius = UDim.new(0, 0),
 			}),
 		})
 
@@ -3450,7 +3450,7 @@ Components.Dialog = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 8),
+				CornerRadius = UDim.new(0, 0),
 			}),
 			New("UIStroke", {
 				Transparency = 0.5,
@@ -3907,7 +3907,7 @@ Components.TitleBar = (function()
                 },
             }, {
                 New("UICorner", {
-                    CornerRadius = UDim.new(0, 7),
+                    CornerRadius = UDim.new(0, 0),
                 }),
                 New("ImageLabel", {
                     Image = Icon,
@@ -4097,11 +4097,7 @@ Components.Window = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 9),
-			}),
-		})
-
-		local ResizeStartFrame = New("Frame", {
+			CornerRadius = UDim.new(0, 0),
 			Size = UDim2.fromOffset(20, 20),
 			BackgroundTransparency = 1,
 			Position = UDim2.new(1, -20, 1, -2),
@@ -4346,7 +4342,7 @@ Components.Window = (function()
 			Visible = true,
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 6),
+				CornerRadius = UDim.new(0, 0),
 			}),
 		}) or nil
 
@@ -4547,7 +4543,7 @@ Window.ContainerCanvas = New("Frame", {
 				ScaleType = Enum.ScaleType.Stretch,
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 8),
+					CornerRadius = UDim.new(0, 0),
 				}),
 			})
 			Window.BackgroundImage = BackgroundImageFrame
@@ -5038,7 +5034,7 @@ Window.Root = New("Frame", {
 					Parent = Window.Root,
 				}, {
 					New("UICorner", {
-						CornerRadius = UDim.new(0, 8),
+						CornerRadius = UDim.new(0, 0),
 					}),
 				})
 				Window.BackgroundImage = BackgroundImageFrame
@@ -5263,7 +5259,7 @@ ElementsTable.Toggle = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 9),
+				CornerRadius = UDim.new(0, 0),
 			}),
 			ToggleBorder,
 			ToggleCircle,
@@ -5528,7 +5524,7 @@ ElementsTable.Dropdown = (function()
 			SearchBar,
 			DropdownScrollFrame,
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 7),
+				CornerRadius = UDim.new(0, 0),
 			}),
 			New("UIStroke", {
 				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
@@ -6005,9 +6001,7 @@ local DropdownHolderCanvas = New("Frame", {
 					ButtonSelector,
 					ButtonLabel,
 					New("UICorner", {
-						CornerRadius = UDim.new(0, 6),
-					}),
-				})
+					CornerRadius = UDim.new(0, 0),
 
 				local Selected
 
@@ -6805,7 +6799,7 @@ ElementsTable.Colorpicker = (function()
 			Parent = ColorpickerFrame.Frame,
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
+				CornerRadius = UDim.new(0, 0),
 			}),
 		})
 
@@ -6820,7 +6814,7 @@ ElementsTable.Colorpicker = (function()
 			TileSize = UDim2.fromOffset(40, 40),
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
+				CornerRadius = UDim.new(0, 0),
 			}),
 			DisplayFrameColor,
 		})
@@ -6895,7 +6889,7 @@ ElementsTable.Colorpicker = (function()
 				BackgroundTransparency = Colorpicker.Transparency,
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 4),
+					CornerRadius = UDim.new(0, 0),
 				}),
 			})
 			local OldColorFrameChecker = New("ImageLabel", {
@@ -6909,7 +6903,7 @@ ElementsTable.Colorpicker = (function()
 				Parent = Dialog.Root,
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 4),
+					CornerRadius = UDim.new(0, 0),
 				}),
 				New("UIStroke", {
 					Thickness = 2,
@@ -6924,7 +6918,7 @@ ElementsTable.Colorpicker = (function()
 				BackgroundTransparency = 0,
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 4),
+					CornerRadius = UDim.new(0, 0),
 				}),
 			})
 
@@ -6939,7 +6933,7 @@ ElementsTable.Colorpicker = (function()
 				Parent = Dialog.Root,
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 4),
+					CornerRadius = UDim.new(0, 0),
 				}),
 				New("UIStroke", {
 					Thickness = 2,
@@ -10615,7 +10609,7 @@ local MinimizeButton = New("TextButton", {
 		New("UICorner", {
 
 
-			CornerRadius = UDim.new(0, 8),
+			CornerRadius = UDim.new(0, 0),
 
 
 		}),
