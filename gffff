@@ -7,6 +7,8 @@ local TextService = game:GetService("TextService")
 local Camera = game:GetService("Workspace").CurrentCamera
 local Mouse = LocalPlayer:GetMouse()
 local httpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 local Mobile = not RunService:IsStudio() and table.find({Enum.Platform.IOS, Enum.Platform.Android}, UserInputService:GetPlatform()) ~= nil
 
@@ -2038,10 +2040,6 @@ function AcrylicPaint()
 				ImageTransparency = 0.7,
 			}),
 
-			New("UICorner", {
-				CornerRadius = UDim.new(0, 0),
-			}),
-
 			New("Frame", {
 				BackgroundTransparency = 0.45,
 				Size = UDim2.fromScale(1, 1),
@@ -2051,39 +2049,31 @@ function AcrylicPaint()
 				},
 			}, {
 				New("UICorner", {
-				CornerRadius = UDim.new(0, 0),
-			}),
-		}),
-
-		New("Frame", {
-			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-			BackgroundTransparency = 0.4,
-			Size = UDim2.fromScale(1, 1),
-		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(0, 0),
+					CornerRadius = UDim.new(0, 8),
+				}),
 			}),
 
-			New("UIGradient", {
-				Rotation = 90,
-				ThemeTag = {
-					Color = "AcrylicGradient",
-				},
+			New("Frame", {
+				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+				BackgroundTransparency = 0.4,
+				Size = UDim2.fromScale(1, 1),
+			}, {
+				New("UIGradient", {
+					Rotation = 90,
+					ThemeTag = {
+						Color = "AcrylicGradient",
+					},
+				}),
 			}),
-		}),
 
-		New("ImageLabel", {
-			Image = "rbxassetid://9968344105",
-			ImageTransparency = 0.98,
-			ScaleType = Enum.ScaleType.Tile,
-			TileSize = UDim2.new(0, 128, 0, 128),
-			Size = UDim2.fromScale(1, 1),
-			BackgroundTransparency = 1,
-		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(0, 0),
+			New("ImageLabel", {
+				Image = "rbxassetid://9968344105",
+				ImageTransparency = 0.98,
+				ScaleType = Enum.ScaleType.Tile,
+				TileSize = UDim2.new(0, 128, 0, 128),
+				Size = UDim2.fromScale(1, 1),
+				BackgroundTransparency = 1,
 			}),
-		}),
 
 			New("ImageLabel", {
 				Image = "rbxassetid://9968344227",
@@ -2095,10 +2085,6 @@ function AcrylicPaint()
 				ThemeTag = {
 					ImageTransparency = "AcrylicNoise",
 				},
-			}, {
-				New("UICorner", {
-					CornerRadius = UDim.new(0, 0),
-				}),
 			}),
 
 			New("Frame", {
@@ -2106,9 +2092,6 @@ function AcrylicPaint()
 				Size = UDim2.fromScale(1, 1),
 				ZIndex = 2,
 			}, {
-				New("UICorner", {
-					CornerRadius = UDim.new(0, 0),
-				}),
 				New("UIStroke", {
 					Transparency = 0.5,
 					Thickness = 1,
@@ -2612,7 +2595,7 @@ Components.Tab = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
+				CornerRadius = UDim.new(0, 6),
 			}),
 			New("TextLabel", {
 				AnchorPoint = Vector2.new(0, 0.5),
@@ -2807,7 +2790,7 @@ Components.Tab = (function()
 				},
 			}, {
 				New("UICorner", {
-					CornerRadius = UDim.new(0, 4),
+					CornerRadius = UDim.new(0, 6),
 				}),
 				New("UIStroke", {
 					Transparency = 1,
@@ -3308,7 +3291,7 @@ Components.Button = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 6),
+				CornerRadius = UDim.new(0, 4),
 			}),
 		})
 
@@ -3320,7 +3303,7 @@ Components.Button = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 6),
+				CornerRadius = UDim.new(0, 4),
 			}),
 			New("UIStroke", {
 				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
@@ -3905,7 +3888,7 @@ Components.TitleBar = (function()
                 },
             }, {
                 New("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
+                    CornerRadius = UDim.new(0, 7),
                 }),
                 New("ImageLabel", {
                     Image = Icon,
@@ -4095,12 +4078,14 @@ Components.Window = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
+				CornerRadius = UDim.new(0, 9),
 			}),
-			New("Frame", {
-				Size = UDim2.fromOffset(20, 20),
-				BackgroundTransparency = 1,
-				Position = UDim2.new(1, -20, 1, -2),
+		})
+
+		local ResizeStartFrame = New("Frame", {
+			Size = UDim2.fromOffset(20, 20),
+			BackgroundTransparency = 1,
+			Position = UDim2.new(1, -20, 1, -2),
 		})
 
 		local SearchElements = {}
@@ -4342,7 +4327,7 @@ Components.Window = (function()
 			Visible = true,
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
+				CornerRadius = UDim.new(0, 6),
 			}),
 		}) or nil
 
@@ -4541,10 +4526,6 @@ Window.ContainerCanvas = New("Frame", {
 				ImageTransparency = math.max(0, math.min(1, backgroundImageTransparency)),
 				ZIndex = 0,
 				ScaleType = Enum.ScaleType.Stretch,
-			}, {
-				New("UICorner", {
-					CornerRadius = UDim.new(0, 4),
-				}),
 			})
 			Window.BackgroundImage = BackgroundImageFrame
 			table.insert(rootChildren, BackgroundImageFrame)
@@ -4587,6 +4568,9 @@ Window.ContainerCanvas = New("Frame", {
 		table.insert(rootChildren, Window.ContainerCanvas)
 		table.insert(rootChildren, TabFrame)
 		table.insert(rootChildren, ResizeStartFrame)
+		table.insert(rootChildren, New("UICorner", {
+			CornerRadius = UDim.new(0, 8),
+		}))
 
 Window.Root = New("Frame", {
     BackgroundTransparency = 1,
@@ -5034,7 +5018,7 @@ Window.Root = New("Frame", {
 					Parent = Window.Root,
 				}, {
 					New("UICorner", {
-						CornerRadius = UDim.new(0, 4),
+						CornerRadius = UDim.new(0, 8),
 					}),
 				})
 				Window.BackgroundImage = BackgroundImageFrame
@@ -5259,7 +5243,7 @@ ElementsTable.Toggle = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 8),
+				CornerRadius = UDim.new(0, 9),
 			}),
 			ToggleBorder,
 			ToggleCircle,
@@ -5524,7 +5508,7 @@ ElementsTable.Dropdown = (function()
 			SearchBar,
 			DropdownScrollFrame,
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 6),
+				CornerRadius = UDim.new(0, 7),
 			}),
 			New("UIStroke", {
 				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
@@ -6001,9 +5985,11 @@ local DropdownHolderCanvas = New("Frame", {
 					ButtonSelector,
 					ButtonLabel,
 					New("UICorner", {
-					CornerRadius = UDim.new(0, 4),
-				}),
-			})
+						CornerRadius = UDim.new(0, 6),
+					}),
+				})
+
+				local Selected
 
 				if Config.Multi then
 					Selected = Dropdown.Value[Value]
@@ -9909,7 +9895,7 @@ function Library:CreateMinimizer(Config)
 				New("UIAspectRatioConstraint", { AspectRatio = 1, AspectType = Enum.AspectType.FitWithinMaxSize }),
 
 
-				New("UICorner", { CornerRadius = UDim.new(0, 6) })
+				New("UICorner", { CornerRadius = UDim.new(0, 0) })
 
 
 			}),
@@ -9992,7 +9978,6 @@ function Library:CreateMinimizer(Config)
 	if useAcrylic then
 
 		local miniAcrylic = Acrylic.AcrylicPaint()
-
 
 		miniAcrylic.Frame.Parent = holder
 
@@ -10609,7 +10594,7 @@ local MinimizeButton = New("TextButton", {
 		New("UICorner", {
 
 
-			CornerRadius = UDim.new(0, 4),
+			CornerRadius = UDim.new(0, 8),
 
 
 		}),
@@ -10992,7 +10977,6 @@ Creator.AddSignal(RunService.Heartbeat, function()
 		end
 
 		if newY > viewportSize.Y - minimizerSize.Y then 
-
 
 			newY = viewportSize.Y - minimizerSize.Y 
 
