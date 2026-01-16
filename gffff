@@ -2047,10 +2047,6 @@ function AcrylicPaint()
 				ThemeTag = {
 					BackgroundColor3 = "AcrylicMain",
 				},
-			}, {
-				New("UICorner", {
-					CornerRadius = UDim.new(0, 8),
-				}),
 			}),
 
 			New("Frame", {
