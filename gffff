@@ -3936,7 +3936,7 @@ Components.TitleBar = (function()
             Text = (Config.UserInfoSubtitle ~= nil) and tostring(Config.UserInfoSubtitle) or "User",
             TextTransparency = 0,
             FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-            TextSize = 17,
+            TextSize = 16.1,
             TextXAlignment = Enum.TextXAlignment.Left,
             Size = UDim2.new(0, 300, 1, 0),
             Position = UDim2.new(0, 60, 0, 0), -- Moved right
