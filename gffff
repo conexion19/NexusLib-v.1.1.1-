@@ -4122,11 +4122,14 @@ Components.Window = (function()
 			}),
 		})
 
-		local ResizeStartFrame = New("Frame", {
-			Size = UDim2.fromOffset(20, 20),
-			BackgroundTransparency = 1,
-			Position = UDim2.new(1, -20, 1, -2),
-		})
+		local ResizeStartFrame = nil
+		if Config.Resizable ~= false then
+			ResizeStartFrame = New("Frame", {
+				Size = UDim2.fromOffset(20, 20),
+				BackgroundTransparency = 1,
+				Position = UDim2.new(1, -20, 1, -2),
+			})
+		end
 
 		local SearchElements = {}
 		local AllElements = {}
@@ -4607,7 +4610,9 @@ Window.ContainerCanvas = New("Frame", {
 		table.insert(rootChildren, Window.TabDisplay)
 		table.insert(rootChildren, Window.ContainerCanvas)
 		table.insert(rootChildren, TabFrame)
-		table.insert(rootChildren, ResizeStartFrame)
+		if ResizeStartFrame then
+			table.insert(rootChildren, ResizeStartFrame)
+		end
 
 Window.Root = New("Frame", {
     BackgroundTransparency = 1,
@@ -4846,15 +4851,17 @@ Window.Root = New("Frame", {
 			end
 		end)
 
-		Creator.AddSignal(ResizeStartFrame.InputBegan, function(Input)
-			if
-				Input.UserInputType == Enum.UserInputType.MouseButton1
-				or Input.UserInputType == Enum.UserInputType.Touch
-			then
-				Resizing = true
-				ResizePos = Input.Position
-			end
-		end)
+		if ResizeStartFrame then
+			Creator.AddSignal(ResizeStartFrame.InputBegan, function(Input)
+				if
+					Input.UserInputType == Enum.UserInputType.MouseButton1
+					or Input.UserInputType == Enum.UserInputType.Touch
+				then
+					Resizing = true
+					ResizePos = Input.Position
+				end
+			end)
+		end
 
 		Creator.AddSignal(UserInputService.InputChanged, function(Input)
 			if Input == DragInput and Dragging then
@@ -9651,6 +9658,9 @@ Library.CreateWindow = function(self, Config)
 
 
 		SubTitle = Config.SubTitle,
+
+
+		Resizable = Config.Resizable,
 
 
 		TabWidth = Config.TabWidth,
