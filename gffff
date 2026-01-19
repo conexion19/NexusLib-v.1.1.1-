@@ -3985,6 +3985,9 @@ Components.TitleBar = (function()
             end)
             
             task.spawn(function()
+                -- Wait for UI to mount
+                repeat task.wait() until ExpiryLabel.Parent
+                
                 while ExpiryLabel and ExpiryLabel.Parent do
                     if _G.NEXUS_EXPIRY_TIME then
                         if _G.NEXUS_EXPIRY_TIME == -1 then
@@ -3999,7 +4002,7 @@ Components.TitleBar = (function()
                                  local m = math.floor((diff % 3600) / 60)
                                  local s = diff % 60
                                  if d > 0 then
-                                     ExpiryLabel.Text = string.format("%d days, %02d:%02d:%02d", d, h, m, s)
+                                     ExpiryLabel.Text = string.format("%d Days, %02d:%02d:%02d", d, h, m, s)
                                  else
                                      ExpiryLabel.Text = string.format("%02d:%02d:%02d", h, m, s)
                                  end
@@ -4008,7 +4011,7 @@ Components.TitleBar = (function()
                     elseif _G.NEXUS_IS_PREMIUM then
                         ExpiryLabel.Text = "Lifetime Key"
                     else
-                        ExpiryLabel.Text = "" -- Not loaded yet
+                        ExpiryLabel.Text = "Waiting for Key..." -- Informative text before auth
                     end
                     task.wait(1)
                 end
