@@ -3933,45 +3933,40 @@ Components.TitleBar = (function()
             ImageColor3 = Color3.fromRGB(255, 255, 255),
         })
 
-        local SubtitleLabel = nil
+        local SubtitleLabel = New("TextLabel", {
+            Name = "UserSubtitle",
+            Text = (Config.UserInfoSubtitle ~= nil) and tostring(Config.UserInfoSubtitle) or "User",
+            TextTransparency = 0,
+            FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+            TextSize = 16.1,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            Size = UDim2.new(0, 300, 1, 0),
+            Position = UDim2.new(0, 60, 0, 0), 
+            BackgroundTransparency = 1,
+            TextColor3 = Color3.fromRGB(255, 255, 255),
+        })
 
-        -- Logic to optionally show user/premium text
-        if Config.UserInfoSubtitle ~= false then
-            SubtitleLabel = New("TextLabel", {
-                Size = UDim2.new(0, 0, 0, 15),
-                Position = UDim2.new(1, -75, 0, 14), 
-                AnchorPoint = Vector2.new(1, 0),
-                BackgroundTransparency = 1,
-                Text = Config.UserInfoSubtitle or "User", 
-                RichText = true,
-                TextXAlignment = "Right",
-                TextSize = 12,
-                FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-                ThemeTag = {
-                    TextColor3 = "SubText",
-                },
-            })
+        local CheckGradient = New("UIGradient", {
+            Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(0.5, Color3.fromRGB(100, 100, 100)),
+                ColorSequenceKeypoint.new(0.8, Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
+            }),
+            Parent = SubtitleLabel,
+        })
 
-            -- Gradient Effect
-            local UIGradient = New("UIGradient", {
-                Color = ColorSequence.new({
-                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-                    ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 150, 150))
-                }),
-                Rotation = 45,
-                Parent = SubtitleLabel
-            })
-
-            -- Animation loop
-            task.spawn(function()
-                while SubtitleLabel and SubtitleLabel.Parent do
-                    local t = tick() * 2
-                    local v = math.abs(math.sin(t))
-                    UIGradient.Rotation = 45 + (v * 45)
-                    task.wait()
-                end
-            end)
-        end
+        task.spawn(function()
+            local success, TweenService = pcall(game.GetService, game, "TweenService")
+            if success and TweenService then
+                -- Move from -0.8 to 0.8. Constant continuous loop.
+                local tInfo = TweenInfo.new(3, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, false)
+                CheckGradient.Offset = Vector2.new(-0.8, 0)
+                local tween = TweenService:Create(CheckGradient, tInfo, {Offset = Vector2.new(0.8, 0)})
+                tween:Play()
+            end
+        end)
 
         TitleBar.Frame = New("Frame", {
             Size = UDim2.new(1, 0, 0, 42),
@@ -3980,7 +3975,7 @@ Components.TitleBar = (function()
         }, {
             -- Logo no canto esquerdo (com animação)
             LogoIcon,
-            -- SubtitleLabel (if created)
+
             SubtitleLabel,
 
             -- Простой центральный контейнер
@@ -4122,14 +4117,11 @@ Components.Window = (function()
 			}),
 		})
 
-		local ResizeStartFrame = nil
-		if Config.Resizable ~= false then
-			ResizeStartFrame = New("Frame", {
-				Size = UDim2.fromOffset(20, 20),
-				BackgroundTransparency = 1,
-				Position = UDim2.new(1, -20, 1, -2),
-			})
-		end
+		local ResizeStartFrame = New("Frame", {
+			Size = UDim2.fromOffset(20, 20),
+			BackgroundTransparency = 1,
+			Position = UDim2.new(1, -20, 1, -2),
+		})
 
 		local SearchElements = {}
 		local AllElements = {}
@@ -4610,9 +4602,7 @@ Window.ContainerCanvas = New("Frame", {
 		table.insert(rootChildren, Window.TabDisplay)
 		table.insert(rootChildren, Window.ContainerCanvas)
 		table.insert(rootChildren, TabFrame)
-		if ResizeStartFrame then
-			table.insert(rootChildren, ResizeStartFrame)
-		end
+		table.insert(rootChildren, ResizeStartFrame)
 
 Window.Root = New("Frame", {
     BackgroundTransparency = 1,
@@ -4851,17 +4841,15 @@ Window.Root = New("Frame", {
 			end
 		end)
 
-		if ResizeStartFrame then
-			Creator.AddSignal(ResizeStartFrame.InputBegan, function(Input)
-				if
-					Input.UserInputType == Enum.UserInputType.MouseButton1
-					or Input.UserInputType == Enum.UserInputType.Touch
-				then
-					Resizing = true
-					ResizePos = Input.Position
-				end
-			end)
-		end
+		Creator.AddSignal(ResizeStartFrame.InputBegan, function(Input)
+			if
+				Input.UserInputType == Enum.UserInputType.MouseButton1
+				or Input.UserInputType == Enum.UserInputType.Touch
+			then
+				Resizing = true
+				ResizePos = Input.Position
+			end
+		end)
 
 		Creator.AddSignal(UserInputService.InputChanged, function(Input)
 			if Input == DragInput and Dragging then
@@ -9010,7 +8998,6 @@ local SaveManager = {} do
 
 
 			})
-
 		end})
 
 
@@ -9660,9 +9647,6 @@ Library.CreateWindow = function(self, Config)
 		SubTitle = Config.SubTitle,
 
 
-		Resizable = Config.Resizable,
-
-
 		TabWidth = Config.TabWidth,
 
 		DropdownsOutsideWindow = Config.DropdownsOutsideWindow,
@@ -9706,11 +9690,6 @@ Library.CreateWindow = function(self, Config)
     task.spawn(function()
         task.wait(1)
         if Library.Window and Library.Window.Root then
-            -- Если в конфиге явно отключен снег, не добавляем его
-            if Config.Snowfall == false then
-                return
-            end
-
             local snowfallEnabled = InterfaceManager.Settings.Snowfall == nil and true or InterfaceManager.Settings.Snowfall
             Library:AddSnowfallToWindow({
                 Count = 38,
@@ -10018,7 +9997,6 @@ function Library:CreateMinimizer(Config)
 
 
 					descendant.CornerRadius = desiredCorner
-
 				elseif descendant.ClassName == "ImageLabel" then
 
 
@@ -11018,7 +10996,6 @@ AddSignal(MinimizeButton.MouseButton1Click, function()
 	if not isDragging then
 
 		Library.Window:Minimize()
-
 
 	end
 
