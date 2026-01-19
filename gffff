@@ -3933,40 +3933,87 @@ Components.TitleBar = (function()
             ImageColor3 = Color3.fromRGB(255, 255, 255),
         })
 
-        local SubtitleLabel = New("TextLabel", {
-            Name = "UserSubtitle",
-            Text = (Config.UserInfoSubtitle ~= nil) and tostring(Config.UserInfoSubtitle) or "User",
-            TextTransparency = 0,
-            FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-            TextSize = 16.1,
-            TextXAlignment = Enum.TextXAlignment.Left,
-            Size = UDim2.new(0, 300, 1, 0),
-            Position = UDim2.new(0, 60, 0, 0), 
-            BackgroundTransparency = 1,
-            TextColor3 = Color3.fromRGB(255, 255, 255),
-        })
+        local SubtitleLabel
+        local ExpiryLabel
 
-        local CheckGradient = New("UIGradient", {
-            Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-                ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 255, 255)),
-                ColorSequenceKeypoint.new(0.5, Color3.fromRGB(100, 100, 100)),
-                ColorSequenceKeypoint.new(0.8, Color3.fromRGB(255, 255, 255)),
-                ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
-            }),
-            Parent = SubtitleLabel,
-        })
+        if Config.UserInfoSubtitle ~= false then
+            SubtitleLabel = New("TextLabel", {
+                Name = "UserSubtitle",
+                Text = (Config.UserInfoSubtitle ~= nil) and tostring(Config.UserInfoSubtitle) or "User",
+                TextTransparency = 0,
+                FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                TextSize = 15,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Size = UDim2.new(0, 300, 0, 20),
+                Position = UDim2.new(0, 60, 0, 4), 
+                BackgroundTransparency = 1,
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+            })
+            
+            ExpiryLabel = New("TextLabel", {
+                Name = "ExpirySubtitle",
+                Text = "Loading...",
+                TextTransparency = 0.4,
+                FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                TextSize = 11,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Size = UDim2.new(0, 300, 0, 15),
+                Position = UDim2.new(0, 60, 0, 22), 
+                BackgroundTransparency = 1,
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+            })
 
-        task.spawn(function()
-            local success, TweenService = pcall(game.GetService, game, "TweenService")
-            if success and TweenService then
-                -- Move from -0.8 to 0.8. Constant continuous loop.
-                local tInfo = TweenInfo.new(3, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, false)
-                CheckGradient.Offset = Vector2.new(-0.8, 0)
-                local tween = TweenService:Create(CheckGradient, tInfo, {Offset = Vector2.new(0.8, 0)})
-                tween:Play()
-            end
-        end)
+            local CheckGradient = New("UIGradient", {
+                Color = ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+                    ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 255, 255)),
+                    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(100, 100, 100)),
+                    ColorSequenceKeypoint.new(0.8, Color3.fromRGB(255, 255, 255)),
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
+                }),
+                Parent = SubtitleLabel,
+            })
+
+            task.spawn(function()
+                local success, TweenService = pcall(game.GetService, game, "TweenService")
+                if success and TweenService then
+                    local tInfo = TweenInfo.new(3, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, false)
+                    CheckGradient.Offset = Vector2.new(-0.8, 0)
+                    local tween = TweenService:Create(CheckGradient, tInfo, {Offset = Vector2.new(0.8, 0)})
+                    tween:Play()
+                end
+            end)
+            
+            task.spawn(function()
+                while ExpiryLabel and ExpiryLabel.Parent do
+                    if _G.NEXUS_EXPIRY_TIME then
+                        if _G.NEXUS_EXPIRY_TIME == -1 then
+                             ExpiryLabel.Text = "Lifetime Key"
+                        else
+                             local diff = _G.NEXUS_EXPIRY_TIME - os.time()
+                             if diff <= 0 then
+                                 ExpiryLabel.Text = "Expired"
+                             else
+                                 local d = math.floor(diff / 86400)
+                                 local h = math.floor((diff % 86400) / 3600)
+                                 local m = math.floor((diff % 3600) / 60)
+                                 local s = diff % 60
+                                 if d > 0 then
+                                     ExpiryLabel.Text = string.format("%d days, %02d:%02d:%02d", d, h, m, s)
+                                 else
+                                     ExpiryLabel.Text = string.format("%02d:%02d:%02d", h, m, s)
+                                 end
+                             end
+                        end
+                    elseif _G.NEXUS_IS_PREMIUM then
+                        ExpiryLabel.Text = "Lifetime Key"
+                    else
+                        ExpiryLabel.Text = "" -- Not loaded yet
+                    end
+                    task.wait(1)
+                end
+            end)
+        end
 
         TitleBar.Frame = New("Frame", {
             Size = UDim2.new(1, 0, 0, 42),
@@ -3977,6 +4024,7 @@ Components.TitleBar = (function()
             LogoIcon,
 
             SubtitleLabel,
+            ExpiryLabel,
 
             -- Простой центральный контейнер
             New("Frame", {
