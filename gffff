@@ -9717,11 +9717,8 @@ Library.CreateWindow = function(self, Config)
 
 
 		UserInfoSubtitle = Config.UserInfoSubtitle,
-
-
 		UserInfoSubtitleColor = Config.UserInfoSubtitleColor,
-
-
+		Resizable = Config.Resizable,
 	})
 
 
@@ -9742,7 +9739,12 @@ Library.CreateWindow = function(self, Config)
     task.spawn(function()
         task.wait(1)
         if Library.Window and Library.Window.Root then
-            local snowfallEnabled = (Library.WindowSnowfallEnabled) and (InterfaceManager.Settings.Snowfall == nil and true or InterfaceManager.Settings.Snowfall)
+            local userWantsSnow = InterfaceManager.Settings.Snowfall
+            if userWantsSnow == nil then userWantsSnow = true end
+            
+            local configAllowsSnow = Library.WindowSnowfallEnabled
+            local snowfallEnabled = configAllowsSnow and userWantsSnow
+
             Library:AddSnowfallToWindow({
                 Count = 38,
                 Speed = 9.5
