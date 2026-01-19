@@ -9706,6 +9706,11 @@ Library.CreateWindow = function(self, Config)
     task.spawn(function()
         task.wait(1)
         if Library.Window and Library.Window.Root then
+            -- Если в конфиге явно отключен снег, не добавляем его
+            if Config.Snowfall == false then
+                return
+            end
+
             local snowfallEnabled = InterfaceManager.Settings.Snowfall == nil and true or InterfaceManager.Settings.Snowfall
             Library:AddSnowfallToWindow({
                 Count = 38,
