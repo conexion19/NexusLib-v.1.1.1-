@@ -4172,6 +4172,7 @@ Components.Window = (function()
 			Size = UDim2.fromOffset(20, 20),
 			BackgroundTransparency = 1,
 			Position = UDim2.new(1, -20, 1, -2),
+			Visible = (Config.Resizable ~= false),
 		})
 
 		local SearchElements = {}
@@ -4679,8 +4680,7 @@ Window.Root = New("Frame", {
 			UserInfo = Config.UserInfo,
 			UserInfoSubtitle = Config.UserInfoSubtitle,
 			UserInfoSubtitleColor = Config.UserInfoSubtitleColor,
-		})
-
+		Resizable = Config.Resizable,
 		if false and Config.UserInfo then
 			local function parseColor(value)
 				if typeof(value) == "Color3" then return value end
@@ -4893,6 +4893,7 @@ Window.Root = New("Frame", {
 		end)
 
 		Creator.AddSignal(ResizeStartFrame.InputBegan, function(Input)
+			if Config.Resizable == false then return end
 			if
 				Input.UserInputType == Enum.UserInputType.MouseButton1
 				or Input.UserInputType == Enum.UserInputType.Touch
@@ -9741,7 +9742,7 @@ Library.CreateWindow = function(self, Config)
     task.spawn(function()
         task.wait(1)
         if Library.Window and Library.Window.Root then
-            local snowfallEnabled = InterfaceManager.Settings.Snowfall == nil and true or InterfaceManager.Settings.Snowfall
+            local snowfallEnabled = (Library.WindowSnowfallEnabled) and (InterfaceManager.Settings.Snowfall == nil and true or InterfaceManager.Settings.Snowfall)
             Library:AddSnowfallToWindow({
                 Count = 38,
                 Speed = 9.5
