@@ -4172,6 +4172,7 @@ Components.Window = (function()
 			Size = UDim2.fromOffset(20, 20),
 			BackgroundTransparency = 1,
 			Position = UDim2.new(1, -20, 1, -2),
+			Visible = (Config.Resizable ~= false),
 		})
 
 		local SearchElements = {}
@@ -4893,6 +4894,7 @@ Window.Root = New("Frame", {
 		end)
 
 		Creator.AddSignal(ResizeStartFrame.InputBegan, function(Input)
+			if Config.Resizable == false then return end
 			if
 				Input.UserInputType == Enum.UserInputType.MouseButton1
 				or Input.UserInputType == Enum.UserInputType.Touch
@@ -8999,7 +9001,6 @@ local SaveManager = {} do
 
 		section:AddButton({Title = "Load config", Callback = function()
 
-
 			local name = SaveManager.Options.SaveManager_ConfigList.Value
 
 
@@ -9715,22 +9716,20 @@ Library.CreateWindow = function(self, Config)
 
 
 		UserInfoSubtitle = Config.UserInfoSubtitle,
-
-
 		UserInfoSubtitleColor = Config.UserInfoSubtitleColor,
-
-
+		Resizable = Config.Resizable,
 	})
 
 
-    Library.Window = Window
-
-    table.insert(Library.Windows, Window)
-    
-    Window.SnowfallConfig = Config.SnowfallConfig or {
-        Count = 38,
-        Speed = 9.5
-    }
+    if Config.Snowfall ~= false then
+        Library.WindowSnowfallEnabled = true
+        Library.WindowSnowfallConfig = Config.SnowfallConfig or {
+            Count = 40,
+            Speed = 9.5
+        }
+    else
+        Library.WindowSnowfallEnabled = false
+    end
 
 	InterfaceManager:SetTheme(Config.Theme)
 	Library:SetTheme(Config.Theme)
@@ -9740,13 +9739,23 @@ Library.CreateWindow = function(self, Config)
     task.spawn(function()
         task.wait(1)
         if Library.Window and Library.Window.Root then
-            local snowfallEnabled = InterfaceManager.Settings.Snowfall == nil and true or InterfaceManager.Settings.Snowfall
-            Library:AddSnowfallToWindow({
-                Count = 38,
-                Speed = 9.5
-            })
-            if not snowfallEnabled and Library.Snowfall then
-                Library.Snowfall:SetVisible(false)
+            local userWantsSnow = InterfaceManager.Settings.Snowfall
+            if userWantsSnow == nil then userWantsSnow = true end
+            
+            local configAllowsSnow = Library.WindowSnowfallEnabled
+            local snowfallEnabled = configAllowsSnow and userWantsSnow
+            
+            -- Only add snowfall if enabled
+            if snowfallEnabled then
+                 Library:AddSnowfallToWindow({
+                    Count = 38,
+                    Speed = 9.5
+                })
+            else
+                -- If not enabled, make sure any existing snow is hidden (just in case)
+                if Library.Snowfall then
+                    Library.Snowfall:SetVisible(false)
+                end
             end
         end
     end)
@@ -9998,7 +10007,6 @@ function Library:CreateMinimizer(Config)
 
 
 			Size = Config.Size or UDim2.fromOffset(36, 36),
-
 			Position = Config.Position or UDim2.new(0, 300, 0, 20),
 
 
@@ -10998,7 +11006,6 @@ Creator.AddSignal(RunService.Heartbeat, function()
 
 
 		local viewportSize = workspace.Camera.ViewportSize
-
 		local minimizerSize = activeMin.AbsoluteSize
 
 
