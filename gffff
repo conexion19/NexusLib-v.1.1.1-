@@ -1438,7 +1438,7 @@ end
 
 function Creator.UpdateTheme()
 	if not Creator.Themes[Creator.Theme] then
-		Creator.Theme = "Dark"
+		Creator.Theme = "DarkGray"
 	end
 
 	for Instance, Object in next, Creator.Registry do
