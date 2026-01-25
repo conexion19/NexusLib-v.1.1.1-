@@ -754,9 +754,9 @@ local Themes = {
 		Input = Color3.fromRGB(60, 60, 60),
 		InputFocused = Color3.fromRGB(0, 0, 0),
 		InputIndicator = Color3.fromRGB(60, 60, 60),
-		Dialog = Color3.fromRGB(15, 15, 15),
-		DialogHolder = Color3.fromRGB(0, 0, 0),
-		DialogHolderLine = Color3.fromRGB(0, 0, 0),
+		Dialog = Color3.fromRGB(20, 20, 20),
+		DialogHolder = Color3.fromRGB(20, 20, 20),
+		DialogHolderLine = Color3.fromRGB(25, 25, 25),
 		DialogButton = Color3.fromRGB(15, 15, 15),
 		DialogButtonBorder = Color3.fromRGB(0, 0, 0),
 		DialogBorder = Color3.fromRGB(0, 0, 0),
@@ -3510,12 +3510,14 @@ Components.Dialog = (function()
 		NewDialog.ButtonHolderFrame = New("Frame", {
 			Size = UDim2.new(1, 0, 0, 70),
 			Position = UDim2.new(0, 0, 1, -70),
+			BackgroundTransparency = 1,
 			ThemeTag = {
 				BackgroundColor3 = "DialogHolder",
 			},
 		}, {
 			New("Frame", {
 				Size = UDim2.new(1, 0, 0, 1),
+				BackgroundTransparency = 0.5,
 				ThemeTag = {
 					BackgroundColor3 = "DialogHolderLine",
 				},
@@ -3553,6 +3555,7 @@ Components.Dialog = (function()
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			Position = UDim2.fromScale(0.5, 0.5),
 			GroupTransparency = 1,
+			BackgroundTransparency = 0.3,
 			Parent = NewDialog.TintFrame,
 			ThemeTag = {
 				BackgroundColor3 = "Dialog",
