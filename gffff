@@ -1426,14 +1426,14 @@ function Creator.Disconnect()
 end
 
 Creator.Themes = Themes
-Creator.Theme = Creator.Theme or "Dark"
+Creator.Theme = "DarkGray"
 
 function Creator.GetThemeProperty(Property)
 	local Theme = Creator.Themes[Creator.Theme]
 	if Theme then
 		return Theme[Property]
 	end
-	return Creator.Themes.Dark[Property]
+	return Creator.Themes.DarkGray[Property]
 end
 
 function Creator.UpdateTheme()
@@ -9481,6 +9481,7 @@ function InterfaceManager:LoadSettings()
             end
         end
     end
+    InterfaceManager.Settings.Theme = "DarkGray"
 end
 
 
@@ -9857,8 +9858,6 @@ Library.CreateWindow = function(self, Config)
 
 	InterfaceManager:SetTheme("DarkGray")
 	Library:SetTheme("DarkGray")
-    
-    InterfaceManager:LoadSettings()
     
     task.spawn(function()
         task.wait(1)
@@ -10389,14 +10388,9 @@ end
 
 function Library:SetTheme(Value)
 	Library.Theme = "DarkGray"
+	Creator.Theme = "DarkGray"
 	Creator.UpdateTheme()
 end
-
-
-end
-
-
-
 
 
 function Library:Destroy()
