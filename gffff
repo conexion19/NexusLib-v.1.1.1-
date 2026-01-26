@@ -24,7 +24,7 @@ local ProtectGui = protectgui or (syn and syn.protect_gui) or function() end
 
 local Themes = {
 	Names = {
-		"DarkGray",
+		"Slate",
 	},
 	Dark = {
 		Name = "Dark",
@@ -730,41 +730,41 @@ local Themes = {
 		Hover = Color3.fromRGB(90, 140, 180),
 		HoverChange = 0.04
 	},
-	DarkGray = {
-		Name = "DarkGray",
+	Slate = {
+		Name = "Slate",
 		Accent = Color3.fromRGB(255, 255, 255),
-		AcrylicMain = Color3.fromRGB(20, 20, 20),
+		AcrylicMain = Color3.fromRGB(45, 45, 48),
 		AcrylicBorder = Color3.fromRGB(0, 0, 0),
-		AcrylicGradient = ColorSequence.new(Color3.fromRGB(10, 10, 10), Color3.fromRGB(20, 20, 20)),
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(35, 35, 38), Color3.fromRGB(45, 45, 48)),
 		AcrylicNoise = 0.95,
-		TitleBarLine = Color3.fromRGB(30, 30, 30),
-		Tab = Color3.fromRGB(60, 60, 60),
-		Element = Color3.fromRGB(20, 20, 20),
+		TitleBarLine = Color3.fromRGB(60, 60, 60),
+		Tab = Color3.fromRGB(80, 80, 80),
+		Element = Color3.fromRGB(45, 45, 48),
 		ElementBorder = Color3.fromRGB(0, 0, 0),
-		InElementBorder = Color3.fromRGB(30, 30, 30),
+		InElementBorder = Color3.fromRGB(60, 60, 60),
 		ElementTransparency = 0.92,
-		ToggleSlider = Color3.fromRGB(60, 60, 60),
+		ToggleSlider = Color3.fromRGB(80, 80, 80),
 		ToggleToggled = Color3.fromRGB(255, 255, 255),
-		SliderRail = Color3.fromRGB(60, 60, 60),
-		DropdownFrame = Color3.fromRGB(60, 60, 60),
-		DropdownHolder = Color3.fromRGB(15, 15, 15),
+		SliderRail = Color3.fromRGB(80, 80, 80),
+		DropdownFrame = Color3.fromRGB(80, 80, 80),
+		DropdownHolder = Color3.fromRGB(40, 40, 43),
 		DropdownBorder = Color3.fromRGB(0, 0, 0),
-		DropdownOption = Color3.fromRGB(60, 60, 60),
-		Keybind = Color3.fromRGB(60, 60, 60),
-		Input = Color3.fromRGB(60, 60, 60),
-		InputFocused = Color3.fromRGB(0, 0, 0),
-		InputIndicator = Color3.fromRGB(60, 60, 60),
-		Dialog = Color3.fromRGB(20, 20, 20),
-		DialogHolder = Color3.fromRGB(20, 20, 20),
-		DialogHolderLine = Color3.fromRGB(25, 25, 25),
-		DialogButton = Color3.fromRGB(15, 15, 15),
+		DropdownOption = Color3.fromRGB(80, 80, 80),
+		Keybind = Color3.fromRGB(80, 80, 80),
+		Input = Color3.fromRGB(80, 80, 80),
+		InputFocused = Color3.fromRGB(20, 20, 23),
+		InputIndicator = Color3.fromRGB(80, 80, 80),
+		Dialog = Color3.fromRGB(45, 45, 48),
+		DialogHolder = Color3.fromRGB(45, 45, 48),
+		DialogHolderLine = Color3.fromRGB(50, 50, 53),
+		DialogButton = Color3.fromRGB(40, 40, 43),
 		DialogButtonBorder = Color3.fromRGB(0, 0, 0),
 		DialogBorder = Color3.fromRGB(0, 0, 0),
-		DialogInput = Color3.fromRGB(10, 10, 10),
-		DialogInputLine = Color3.fromRGB(60, 60, 60),
-		Text = Color3.fromRGB(220, 220, 220),
-		SubText = Color3.fromRGB(100, 100, 100),
-		Hover = Color3.fromRGB(40, 40, 40),
+		DialogInput = Color3.fromRGB(35, 35, 38),
+		DialogInputLine = Color3.fromRGB(80, 80, 80),
+		Text = Color3.fromRGB(240, 240, 240),
+		SubText = Color3.fromRGB(160, 160, 160),
+		Hover = Color3.fromRGB(65, 65, 68),
 		HoverChange = 0.03,
 	},
 	Gray = {
@@ -1426,19 +1426,19 @@ function Creator.Disconnect()
 end
 
 Creator.Themes = Themes
-Creator.Theme = "DarkGray"
+Creator.Theme = "Slate"
 
 function Creator.GetThemeProperty(Property)
 	local Theme = Creator.Themes[Creator.Theme]
 	if Theme then
 		return Theme[Property]
 	end
-	return Creator.Themes.DarkGray[Property]
+	return Creator.Themes.Slate[Property]
 end
 
 function Creator.UpdateTheme()
 	if not Creator.Themes[Creator.Theme] then
-		Creator.Theme = "DarkGray"
+		Creator.Theme = "Slate"
 	end
 
 	for Instance, Object in next, Creator.Registry do
@@ -9370,7 +9370,7 @@ local InterfaceManager = {} do
 
 
 	function InterfaceManager:SetTheme(name)
-		InterfaceManager.Settings.Theme = "DarkGray"
+		InterfaceManager.Settings.Theme = "Slate"
 	end
 
 
@@ -9477,14 +9477,10 @@ function InterfaceManager:LoadSettings()
         
         if not RunService:IsStudio() then 
             local success, decoded = pcall(httpService.JSONDecode, httpService, data)
-            if success then
-                for i, v in next, decoded do
-                    InterfaceManager.Settings[i] = v
-                end
             end
         end
     end
-    InterfaceManager.Settings.Theme = "DarkGray"
+    InterfaceManager.Settings.Theme = "Slate"
 end
 
 
@@ -9729,14 +9725,14 @@ Library.CreateWindow = function(self, Config)
 	Library.Acrylic = Config.Acrylic or false
 
 
-	Library.Theme = "DarkGray"
+	Library.Theme = "Slate"
 
 	if Config.BackgroundImage == nil then
 		Config.BackgroundImage = "rbxassetid://13196113628"
 	end
 
 	if Config.BackgroundTransparency == nil then
-		Config.BackgroundTransparency = 0.5
+		Config.BackgroundTransparency = 0.2
 	end
 
     if Config.Snowfall ~= false then
@@ -9859,8 +9855,8 @@ Library.CreateWindow = function(self, Config)
         Library.WindowSnowfallEnabled = false
     end
 
-	InterfaceManager:SetTheme("DarkGray")
-	Library:SetTheme("DarkGray")
+	InterfaceManager:SetTheme("Slate")
+	Library:SetTheme("Slate")
     
     task.spawn(function()
         task.wait(1)
@@ -10390,8 +10386,8 @@ end
 
 
 function Library:SetTheme(Value)
-	Library.Theme = "DarkGray"
-	Creator.Theme = "DarkGray"
+	Library.Theme = "Slate"
+	Creator.Theme = "Slate"
 	Creator.UpdateTheme()
 end
 
@@ -11380,7 +11376,7 @@ task.spawn(function()
                 
                 -- Если библиотека поддерживает горячее обновление:
                 if Library.Window then
-                    Library:SetTheme("DarkGray") 
+                    Library:SetTheme("Slate") 
                 end
             end
         end
