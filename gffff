@@ -4170,22 +4170,23 @@ Components.TitleBar = (function()
                 Position = UDim2.new(0, 0, 0, 0),
             }, {
                 New("UIListLayout", {
-                    Padding = UDim.new(0, 4), -- Reduced padding
-                    FillDirection = Enum.FillDirection.Horizontal,
+                    Padding = UDim.new(0, 0), -- Vert Padding between TitleRow and Subtitle
+                    FillDirection = Enum.FillDirection.Vertical,
                     SortOrder = Enum.SortOrder.LayoutOrder,
                     HorizontalAlignment = Enum.HorizontalAlignment.Center,
                     VerticalAlignment = Enum.VerticalAlignment.Center,
                 }),
 
-                -- Title Container
+                -- Title ROW Container (Title + Separator + Executor)
                 New("Frame", {
-                     Size = UDim2.fromScale(0, 1),
-                     AutomaticSize = Enum.AutomaticSize.X,
+                     Size = UDim2.fromScale(0, 0),
+                     AutomaticSize = Enum.AutomaticSize.XY,
                      BackgroundTransparency = 1,
+                     LayoutOrder = 1,
                 }, {
                      New("UIListLayout", {
-                        Padding = UDim.new(0, 0),
-                        FillDirection = Enum.FillDirection.Vertical,
+                        Padding = UDim.new(0, 6), -- Horizontal Padding inside the row
+                        FillDirection = Enum.FillDirection.Horizontal,
                         SortOrder = Enum.SortOrder.LayoutOrder,
                         HorizontalAlignment = Enum.HorizontalAlignment.Center,
                         VerticalAlignment = Enum.VerticalAlignment.Center,
@@ -4202,7 +4203,7 @@ Components.TitleBar = (function()
                         ),
                         TextSize = 14, 
                         TextXAlignment = "Center",
-                        TextYAlignment = "Bottom", 
+                        TextYAlignment = "Center", 
                         Size = UDim2.new(0, 0, 0, 16),
                         AutomaticSize = Enum.AutomaticSize.X,
                         BackgroundTransparency = 1,
@@ -4211,78 +4212,80 @@ Components.TitleBar = (function()
                             TextColor3 = "Text",
                         },
                     }),
-                    
-                    -- SubTitle
-                    Config.SubTitle and New("TextLabel", {
-                        RichText = true,
-                        Text = Config.SubTitle,
-                        TextTransparency = 0.4,
-                        FontFace = Font.new(
-                            "rbxasset://fonts/families/GothamSSm.json",
-                            Enum.FontWeight.Regular,
-                            Enum.FontStyle.Normal
-                        ),
-                        TextSize = 12, 
-                        TextXAlignment = "Center",
-                        TextYAlignment = "Top", 
-                        Size = UDim2.new(0, 0, 0, 14),
+
+                    -- Separator
+                    New("TextLabel", {
+                        Text = "|",
+                        TextTransparency = 0.5,
+                        FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                        TextSize = 14,
+                        Size = UDim2.new(0, 0, 0, 16),
                         AutomaticSize = Enum.AutomaticSize.X,
                         BackgroundTransparency = 1,
                         LayoutOrder = 2,
-                        ThemeTag = {
-                            TextColor3 = "Text",
-                        },
-                    }) or nil,
-                }),
+                        ThemeTag = { TextColor3 = "Text" },
+                    }),
 
-                -- Separator
-                New("TextLabel", {
-                    Text = "|",
-                    TextTransparency = 0.5,
-                    FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-                    TextSize = 14,
-                    Size = UDim2.new(0, 0, 1, 0),
+                    -- Executor Info
+                    (function()
+                         local label = New("TextLabel", {
+                            RichText = true,
+                            Text = Executor,
+                            FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
+                            TextSize = 13,
+                            Size = UDim2.new(0, 0, 0, 16),
+                            AutomaticSize = Enum.AutomaticSize.X,
+                            BackgroundTransparency = 1,
+                            LayoutOrder = 3,
+                            TextColor3 = Color3.fromRGB(255, 255, 255),
+                         })
+                         
+                         local gradient = New("UIGradient", {
+                            Color = ColorSequence.new({
+                                ColorSequenceKeypoint.new(0.00, Color3.fromRGB(120, 120, 120)), -- Darker Gray
+                                ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)), -- White (Shine)
+                                ColorSequenceKeypoint.new(1.00, Color3.fromRGB(120, 120, 120)), -- Darker Gray
+                            }),
+                            Rotation = 0,
+                            Parent = label
+                         })
+                         
+                         local TweenService = game:GetService("TweenService")
+                         if TweenService then
+                            -- Set initial offset off-screen to the left
+                            gradient.Offset = Vector2.new(-1, 0)
+                            
+                            -- Create infinite tween from -1 to 1
+                            local tweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, false) 
+                            local tween = TweenService:Create(gradient, tweenInfo, {Offset = Vector2.new(1, 0)})
+                            tween:Play()
+                         end
+                         
+                         return label
+                    end)(),
+                }),
+                
+                -- SubTitle (Below the row)
+                Config.SubTitle and New("TextLabel", {
+                    RichText = true,
+                    Text = Config.SubTitle,
+                    TextTransparency = 0.4,
+                    FontFace = Font.new(
+                        "rbxasset://fonts/families/GothamSSm.json",
+                        Enum.FontWeight.Regular,
+                        Enum.FontStyle.Normal
+                    ),
+                    TextSize = 12, 
+                    TextXAlignment = "Center",
+                    TextYAlignment = "Top", 
+                    Size = UDim2.new(0, 0, 0, 14),
                     AutomaticSize = Enum.AutomaticSize.X,
                     BackgroundTransparency = 1,
-                    ThemeTag = { TextColor3 = "Text" },
-                }),
-
-                -- Executor Info
-                (function()
-                     local label = New("TextLabel", {
-                        RichText = true,
-                        Text = Executor,
-                        FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
-                        TextSize = 13,
-                        Size = UDim2.new(0, 0, 1, 0),
-                        AutomaticSize = Enum.AutomaticSize.X,
-                        BackgroundTransparency = 1,
-                        TextColor3 = Color3.fromRGB(255, 255, 255),
-                     })
-                     
-                     local gradient = New("UIGradient", {
-                        Color = ColorSequence.new({
-                            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(120, 120, 120)), -- Darker Gray
-                            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)), -- White (Shine)
-                            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(120, 120, 120)), -- Darker Gray
-                        }),
-                        Rotation = 0,
-                        Parent = label
-                     })
-                     
-                     local TweenService = game:GetService("TweenService")
-                     if TweenService then
-                        -- Set initial offset off-screen to the left
-                        gradient.Offset = Vector2.new(-1, 0)
-                        
-                        -- Create infinite tween from -1 to 1
-                        local tweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, false) -- Slightly faster than 5 to flow better
-                        local tween = TweenService:Create(gradient, tweenInfo, {Offset = Vector2.new(1, 0)})
-                        tween:Play()
-                     end
-                     
-                     return label
-                end)(),
+                    LayoutOrder = 2,
+                    ThemeTag = {
+                        TextColor3 = "Text",
+                    },
+                }) or nil,
             }),
 
             New("Frame", {
