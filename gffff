@@ -9477,6 +9477,10 @@ function InterfaceManager:LoadSettings()
         
         if not RunService:IsStudio() then 
             local success, decoded = pcall(httpService.JSONDecode, httpService, data)
+            if success then
+                for i, v in next, decoded do
+                    InterfaceManager.Settings[i] = v
+                end
             end
         end
     end
