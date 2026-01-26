@@ -4203,7 +4203,8 @@ Components.TitleBar = (function()
                         TextSize = 14, 
                         TextXAlignment = "Center",
                         TextYAlignment = "Bottom", 
-                        Size = UDim2.new(1, 0, 0, 16),
+                        Size = UDim2.new(0, 0, 0, 16),
+                        AutomaticSize = Enum.AutomaticSize.X,
                         BackgroundTransparency = 1,
                         LayoutOrder = 1,
                         ThemeTag = {
@@ -4224,7 +4225,8 @@ Components.TitleBar = (function()
                         TextSize = 12, 
                         TextXAlignment = "Center",
                         TextYAlignment = "Top", 
-                        Size = UDim2.new(1, 0, 0, 14),
+                        Size = UDim2.new(0, 0, 0, 14),
+                        AutomaticSize = Enum.AutomaticSize.X,
                         BackgroundTransparency = 1,
                         LayoutOrder = 2,
                         ThemeTag = {
@@ -4239,7 +4241,8 @@ Components.TitleBar = (function()
                     TextTransparency = 0.5,
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
                     TextSize = 14,
-                    Size = UDim2.new(0, 10, 1, 0),
+                    Size = UDim2.new(0, 0, 1, 0),
+                    AutomaticSize = Enum.AutomaticSize.X,
                     BackgroundTransparency = 1,
                     ThemeTag = { TextColor3 = "Text" },
                 }),
@@ -4273,7 +4276,7 @@ Components.TitleBar = (function()
                         gradient.Offset = Vector2.new(-1, 0)
                         
                         -- Create infinite tween from -1 to 1
-                        local tweenInfo = TweenInfo.new(5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, false)
+                        local tweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, false) -- Slightly faster than 5 to flow better
                         local tween = TweenService:Create(gradient, tweenInfo, {Offset = Vector2.new(1, 0)})
                         tween:Play()
                      end
