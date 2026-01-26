@@ -22,6 +22,7 @@ local RenderStepped = RunService.RenderStepped
 
 local ProtectGui = protectgui or (syn and syn.protect_gui) or function() end
 
+local Executor = identifyexecutor and identifyexecutor() or "Unknown"
 local Themes = {
 	Names = {
 		"Slate",
@@ -9697,7 +9698,7 @@ end
 
 
 Library.CreateWindow = function(self, Config)
-
+	Config.Title = Config.Title .. " | " .. Executor
 
 	assert(Config.Title, "Window - Missing Title")
 
