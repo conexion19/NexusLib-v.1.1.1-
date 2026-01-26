@@ -4227,42 +4227,19 @@ Components.TitleBar = (function()
                     }),
 
                     -- Executor Info
-                    (function()
-                         local label = New("TextLabel", {
-                            RichText = true,
-                            Text = Executor,
-                            FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
-                            TextSize = 13,
-                            Size = UDim2.new(0, 0, 0, 16),
-                            AutomaticSize = Enum.AutomaticSize.X,
-                            BackgroundTransparency = 1,
-                            LayoutOrder = 3,
-                            TextColor3 = Color3.fromRGB(255, 255, 255),
-                         })
-                         
-                         local gradient = New("UIGradient", {
-                            Color = ColorSequence.new({
-                                ColorSequenceKeypoint.new(0.00, Color3.fromRGB(120, 120, 120)), -- Darker Gray
-                                ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)), -- White (Shine)
-                                ColorSequenceKeypoint.new(1.00, Color3.fromRGB(120, 120, 120)), -- Darker Gray
-                            }),
-                            Rotation = 0,
-                            Parent = label
-                         })
-                         
-                         local TweenService = game:GetService("TweenService")
-                         if TweenService then
-                            -- Set initial offset off-screen to the left
-                            gradient.Offset = Vector2.new(-1, 0)
-                            
-                            -- Create infinite tween from -1 to 1
-                            local tweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, false) 
-                            local tween = TweenService:Create(gradient, tweenInfo, {Offset = Vector2.new(1, 0)})
-                            tween:Play()
-                         end
-                         
-                         return label
-                    end)(),
+                     New("TextLabel", {
+                        RichText = true,
+                        Text = "Running on " .. Executor,
+                        FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal),
+                        TextSize = 14,
+                        Size = UDim2.new(0, 0, 0, 16),
+                        AutomaticSize = Enum.AutomaticSize.X,
+                        BackgroundTransparency = 1,
+                        LayoutOrder = 3,
+                        ThemeTag = {
+                            TextColor3 = "Text",
+                        },
+                     }),
                 }),
                 
                 -- SubTitle (Below the row)
