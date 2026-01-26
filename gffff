@@ -4170,7 +4170,7 @@ Components.TitleBar = (function()
                 Position = UDim2.new(0, 0, 0, 0),
             }, {
                 New("UIListLayout", {
-                    Padding = UDim.new(0, 5), -- Отступ между заголовком и инфо об экзекуторе
+                    Padding = UDim.new(0, 4), -- Reduced padding
                     FillDirection = Enum.FillDirection.Horizontal,
                     SortOrder = Enum.SortOrder.LayoutOrder,
                     HorizontalAlignment = Enum.HorizontalAlignment.Center,
@@ -4235,7 +4235,7 @@ Components.TitleBar = (function()
 
                 -- Separator
                 New("TextLabel", {
-                    Text = "•",
+                    Text = "|",
                     TextTransparency = 0.5,
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
                     TextSize = 14,
@@ -4248,7 +4248,7 @@ Components.TitleBar = (function()
                 (function()
                      local label = New("TextLabel", {
                         RichText = true,
-                        Text = "Injector: " .. Executor,
+                        Text = Executor,
                         FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
                         TextSize = 13,
                         Size = UDim2.new(0, 0, 1, 0),
@@ -4273,7 +4273,7 @@ Components.TitleBar = (function()
                         gradient.Offset = Vector2.new(-1, 0)
                         
                         -- Create infinite tween from -1 to 1
-                        local tweenInfo = TweenInfo.new(5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, false) -- Increased duration to 5 for slower effect
+                        local tweenInfo = TweenInfo.new(5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, false)
                         local tween = TweenService:Create(gradient, tweenInfo, {Offset = Vector2.new(1, 0)})
                         tween:Play()
                      end
