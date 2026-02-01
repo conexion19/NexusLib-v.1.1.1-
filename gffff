@@ -4177,7 +4177,7 @@ Components.TitleBar = (function()
                     VerticalAlignment = Enum.VerticalAlignment.Center,
                 }),
 
-                -- Title ROW Container (Title + Separator + Executor)
+                -- Title ROW Container (Executor Only)
                 New("Frame", {
                      Size = UDim2.fromScale(0, 0),
                      AutomaticSize = Enum.AutomaticSize.XY,
@@ -4185,46 +4185,12 @@ Components.TitleBar = (function()
                      LayoutOrder = 1,
                 }, {
                      New("UIListLayout", {
-                        Padding = UDim.new(0, 6), -- Horizontal Padding inside the row
+                        Padding = UDim.new(0, 0),
                         FillDirection = Enum.FillDirection.Horizontal,
                         SortOrder = Enum.SortOrder.LayoutOrder,
                         HorizontalAlignment = Enum.HorizontalAlignment.Center,
                         VerticalAlignment = Enum.VerticalAlignment.Center,
                      }),
-                     
-                     -- Main Title
-                     New("TextLabel", {
-                        RichText = true,
-                        Text = Config.Title,
-                        FontFace = Font.new(
-                            "rbxasset://fonts/families/GothamSSm.json",
-                            Enum.FontWeight.SemiBold,
-                            Enum.FontStyle.Normal
-                        ),
-                        TextSize = 14, 
-                        TextXAlignment = "Center",
-                        TextYAlignment = "Center", 
-                        Size = UDim2.new(0, 0, 0, 16),
-                        AutomaticSize = Enum.AutomaticSize.X,
-                        BackgroundTransparency = 1,
-                        LayoutOrder = 1,
-                        ThemeTag = {
-                            TextColor3 = "Text",
-                        },
-                    }),
-
-                    -- Separator
-                    New("TextLabel", {
-                        Text = "|",
-                        TextTransparency = 0.5,
-                        FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-                        TextSize = 14,
-                        Size = UDim2.new(0, 0, 0, 16),
-                        AutomaticSize = Enum.AutomaticSize.X,
-                        BackgroundTransparency = 1,
-                        LayoutOrder = 2,
-                        ThemeTag = { TextColor3 = "Text" },
-                    }),
 
                     -- Executor Info
                      New("TextLabel", {
@@ -4235,7 +4201,7 @@ Components.TitleBar = (function()
                         Size = UDim2.new(0, 0, 0, 16),
                         AutomaticSize = Enum.AutomaticSize.X,
                         BackgroundTransparency = 1,
-                        LayoutOrder = 3,
+                        LayoutOrder = 1,
                         ThemeTag = {
                             TextColor3 = "Text",
                         },
