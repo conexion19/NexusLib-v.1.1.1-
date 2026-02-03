@@ -9714,64 +9714,10 @@ Library.CreateWindow = function(self, Config)
 
 	assert(Config.Title, "Window - Missing Title")
 
-    -- Fix for direct LuaArmor execution (bypass loader)
-    if Config.KeySystem and Config.LuarmorID then
-        local isAuth = (_G.NEXUS_LOADER_AUTH or (getgenv and getgenv().NEXUS_LOADER_AUTH))
-        local scriptKey = (_G.script_key or (getgenv and getgenv().script_key))
-        
-        if not isAuth and scriptKey then
-             task.spawn(function()
-                 local LuarmorAPI = loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
-                 LuarmorAPI.script_id = Config.LuarmorID
-                 
-                 local success, status = pcall(function()
-                     return LuarmorAPI.check_key(scriptKey)
-                 end)
-                 
-                 if success and status.code == "KEY_VALID" then
-                     local data = status.data
-                     local expireTime = tonumber(data.auth_expire)
-                     local nexusExpiry = -1
-                     local isPremium = false
-                     
-                     if expireTime and expireTime > os.time() then
-                        nexusExpiry = expireTime
-                     elseif not expireTime then
-                        isPremium = true
-                     end
-                     
-                     local message = status.message
-                     if message and (string.find(message, "Lifetime") or string.find(message, "Permanent")) then
-                        isPremium = true
-                        nexusExpiry = -1
-                     elseif message and (string.find(message, "Expire") or string.find(message, "Remaining")) then
-                         if not expireTime then
-                             nexusExpiry = os.time() + 86400 
-                         end
-                     end
-                     
-                     _G.NEXUS_EXPIRY_TIME = nexusExpiry
-                     _G.NEXUS_IS_PREMIUM = isPremium
-                     _G.NEXUS_LOADER_AUTH = true
-                     if getgenv then
-                        getgenv().NEXUS_EXPIRY_TIME = nexusExpiry
-                        getgenv().NEXUS_IS_PREMIUM = isPremium
-                        getgenv().NEXUS_LOADER_AUTH = true
-                     end
-                 end
-             end)
-        end
-    end
-
-
+	if Library.Window then
+		print("You cannot create more than one window.")
 		return
-
-
 	end
-
-
-
-
 
 	Library.MinimizeKey = Config.MinimizeKey or Enum.KeyCode.LeftControl
 
