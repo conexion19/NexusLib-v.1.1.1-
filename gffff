@@ -4123,11 +4123,14 @@ Components.TitleBar = (function()
                 repeat task.wait() until ExpiryLabel.Parent
                 
                 while ExpiryLabel and ExpiryLabel.Parent do
-                    if _G.NEXUS_EXPIRY_TIME then
-                        if _G.NEXUS_EXPIRY_TIME == -1 then
+                    local expiryTime = (getgenv and getgenv().NEXUS_EXPIRY_TIME) or _G.NEXUS_EXPIRY_TIME
+                    local isPremium = (getgenv and getgenv().NEXUS_IS_PREMIUM) or _G.NEXUS_IS_PREMIUM
+                    
+                    if expiryTime then
+                        if expiryTime == -1 then
                              ExpiryLabel.Text = "Lifetime Key"
                         else
-                             local diff = _G.NEXUS_EXPIRY_TIME - os.time()
+                             local diff = expiryTime - os.time()
                              if diff <= 0 then
                                  ExpiryLabel.Text = "Expired"
                              else
@@ -4142,7 +4145,7 @@ Components.TitleBar = (function()
                                  end
                              end
                         end
-                    elseif _G.NEXUS_IS_PREMIUM then
+                    elseif isPremium then
                         ExpiryLabel.Text = "Lifetime Key"
                     else
                         ExpiryLabel.Text = "Waiting for Key..." -- Informative text before auth
