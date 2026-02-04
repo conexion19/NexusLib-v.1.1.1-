@@ -1998,7 +1998,6 @@ local function getOffset()
 	local viewportSizeY = game:GetService("Workspace").CurrentCamera.ViewportSize.Y
 	return map(viewportSizeY, 0, 2560, 8, 56)
 end
-
 local viewportPointToWorld, getOffset = unpack({ viewportPointToWorld, getOffset })
 
 local BlurFolder = Instance.new("Folder")
@@ -4123,7 +4122,6 @@ Components.TitleBar = (function()
                 repeat task.wait() until ExpiryLabel.Parent
                 
                 while ExpiryLabel and ExpiryLabel.Parent do
-                    -- Force update from globals every frame to catch changes immediately
                     local expiryTime = (getgenv and getgenv().NEXUS_EXPIRY_TIME) or _G.NEXUS_EXPIRY_TIME
                     local isPremium = (getgenv and getgenv().NEXUS_IS_PREMIUM) or _G.NEXUS_IS_PREMIUM
                     
@@ -4147,8 +4145,7 @@ Components.TitleBar = (function()
                              end
                         end
                     elseif isPremium then
-                        -- If Premium is set but Expiry isn't (-1 or time), it's likely syncing
-                        ExpiryLabel.Text = "Verifying..." 
+                        ExpiryLabel.Text = "Lifetime Key"
                     else
                         ExpiryLabel.Text = "Waiting for Key..." -- Informative text before auth
                     end
@@ -9000,7 +8997,6 @@ local SaveManager = {} do
 
 					SubContent = string.format("Auto loaded config %q", name),
 
-
 					Duration = 7
 
 
@@ -9711,14 +9707,32 @@ end
 end
 
 
+
+
+
 Library.CreateWindow = function(self, Config)
+	-- Config.Title = Config.Title .. " | " .. Executor -- Старый метод удаляем
 
 	assert(Config.Title, "Window - Missing Title")
 
+
+
+
+
 	if Library.Window then
+
+
 		print("You cannot create more than one window.")
+
+
 		return
+
+
 	end
+
+
+
+
 
 	Library.MinimizeKey = Config.MinimizeKey or Enum.KeyCode.LeftControl
 
@@ -10981,7 +10995,6 @@ Creator.AddSignal(MinimizeButton.InputBegan, function(Input)
 
 
 		local connection
-
 
 		connection = Input.Changed:Connect(function()
 
