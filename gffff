@@ -4122,23 +4122,9 @@ Components.TitleBar = (function()
                 repeat task.wait() until ExpiryLabel.Parent
                 
                 while ExpiryLabel and ExpiryLabel.Parent do
-                    -- Priority check: getgenv() first, then _G as fallback
-                    local expiryTime = nil
-                    local isPremium = nil
-                    
-                    -- Check getgenv() first (preferred for fresh data)
-                    if getgenv then
-                        expiryTime = getgenv().NEXUS_EXPIRY_TIME
-                        isPremium = getgenv().NEXUS_IS_PREMIUM
-                    end
-                    
-                    -- Fallback to _G if getgenv values are nil
-                    if expiryTime == nil then
-                        expiryTime = _G.NEXUS_EXPIRY_TIME
-                    end
-                    if isPremium == nil then
-                        isPremium = _G.NEXUS_IS_PREMIUM
-                    end
+                    -- Check only _G to avoid persistence issues from getgenv
+                    local expiryTime = _G.NEXUS_EXPIRY_TIME
+                    local isPremium = _G.NEXUS_IS_PREMIUM
                     
                     if expiryTime then
                         if expiryTime == -1 then
@@ -10615,19 +10601,7 @@ end
 
 
 
-if getgenv then
-
-
-	getgenv().Fluent = Library
-
-
-else
-
-
-	Fluent = Library
-
-
-end
+_G.Fluent = Library
 
 
 
