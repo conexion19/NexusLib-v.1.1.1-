@@ -4149,7 +4149,7 @@ Components.TitleBar = (function()
                         -- If Premium is set but Expiry isn't (-1 or time), it's likely syncing
                         ExpiryLabel.Text = "Verifying..." 
                     else
-                        ExpiryLabel.Text = "Waiting for Key..." -- Informative text before auth
+                        ExpiryLabel.Text = "Fetching Expiry..." -- Informative text before auth
                     end
                     task.wait(1)
                 end
