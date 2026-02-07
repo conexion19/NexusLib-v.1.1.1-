@@ -738,18 +738,18 @@ local Themes = {
 		AcrylicBorder = Color3.fromRGB(35, 35, 38),
 		AcrylicGradient = ColorSequence.new(Color3.fromRGB(30, 30, 33), Color3.fromRGB(35, 35, 38)),
 		AcrylicNoise = 0.95,
-		TitleBarLine = Color3.fromRGB(0, 0, 0),
+		TitleBarLine = Color3.fromRGB(50, 50, 50),
 		Tab = Color3.fromRGB(80, 80, 80),
 		Element = Color3.fromRGB(35, 35, 38),
-		ElementBorder = Color3.fromRGB(0, 0, 0),
-		InElementBorder = Color3.fromRGB(0, 0, 0),
+		ElementBorder = Color3.fromRGB(50, 50, 50),
+		InElementBorder = Color3.fromRGB(50, 50, 50),
 		ElementTransparency = 0.92,
 		ToggleSlider = Color3.fromRGB(65, 65, 65),
 		ToggleToggled = Color3.fromRGB(255, 255, 255),
 		SliderRail = Color3.fromRGB(65, 65, 65),
 		DropdownFrame = Color3.fromRGB(65, 65, 65),
 		DropdownHolder = Color3.fromRGB(35, 35, 38),
-		DropdownBorder = Color3.fromRGB(0, 0, 0),
+		DropdownBorder = Color3.fromRGB(50, 50, 50),
 		DropdownOption = Color3.fromRGB(65, 65, 65),
 		Keybind = Color3.fromRGB(65, 65, 65),
 		Input = Color3.fromRGB(65, 65, 65),
@@ -757,10 +757,10 @@ local Themes = {
 		InputIndicator = Color3.fromRGB(65, 65, 65),
 		Dialog = Color3.fromRGB(35, 35, 38),
 		DialogHolder = Color3.fromRGB(35, 35, 38),
-		DialogHolderLine = Color3.fromRGB(0, 0, 0),
+		DialogHolderLine = Color3.fromRGB(50, 50, 50),
 		DialogButton = Color3.fromRGB(40, 40, 43),
-		DialogButtonBorder = Color3.fromRGB(0, 0, 0),
-		DialogBorder = Color3.fromRGB(0, 0, 0),
+		DialogButtonBorder = Color3.fromRGB(50, 50, 50),
+		DialogBorder = Color3.fromRGB(50, 50, 50),
 		DialogInput = Color3.fromRGB(35, 35, 38),
 		DialogInputLine = Color3.fromRGB(80, 80, 80),
 		Text = Color3.fromRGB(240, 240, 240),
@@ -3488,7 +3488,7 @@ Components.Dialog = (function()
 			Parent = Dialog.Window.Root,
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 8),
+				CornerRadius = UDim.new(0, 0),
 			}),
 		})
 
@@ -4745,10 +4745,12 @@ Components.Window = (function()
 			Size = UDim2.fromScale(1, 1),
 			BackgroundTransparency = 1,
 		})
+        
+        local TabsTop = (Window.ShowSearch and 54 or 19) + Window.TabHolderTop
 
 Window.ContainerCanvas = New("Frame", {
-    Size = UDim2.new(1, -Window.TabWidth - 32, 1, -102),
-    Position = UDim2.fromOffset(Window.TabWidth + 26, 54),
+    Size = UDim2.new(1, -Window.TabWidth - 32, 1, -102 - (TabsTop - 54)),
+    Position = UDim2.fromOffset(Window.TabWidth + 26, TabsTop),
     BackgroundTransparency = 1,
     ClipsDescendants = true,
 }, {
