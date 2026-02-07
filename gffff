@@ -4128,7 +4128,7 @@ Components.TitleBar = (function()
                     
                     if expiryTime then
                         if expiryTime == -1 then
-                             ExpiryLabel.Text = "Lifetime Key"
+                             ExpiryLabel.Text = "Lifetime"
                         else
                              local diff = expiryTime - os.time()
                              if diff <= 0 then
@@ -5022,6 +5022,7 @@ Window.Root = New("Frame", {
 		end)
 
 		Creator.AddSignal(Window.TitleBar.Frame.InputBegan, function(Input)
+            if Config.Draggable == false then return end
 			if
 				Input.UserInputType == Enum.UserInputType.MouseButton1
 				or Input.UserInputType == Enum.UserInputType.Touch
