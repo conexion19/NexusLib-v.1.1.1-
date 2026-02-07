@@ -1998,6 +1998,7 @@ local function getOffset()
 	local viewportSizeY = game:GetService("Workspace").CurrentCamera.ViewportSize.Y
 	return map(viewportSizeY, 0, 2560, 8, 56)
 end
+
 local viewportPointToWorld, getOffset = unpack({ viewportPointToWorld, getOffset })
 
 local BlurFolder = Instance.new("Folder")
@@ -4122,8 +4123,23 @@ Components.TitleBar = (function()
                 repeat task.wait() until ExpiryLabel.Parent
                 
                 while ExpiryLabel and ExpiryLabel.Parent do
-                    local expiryTime = (getgenv and getgenv().NEXUS_EXPIRY_TIME) or _G.NEXUS_EXPIRY_TIME
-                    local isPremium = (getgenv and getgenv().NEXUS_IS_PREMIUM) or _G.NEXUS_IS_PREMIUM
+                    -- Priority check: getgenv() first, then _G as fallback
+                    local expiryTime = nil
+                    local isPremium = nil
+                    
+                    -- Check getgenv() first (preferred for fresh data)
+                    if getgenv then
+                        expiryTime = getgenv().NEXUS_EXPIRY_TIME
+                        isPremium = getgenv().NEXUS_IS_PREMIUM
+                    end
+                    
+                    -- Fallback to _G if getgenv values are nil
+                    if expiryTime == nil then
+                        expiryTime = _G.NEXUS_EXPIRY_TIME
+                    end
+                    if isPremium == nil then
+                        isPremium = _G.NEXUS_IS_PREMIUM
+                    end
                     
                     if expiryTime then
                         if expiryTime == -1 then
@@ -4145,7 +4161,8 @@ Components.TitleBar = (function()
                              end
                         end
                     elseif isPremium then
-                        ExpiryLabel.Text = "Lifetime Key"
+                        -- If Premium is set but Expiry isn't (-1 or time), it's likely syncing
+                        ExpiryLabel.Text = "Verifying..." 
                     else
                         ExpiryLabel.Text = "Waiting for Key..." -- Informative text before auth
                     end
@@ -4233,6 +4250,7 @@ Components.TitleBar = (function()
                 }) or nil,
             }),
 
+            --[[ Removed Separator Line
             New("Frame", {
                 BackgroundTransparency = 0.5,
                 Size = UDim2.new(1, 0, 0, 1),
@@ -4241,6 +4259,7 @@ Components.TitleBar = (function()
                     BackgroundColor3 = "TitleBarLine",
                 },
             }),
+            ]]
         })
 
         TitleBar.CloseButton = BarButton(Components.Assets.Close, UDim2.new(1, -4, 0, 4), TitleBar.Frame, function()
@@ -8997,6 +9016,7 @@ local SaveManager = {} do
 
 					SubContent = string.format("Auto loaded config %q", name),
 
+
 					Duration = 7
 
 
@@ -9707,32 +9727,14 @@ end
 end
 
 
-
-
-
 Library.CreateWindow = function(self, Config)
-	-- Config.Title = Config.Title .. " | " .. Executor -- Старый метод удаляем
 
 	assert(Config.Title, "Window - Missing Title")
 
-
-
-
-
 	if Library.Window then
-
-
 		print("You cannot create more than one window.")
-
-
 		return
-
-
 	end
-
-
-
-
 
 	Library.MinimizeKey = Config.MinimizeKey or Enum.KeyCode.LeftControl
 
@@ -10995,6 +10997,7 @@ Creator.AddSignal(MinimizeButton.InputBegan, function(Input)
 
 
 		local connection
+
 
 		connection = Input.Changed:Connect(function()
 
