@@ -2718,9 +2718,7 @@ Components.Tab = (function()
 			BackgroundTransparency = 1,
 			Parent = Parent,
 			ZIndex = 10,
-			ThemeTag = {
-				BackgroundColor3 = "Tab",
-			},
+			BackgroundColor3 = Color3.fromRGB(40, 40, 40),
 		}, {
 			New("UICorner", {
 				CornerRadius = UDim.new(0, 4),
@@ -3460,6 +3458,7 @@ Components.Button = (function()
 		return Button
 	end
 end)()
+
 Components.Dialog = (function()
 	local Spring = Flipper.Spring.new
 	local Instant = Flipper.Instant.new
