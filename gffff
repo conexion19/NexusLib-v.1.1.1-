@@ -1960,13 +1960,13 @@ local KeybindDisplayContainer = Creator.New("Frame", {
 	Parent = GUI,
 	Position = UDim2.new(1, -10, 0.5, 0),
 	AnchorPoint = Vector2.new(1, 0.5),
-	Size = UDim2.new(0, 200, 0, 0),
+	Size = UDim2.new(0, 180, 0, 0),
 	BackgroundTransparency = 1,
 	AutomaticSize = Enum.AutomaticSize.Y,
 	ZIndex = 1000,
 }, {
 	Creator.New("UIListLayout", {
-		Padding = UDim.new(0, 6),
+		Padding = UDim.new(0, 4),
 		SortOrder = Enum.SortOrder.LayoutOrder,
 		HorizontalAlignment = Enum.HorizontalAlignment.Right,
 	}),
@@ -1986,19 +1986,18 @@ function Library:SetKeybindDisplayVisible(visible)
 	KeybindDisplayContainer.Visible = visible
 end
 
-function Library:RegisterKeybind(Idx, Title, KeybindObj)
-	if not Title or not KeybindObj then return end
+function Library:RegisterKeybind(Idx, Title, Key)
+	if not Title or not Key or Key == "None" then return end
 	
 	local ExistingDisplay = self.KeybindList[Idx]
 	if ExistingDisplay then
-		ExistingDisplay.TitleLabel.Text = Title
-		ExistingDisplay.KeyLabel.Text = KeybindObj.Value or "None"
+		ExistingDisplay.KeybindLabel.Text = Title .. " - [" .. Key .. "]"
 		return
 	end
 	
 	local DisplayFrame = Creator.New("Frame", {
 		Parent = KeybindDisplayContainer,
-		Size = UDim2.new(1, 0, 0, 32),
+		Size = UDim2.new(1, 0, 0, 22),
 		BackgroundColor3 = Color3.fromRGB(30, 30, 30),
 		BackgroundTransparency = 0.3,
 		BorderSizePixel = 0,
@@ -2007,7 +2006,7 @@ function Library:RegisterKeybind(Idx, Title, KeybindObj)
 		},
 	}, {
 		Creator.New("UICorner", {
-			CornerRadius = UDim.new(0, 6),
+			CornerRadius = UDim.new(0, 5),
 		}),
 		Creator.New("UIStroke", {
 			Color = Color3.fromRGB(60, 60, 60),
@@ -2018,10 +2017,10 @@ function Library:RegisterKeybind(Idx, Title, KeybindObj)
 			},
 		}),
 		Creator.New("UIPadding", {
-			PaddingLeft = UDim.new(0, 10),
-			PaddingRight = UDim.new(0, 10),
-			PaddingTop = UDim.new(0, 6),
-			PaddingBottom = UDim.new(0, 6),
+			PaddingLeft = UDim.new(0, 8),
+			PaddingRight = UDim.new(0, 8),
+			PaddingTop = UDim.new(0, 3),
+			PaddingBottom = UDim.new(0, 3),
 		}),
 	})
 	
@@ -2031,12 +2030,11 @@ function Library:RegisterKeybind(Idx, Title, KeybindObj)
 	local tween = TweenService:Create(DisplayFrame, tweenInfo, {BackgroundTransparency = 0.3})
 	tween:Play()
 	
-	local TitleLabel = Creator.New("TextLabel", {
+	local KeybindLabel = Creator.New("TextLabel", {
 		Parent = DisplayFrame,
-		Size = UDim2.new(1, -50, 0, 10),
-		Position = UDim2.new(0, 0, 0, 0),
+		Size = UDim2.new(1, 0, 1, 0),
 		BackgroundTransparency = 1,
-		Text = Title,
+		Text = Title .. " - [" .. Key .. "]",
 		TextColor3 = Color3.fromRGB(200, 200, 200),
 		TextSize = 11,
 		TextXAlignment = Enum.TextXAlignment.Left,
@@ -2048,48 +2046,40 @@ function Library:RegisterKeybind(Idx, Title, KeybindObj)
 		},
 	})
 	
-	local KeyLabel = Creator.New("TextLabel", {
-		Parent = DisplayFrame,
-		Size = UDim2.new(1, 0, 0, 12),
-		Position = UDim2.new(0, 0, 1, -12),
-		BackgroundTransparency = 1,
-		Text = "[" .. (KeybindObj.Value or "None") .. "]",
-		TextColor3 = Color3.fromRGB(150, 150, 255),
-		TextSize = 10,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
-		TextTransparency = 1,
-		ThemeTag = {
-			TextColor3 = "Accent",
-		},
-	})
-	
 	-- Animate text appearance
-	local textTween1 = TweenService:Create(TitleLabel, tweenInfo, {TextTransparency = 0})
-	local textTween2 = TweenService:Create(KeyLabel, tweenInfo, {TextTransparency = 0})
-	textTween1:Play()
-	textTween2:Play()
+	local textTween = TweenService:Create(KeybindLabel, tweenInfo, {TextTransparency = 0})
+	textTween:Play()
 	
 	self.KeybindList[Idx] = {
 		Frame = DisplayFrame,
-		TitleLabel = TitleLabel,
-		KeyLabel = KeyLabel,
-		KeybindObj = KeybindObj,
+		KeybindLabel = KeybindLabel,
+		Title = Title,
+		Key = Key,
 	}
 end
 
-function Library:UpdateKeybind(Idx, NewKey)
+function Library:UpdateKeybind(Idx, Title, NewKey)
+	if not NewKey or NewKey == "None" then
+		-- Remove keybind from display if set to None
+		self:UnregisterKeybind(Idx)
+		return
+	end
+	
 	local Display = self.KeybindList[Idx]
-	if Display and Display.KeyLabel then
-		local newText = "[" .. (NewKey or "None") .. "]"
+	if Display and Display.KeybindLabel then
+		local newText = Title .. " - [" .. NewKey .. "]"
 		
 		-- Animate key change with a flash effect
-		Display.KeyLabel.TextTransparency = 0.5
-		Display.KeyLabel.Text = newText
+		Display.KeybindLabel.TextTransparency = 0.5
+		Display.KeybindLabel.Text = newText
+		Display.Key = NewKey
 		
 		local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-		local tween = TweenService:Create(Display.KeyLabel, tweenInfo, {TextTransparency = 0})
+		local tween = TweenService:Create(Display.KeybindLabel, tweenInfo, {TextTransparency = 0})
 		tween:Play()
+	else
+		-- Create new display if it doesn't exist
+		self:RegisterKeybind(Idx, Title, NewKey)
 	end
 end
 
@@ -2104,14 +2094,9 @@ function Library:UnregisterKeybind(Idx)
 				Size = UDim2.new(1, 0, 0, 0)
 			})
 			
-			if Display.TitleLabel then
-				local textTween1 = TweenService:Create(Display.TitleLabel, tweenInfo, {TextTransparency = 1})
-				textTween1:Play()
-			end
-			
-			if Display.KeyLabel then
-				local textTween2 = TweenService:Create(Display.KeyLabel, tweenInfo, {TextTransparency = 1})
-				textTween2:Play()
+			if Display.KeybindLabel then
+				local textTween = TweenService:Create(Display.KeybindLabel, tweenInfo, {TextTransparency = 1})
+				textTween:Play()
 			end
 			
 			tween:Play()
@@ -7023,7 +7008,7 @@ ElementsTable.Keybind = (function()
 			Keybind.Mode = Mode
 			
 			-- Update keybind display on the right
-			Library:UpdateKeybind(Idx, Key)
+			Library:UpdateKeybind(Idx, Config.Title, Key)
 		end
 
 		function Keybind:OnClick(Callback)
@@ -7084,11 +7069,7 @@ ElementsTable.Keybind = (function()
 							Library:SafeCallback(Keybind.Changed, Input.KeyCode or Input.UserInputType)
 							
 							-- Update keybind display on the right
-							Library:UpdateKeybind(Idx, Key)
-
-							Event:Disconnect()
-							EndedEvent:Disconnect()
-						end
+						Library:UpdateKeybind(Idx, Config.Title, Key)
 					end)
 				end)
 			end
@@ -7118,9 +7099,6 @@ ElementsTable.Keybind = (function()
 		end)
 
 		Library.Options[Idx] = Keybind
-		
-		-- Register keybind in the display list
-		Library:RegisterKeybind(Idx, Config.Title, Keybind)
 		
 		return Keybind
 	end
