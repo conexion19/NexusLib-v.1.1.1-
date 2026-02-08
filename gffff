@@ -4085,7 +4085,7 @@ Components.TitleBar = (function()
             
             ExpiryLabel = New("TextLabel", {
                 Name = "ExpirySubtitle",
-                Text = "Loading...",
+                Text = "",
                 TextTransparency = 0.4,
                 FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
                 TextSize = 11,
@@ -4118,11 +4118,9 @@ Components.TitleBar = (function()
             end)
             
             task.spawn(function()
-                -- Wait for UI to mount
                 repeat task.wait() until ExpiryLabel.Parent
                 
                 while ExpiryLabel and ExpiryLabel.Parent do
-                    -- Check only _G to avoid persistence issues from getgenv
                     local expiryTime = _G.NEXUS_EXPIRY_TIME
                     local isPremium = _G.NEXUS_IS_PREMIUM
                     
@@ -4145,11 +4143,8 @@ Components.TitleBar = (function()
                                  end
                              end
                         end
-                    elseif isPremium then
-                        -- If Premium is set but Expiry isn't (-1 or time), it's likely syncing
-                        ExpiryLabel.Text = "Verifying..." 
                     else
-                        ExpiryLabel.Text = "Fetching Expiry..." -- Informative text before auth
+                        ExpiryLabel.Text = ""
                     end
                     task.wait(1)
                 end
