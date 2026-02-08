@@ -7000,7 +7000,7 @@ ElementsTable.Keybind = (function()
 		end
 
 		function Keybind:SetValue(Key, Mode)
-			Key = Key or Keybind.Key
+			Key = Key or Keybind.Value
 			Mode = Mode or Keybind.Mode
 
 			KeybindDisplayLabel.Text = Key
