@@ -9968,7 +9968,7 @@ Library.CreateWindow = function(self, Config)
             local snowfallEnabled = configAllowsSnow and userWantsSnow
             
             -- Only add snowfall if enabled
-            if snowfallEnabled then
+            if false and snowfallEnabled then
                  Library:AddSnowfallToWindow({
                     Count = 38,
                     Speed = 9.5
