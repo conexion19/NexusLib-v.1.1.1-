@@ -6229,23 +6229,9 @@ local DropdownHolderCanvas = New("Frame", {
 			RecalculateListSize()
 		end)
 
-		Creator.AddSignal(UserInputService.InputBegan, function(Input)
-			if
-				Input.UserInputType == Enum.UserInputType.MouseButton1
-				or Input.UserInputType == Enum.UserInputType.Touch
-			then
-				local mousePos = Input.UserInputType == Enum.UserInputType.MouseButton1 and Vector2.new(Mouse.X, Mouse.Y) or Input.Position
-				local AbsPos, AbsSize = DropdownHolderFrame.AbsolutePosition, DropdownHolderFrame.AbsoluteSize
-				local innerAbsPos, innerAbsSize = DropdownInner.AbsolutePosition, DropdownInner.AbsoluteSize
-				
-				local clickedInsideDropdown = mousePos.X >= AbsPos.X and mousePos.X <= AbsPos.X + AbsSize.X and mousePos.Y >= AbsPos.Y and mousePos.Y <= AbsPos.Y + AbsSize.Y
-				local clickedInsideInner = mousePos.X >= innerAbsPos.X and mousePos.X <= innerAbsPos.X + innerAbsSize.X and mousePos.Y >= innerAbsPos.Y and mousePos.Y <= innerAbsPos.Y + innerAbsSize.Y
-				
-				if not clickedInsideDropdown and not clickedInsideInner then
-					Dropdown:Close()
-				end
-			end
-		end)
+		-- Слушатель кликов вне дропдауна: подключается ТОЛЬКО когда дропдаун открыт
+		-- и сразу отключается при закрытии, чтобы не торчать в UserInputService постоянно
+		local clickOutsideConnection = nil
 
 		local ScrollFrame = self.ScrollFrame
 		function Dropdown:Open()
@@ -6279,10 +6265,36 @@ local DropdownHolderCanvas = New("Frame", {
 				TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
 				{ Rotation = openRotation }
 			):Play()
+			-- Подключаем слушатель только на время пока дропдаун открыт
+			if clickOutsideConnection then
+				clickOutsideConnection:Disconnect()
+				clickOutsideConnection = nil
+			end
+			clickOutsideConnection = UserInputService.InputBegan:Connect(function(Input)
+				if not Dropdown.Opened then return end
+				if
+					Input.UserInputType == Enum.UserInputType.MouseButton1
+					or Input.UserInputType == Enum.UserInputType.Touch
+				then
+					local mousePos = Input.UserInputType == Enum.UserInputType.MouseButton1 and Vector2.new(Mouse.X, Mouse.Y) or Input.Position
+					local AbsPos, AbsSize = DropdownHolderFrame.AbsolutePosition, DropdownHolderFrame.AbsoluteSize
+					local innerAbsPos, innerAbsSize = DropdownInner.AbsolutePosition, DropdownInner.AbsoluteSize
+					local clickedInsideDropdown = mousePos.X >= AbsPos.X and mousePos.X <= AbsPos.X + AbsSize.X and mousePos.Y >= AbsPos.Y and mousePos.Y <= AbsPos.Y + AbsSize.Y
+					local clickedInsideInner = mousePos.X >= innerAbsPos.X and mousePos.X <= innerAbsPos.X + innerAbsSize.X and mousePos.Y >= innerAbsPos.Y and mousePos.Y <= innerAbsPos.Y + innerAbsSize.Y
+					if not clickedInsideDropdown and not clickedInsideInner then
+						Dropdown:Close()
+					end
+				end
+			end)
 		end
 
 		function Dropdown:Close()
 			Dropdown.Opened = false
+			-- Сразу отключаем глобальный слушатель — он больше не нужен
+			if clickOutsideConnection then
+				clickOutsideConnection:Disconnect()
+				clickOutsideConnection = nil
+			end
 			if Dropdown.OpenToRight then
 				Dropdown.SavedY = nil
 			end
