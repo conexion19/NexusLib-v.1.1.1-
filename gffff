@@ -998,7 +998,6 @@ function LanguageManager:UpdateElement(textLabel, key)
 		end)
 	end
 end
-
 function LanguageManager:UpdateAllElements()
 	for i = #self.RegisteredElements, 1, -1 do
 		local data = self.RegisteredElements[i]
@@ -6229,7 +6228,23 @@ local DropdownHolderCanvas = New("Frame", {
 			RecalculateListSize()
 		end)
 
-		local clickOutsideConnection = nil
+		Creator.AddSignal(UserInputService.InputBegan, function(Input)
+			if
+				Input.UserInputType == Enum.UserInputType.MouseButton1
+				or Input.UserInputType == Enum.UserInputType.Touch
+			then
+				local mousePos = Input.UserInputType == Enum.UserInputType.MouseButton1 and Vector2.new(Mouse.X, Mouse.Y) or Input.Position
+				local AbsPos, AbsSize = DropdownHolderFrame.AbsolutePosition, DropdownHolderFrame.AbsoluteSize
+				local innerAbsPos, innerAbsSize = DropdownInner.AbsolutePosition, DropdownInner.AbsoluteSize
+				
+				local clickedInsideDropdown = mousePos.X >= AbsPos.X and mousePos.X <= AbsPos.X + AbsSize.X and mousePos.Y >= AbsPos.Y and mousePos.Y <= AbsPos.Y + AbsSize.Y
+				local clickedInsideInner = mousePos.X >= innerAbsPos.X and mousePos.X <= innerAbsPos.X + innerAbsSize.X and mousePos.Y >= innerAbsPos.Y and mousePos.Y <= innerAbsPos.Y + innerAbsSize.Y
+				
+				if not clickedInsideDropdown and not clickedInsideInner then
+					Dropdown:Close()
+				end
+			end
+		end)
 
 		local ScrollFrame = self.ScrollFrame
 		function Dropdown:Open()
@@ -6263,34 +6278,10 @@ local DropdownHolderCanvas = New("Frame", {
 				TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
 				{ Rotation = openRotation }
 			):Play()
-			if clickOutsideConnection then
-				clickOutsideConnection:Disconnect()
-				clickOutsideConnection = nil
-			end
-			local _prevDown = false
-			clickOutsideConnection = RunService.Heartbeat:Connect(function()
-				if not Dropdown.Opened then return end
-				local isDown = UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)
-				if isDown and not _prevDown then
-					local mousePos = UserInputService:GetMouseLocation()
-					local AbsPos, AbsSize = DropdownHolderFrame.AbsolutePosition, DropdownHolderFrame.AbsoluteSize
-					local innerAbsPos, innerAbsSize = DropdownInner.AbsolutePosition, DropdownInner.AbsoluteSize
-					local clickedInsideDropdown = mousePos.X >= AbsPos.X and mousePos.X <= AbsPos.X + AbsSize.X and mousePos.Y >= AbsPos.Y and mousePos.Y <= AbsPos.Y + AbsSize.Y
-					local clickedInsideInner = mousePos.X >= innerAbsPos.X and mousePos.X <= innerAbsPos.X + innerAbsSize.X and mousePos.Y >= innerAbsPos.Y and mousePos.Y <= innerAbsPos.Y + innerAbsSize.Y
-					if not clickedInsideDropdown and not clickedInsideInner then
-						Dropdown:Close()
-					end
-				end
-				_prevDown = isDown
-			end)
 		end
 
 		function Dropdown:Close()
 			Dropdown.Opened = false
-			if clickOutsideConnection then
-				clickOutsideConnection:Disconnect()
-				clickOutsideConnection = nil
-			end
 			if Dropdown.OpenToRight then
 				Dropdown.SavedY = nil
 			end
@@ -9007,7 +8998,6 @@ local SaveManager = {} do
 
 					task.spawn(function() self.Parser[option.type].Load(option.idx, option) end)
 
-
 				end
 
 
@@ -10009,7 +9999,6 @@ Library.CreateWindow = function(self, Config)
 
 
 
-
 	local Icon = Config.Icon
 
 
@@ -11005,7 +10994,6 @@ local MinimizeButton = New("TextButton", {
 
 
 		ImageTransparency = 0.1,
-
 
 	}, {
 
