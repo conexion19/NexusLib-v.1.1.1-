@@ -9000,7 +9000,6 @@ local SaveManager = {} do
 
 
 
-
 			return true, decoded
 
 
@@ -10998,7 +10997,6 @@ local MinimizeButton = New("TextButton", {
 
 
 	})
-
 
 })
 
