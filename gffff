@@ -906,7 +906,6 @@ local Library = {
 }
 
 local LanguageManager = {
-local LanguageManager = {
 	CurrentLanguage = "English",
 	Translations = {
 		English = {},
