@@ -2037,80 +2037,199 @@ function Creator.SpringMotor(Initial, Instance, Prop, IgnoreDialogCheck, ResetOn
 end
 
 Library.Creator = Creator
-
 Library.MiniMessageToRichText = MiniMessageToRichText
 
 local New = Creator.New
+local GUI = nil
+local player = game:GetService("Players").LocalPlayer
 
--- Создаем GUI в PlayerGui вместо CoreGui
-local GUI = Creator.New("ScreenGui", {
-    -- Используем PlayerGui напрямую, без оберток
-    Parent = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui") or 
-             game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"),
-    
-    -- Стандартные настройки для ScreenGui
-    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-    ResetOnSpawn = false,
-    DisplayOrder = 999,
-    
-    -- Добавляем имя для удобства отладки
-    Name = "FluentGUI"
-})
+-- Проверяем ID плейса
+local targetPlaceId = 5166944221
+local isTargetGame = (game.PlaceId == targetPlaceId)
 
--- Проверяем, что GUI создался правильно
-if not GUI or not GUI.Parent then
-    warn("Failed to create GUI in PlayerGui, falling back to CoreGui")
-    -- Запасной вариант, если PlayerGui недоступен
-    GUI = Creator.New("ScreenGui", {
-        Parent = game:GetService("CoreGui"),
-        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-        ResetOnSpawn = false,
-        DisplayOrder = 999,
-        Name = "FluentGUI_Fallback"
-    })
+-- Функция для создания случайного имени
+local function randomName()
+    local length = math.random(8, 15)
+    local chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    local name = ""
+    for i = 1, length do
+        name = name .. chars:sub(math.random(#chars), math.random(#chars))
+    end
+    return name
 end
 
--- Защита GUI (оставляем как есть, но protectgui теперь не будет работать в CoreGui)
--- protectgui теперь может быть бесполезен, так как мы в PlayerGui
-local ProtectGui = protectgui or (syn and syn.protect_gui) or function() end
-ProtectGui(GUI)
+-- Если это целевой плейс, применяем защиту
+if isTargetGame then
+    -- Защита от трассировки стека
+    local debug = debug or nil
+    if debug and debug.setstack then
+        debug.setstack(1, 1, nil)
+    end
 
--- Альтернативный вариант без protectgui (рекомендуется для PlayerGui):
--- Просто удаляем protectgui вызов, так как в PlayerGui он не нужен
--- ProtectGui(GUI) -- закомментируйте эту строку
+    -- Ждем полной загрузки игры и персонажа
+    repeat task.wait() until player and player.Character and player.Character:FindFirstChild("Humanoid")
+    task.wait(math.random(3, 8)) -- Случайная задержка
 
--- Если хотите полностью безопасный вариант, используйте это:
--- (замените весь блок выше на этот код)
+    -- Проверяем, не вызывает ли античит ошибки
+    local function checkAnticheat()
+        local success, result = pcall(function()
+            local test = game:GetService("CoreGui"):GetChildren()
+            return #test
+        end)
+        return success
+    end
 
---[[
-local success, playerGui = pcall(function()
-    return game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui", 5)
-end)
+    local anticheatActive = not checkAnticheat()
 
-if success and playerGui then
-    GUI = Creator.New("ScreenGui", {
-        Parent = playerGui,
-        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-        ResetOnSpawn = false,
-        DisplayOrder = 999,
-        Name = "FluentGUI"
-    })
+    -- Создаем GUI в PlayerGui с дополнительной защитой
+    local function createGUI()
+        local playerGui = player:FindFirstChild("PlayerGui")
+        if not playerGui then
+            playerGui = player:WaitForChild("PlayerGui", 5)
+        end
+        
+        if not playerGui then return nil end
+        
+        local container = Instance.new("ScreenGui")
+        container.Name = randomName()
+        container.Parent = playerGui
+        container.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        container.ResetOnSpawn = false
+        container.DisplayOrder = math.random(900, 999)
+        container.Enabled = true
+        
+        pcall(function()
+            container:SetAttribute("__type", nil)
+            container:SetAttribute("__mode", nil)
+        end)
+        
+        return container
+    end
+
+    -- Пытаемся создать GUI несколько раз
+    for attempt = 1, 3 do
+        GUI = createGUI()
+        if GUI then break end
+        task.wait(0.5)
+    end
+
+    -- Если не получилось, пробуем другой подход
+    if not GUI then
+        local playerGui = player:FindFirstChild("PlayerGui") or player:WaitForChild("PlayerGui", 3)
+        
+        if playerGui then
+            GUI = Creator.New("ScreenGui", {
+                Parent = playerGui,
+                ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+                ResetOnSpawn = false,
+                DisplayOrder = 999,
+                Name = randomName(),
+                Enabled = true
+            })
+        end
+    end
+
+    -- Финальная проверка
+    if not GUI then
+        GUI = Instance.new("ScreenGui")
+        GUI.Name = randomName()
+        GUI.Parent = player:FindFirstChild("PlayerGui") or game:GetService("StarterGui")
+        GUI.ResetOnSpawn = false
+    end
+
+    -- Если GUI создан, применяем защиту
+    if GUI then
+        GUI.Name = " " .. randomName()
+        
+        pcall(function()
+            for _, child in pairs(GUI:GetChildren()) do
+                if child:IsA("Folder") then
+                    child:Destroy()
+                end
+            end
+        end)
+        
+        local fakeChild = Instance.new("Frame")
+        fakeChild.Name = "RobloxGui"
+        fakeChild.BackgroundTransparency = 1
+        fakeChild.Size = UDim2.new(0, 0, 0, 0)
+        fakeChild.Parent = GUI
+        fakeChild.Visible = false
+        
+        if not game:GetService("RunService"):IsStudio() then
+            local mt = getrawmetatable and getrawmetatable(game)
+            if mt then
+                local __index = mt.__index
+                setreadonly(mt, false)
+                
+                mt.__index = function(self, key)
+                    if self == GUI and key == "Parent" then
+                        return player:FindFirstChild("PlayerGui")
+                    end
+                    return __index(self, key)
+                end
+                
+                setreadonly(mt, true)
+            end
+        end
+    end
+
+    -- Мониторим логи на предмет обнаружения
+    local connection
+    connection = game:GetService("LogService").MessageOut:Connect(function(message, messageType)
+        if messageType == Enum.MessageType.MessageError then
+            if message:find("CoreGui") or message:find("attempt to call") then
+                if GUI and GUI.Parent then
+                    local oldParent = GUI.Parent
+                    GUI.Parent = game:GetService("StarterGui")
+                    task.wait(math.random(5, 10))
+                    GUI.Parent = oldParent
+                end
+            end
+        end
+    end)
+
+    if GUI then
+        GUI.Destroying:Connect(function()
+            if connection then
+                connection:Disconnect()
+            end
+        end)
+    end
+
+-- Для всех остальных плейсов используем обычное создание GUI
 else
-    -- Если PlayerGui недоступен, используем CoreGui как запасной вариант
-    warn("PlayerGui not available, falling back to CoreGui")
-    GUI = Creator.New("ScreenGui", {
-        Parent = game:GetService("CoreGui"),
-        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-        ResetOnSpawn = false,
-        DisplayOrder = 999,
-        Name = "FluentGUI_Fallback"
-    })
+    -- Стандартное создание GUI для других игр
+    local playerGui = player:FindFirstChild("PlayerGui") or player:WaitForChild("PlayerGui", 5)
+    
+    if playerGui then
+        GUI = Creator.New("ScreenGui", {
+            Parent = playerGui,
+            ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+            ResetOnSpawn = false,
+            DisplayOrder = 999,
+            Name = "FluentGUI"
+        })
+    else
+        -- Запасной вариант
+        GUI = Creator.New("ScreenGui", {
+            Parent = game:GetService("CoreGui"),
+            ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+            ResetOnSpawn = false,
+            DisplayOrder = 999,
+            Name = "FluentGUI"
+        })
+    end
+    
+    -- Обычная защита (только protectgui)
+    local ProtectGui = protectgui or (syn and syn.protect_gui) or function() end
+    ProtectGui(GUI)
 end
---]]
 
 Library.GUI = GUI
 
-ProtectGui(GUI)
+-- Функция protect (пустая для целевого плейса, обычная для других)
+local ProtectGui = isTargetGame and function() end or (protectgui or (syn and syn.protect_gui) or function() end)
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "KeybindDisplay"
