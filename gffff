@@ -2043,11 +2043,9 @@ local New = Creator.New
 local GUI = nil
 local player = game:GetService("Players").LocalPlayer
 
--- Проверяем ID плейса
 local targetPlaceId = 5166944221
 local isTargetGame = (game.PlaceId == targetPlaceId)
 
--- Функция для создания случайного имени
 local function randomName()
     local length = math.random(8, 15)
     local chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -2058,86 +2056,25 @@ local function randomName()
     return name
 end
 
--- Если это целевой плейс, применяем защиту
 if isTargetGame then
-    -- Защита от трассировки стека
     local debug = debug or nil
     if debug and debug.setstack then
         debug.setstack(1, 1, nil)
     end
 
-    -- Ждем полной загрузки игры и персонажа
     repeat task.wait() until player and player.Character and player.Character:FindFirstChild("Humanoid")
-    task.wait(math.random(3, 8)) -- Случайная задержка
+    task.wait(math.random(3, 8))
 
-    -- Проверяем, не вызывает ли античит ошибки
-    local function checkAnticheat()
-        local success, result = pcall(function()
-            local test = game:GetService("CoreGui"):GetChildren()
-            return #test
-        end)
-        return success
-    end
-
-    local anticheatActive = not checkAnticheat()
-
-    -- Создаем GUI в PlayerGui с дополнительной защитой
-    local function createGUI()
-        local playerGui = player:FindFirstChild("PlayerGui")
-        if not playerGui then
-            playerGui = player:WaitForChild("PlayerGui", 5)
-        end
-        
-        if not playerGui then return nil end
-        
-        local container = Instance.new("ScreenGui")
-        container.Name = randomName()
-        container.Parent = playerGui
-        container.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-        container.ResetOnSpawn = false
-        container.DisplayOrder = math.random(900, 999)
-        container.Enabled = true
-        
-        pcall(function()
-            container:SetAttribute("__type", nil)
-            container:SetAttribute("__mode", nil)
-        end)
-        
-        return container
-    end
-
-    -- Пытаемся создать GUI несколько раз
-    for attempt = 1, 3 do
-        GUI = createGUI()
-        if GUI then break end
-        task.wait(0.5)
-    end
-
-    -- Если не получилось, пробуем другой подход
-    if not GUI then
-        local playerGui = player:FindFirstChild("PlayerGui") or player:WaitForChild("PlayerGui", 3)
-        
-        if playerGui then
-            GUI = Creator.New("ScreenGui", {
-                Parent = playerGui,
-                ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-                ResetOnSpawn = false,
-                DisplayOrder = 999,
-                Name = randomName(),
-                Enabled = true
-            })
-        end
-    end
-
-    -- Финальная проверка
-    if not GUI then
-        GUI = Instance.new("ScreenGui")
-        GUI.Name = randomName()
-        GUI.Parent = player:FindFirstChild("PlayerGui") or game:GetService("StarterGui")
-        GUI.ResetOnSpawn = false
-    end
-
-    -- Если GUI создан, применяем защиту
+    local get_hui = gethui or function() return game:GetService("CoreGui") end
+    
+    GUI = Creator.New("ScreenGui", {
+        Parent = get_hui(),
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        ResetOnSpawn = false,
+        DisplayOrder = 999,
+        Name = randomName()
+    })
+    
     if GUI then
         GUI.Name = " " .. randomName()
         
@@ -2164,7 +2101,7 @@ if isTargetGame then
                 
                 mt.__index = function(self, key)
                     if self == GUI and key == "Parent" then
-                        return player:FindFirstChild("PlayerGui")
+                        return get_hui()
                     end
                     return __index(self, key)
                 end
@@ -2174,7 +2111,6 @@ if isTargetGame then
         end
     end
 
-    -- Мониторим логи на предмет обнаружения
     local connection
     connection = game:GetService("LogService").MessageOut:Connect(function(message, messageType)
         if messageType == Enum.MessageType.MessageError then
@@ -2197,39 +2133,24 @@ if isTargetGame then
         end)
     end
 
--- Для всех остальных плейсов используем обычное создание GUI
+    local ProtectGui = protectgui or (syn and syn.protect_gui) or function() end
+    ProtectGui(GUI)
+
 else
-    -- Стандартное создание GUI для других игр
-    local playerGui = player:FindFirstChild("PlayerGui") or player:WaitForChild("PlayerGui", 5)
+    local get_hui = gethui or function() return game:GetService("CoreGui") end
+    GUI = Creator.New("ScreenGui", {
+        Parent = get_hui(), 
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        ResetOnSpawn = false,
+        DisplayOrder = 999,
+        Name = "fff"
+    })
     
-    if playerGui then
-        GUI = Creator.New("ScreenGui", {
-            Parent = playerGui,
-            ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-            ResetOnSpawn = false,
-            DisplayOrder = 999,
-            Name = "FluentGUI"
-        })
-    else
-        -- Запасной вариант
-        GUI = Creator.New("ScreenGui", {
-            Parent = game:GetService("CoreGui"),
-            ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-            ResetOnSpawn = false,
-            DisplayOrder = 999,
-            Name = "FluentGUI"
-        })
-    end
-    
-    -- Обычная защита (только protectgui)
     local ProtectGui = protectgui or (syn and syn.protect_gui) or function() end
     ProtectGui(GUI)
 end
 
 Library.GUI = GUI
-
--- Функция protect (пустая для целевого плейса, обычная для других)
-local ProtectGui = isTargetGame and function() end or (protectgui or (syn and syn.protect_gui) or function() end)
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "KeybindDisplay"
