@@ -2044,8 +2044,10 @@ Library.MiniMessageToRichText = MiniMessageToRichText
 
 local New = Creator.New
 
+local get_hui = gethui or function() return game:GetService("CoreGui") end
+
 local GUI = Creator.New("ScreenGui", {
-    Parent = game:GetService("CoreGui"), 
+    Parent = get_hui(), 
     ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
     ResetOnSpawn = false,
     DisplayOrder = 999
