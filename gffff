@@ -2056,23 +2056,7 @@ local GUI = Creator.New("ScreenGui", {
 Library.GUI = GUI
 
 pcall(function()
-	GUI.Modal = true
-end)
 
-local function blockGameClicks()
-	if GUI.Enabled ~= false and GUI.Parent and GUI.Parent.Parent then
-		UserInputService.InputBegan:Connect(function(input, processed)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-				if GUI.Enabled and GUI.Parent and GUI:IsAncestorOf(LocalPlayer.PlayerGui) then
-					if not processed then
-						input:CaptureController()
-					end
-				end
-			end
-		end)
-	end
-end
-blockGameClicks()
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "Keybinds"
@@ -2081,8 +2065,7 @@ KeybindDisplayContainer.Size = UDim2.new(0, 200, 1, 0)
 KeybindDisplayContainer.Position = UDim2.new(1, -210, 0, 0)
 KeybindDisplayContainer.AnchorPoint = Vector2.new(0, 0)
 KeybindDisplayContainer.Parent = GUI
-KeybindDisplayContainer.Active = true
-KeybindDisplayContainer.Selectable = true
+
 
 local KeybindDisplayList = Instance.new("UIListLayout")
 KeybindDisplayList.SortOrder = Enum.SortOrder.LayoutOrder
