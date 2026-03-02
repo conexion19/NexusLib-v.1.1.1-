@@ -2054,10 +2054,25 @@ local GUI = Creator.New("ScreenGui", {
 	DisplayOrder = 1
 })
 Library.GUI = GUI
--- Block game input when UI is open
+
 pcall(function()
 	GUI.Modal = true
 end)
+
+local function blockGameClicks()
+	if GUI.Enabled ~= false and GUI.Parent and GUI.Parent.Parent then
+		UserInputService.InputBegan:Connect(function(input, processed)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				if GUI.Enabled and GUI.Parent and GUI:IsAncestorOf(LocalPlayer.PlayerGui) then
+					if not processed then
+						input:CaptureController()
+					end
+				end
+			end
+		end)
+	end
+end
+blockGameClicks()
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "Keybinds"
