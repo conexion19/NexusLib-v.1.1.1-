@@ -2044,17 +2044,16 @@ Library.MiniMessageToRichText = MiniMessageToRichText
 
 local New = Creator.New
 
-local get_hui = gethui or function() return game:GetService("CoreGui") end
 
+local playerGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
 local GUI = Creator.New("ScreenGui", {
-    Parent = get_hui(), 
-    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-    ResetOnSpawn = false,
-    DisplayOrder = 999
+	Name = "NexusFluentUI_" .. tostring(math.random(100000,999999)),
+	Parent = playerGui,
+	ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+	ResetOnSpawn = false,
+	DisplayOrder = 999
 })
-
 Library.GUI = GUI
-ProtectGui(GUI)
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "KeybindDisplay"
