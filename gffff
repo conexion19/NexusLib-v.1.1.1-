@@ -2044,22 +2044,23 @@ Library.MiniMessageToRichText = MiniMessageToRichText
 
 local New = Creator.New
 
+local get_hui = gethui or function() return game:GetService("CoreGui") end
 
-local playerGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
 local GUI = Creator.New("ScreenGui", {
-	Name = "MainUI",
-	Parent = playerGui,
-	ZIndexBehavior = Enum.ZIndexBehavior.Global,
-	ResetOnSpawn = true,
-	DisplayOrder = 1
+    Parent = get_hui(), 
+    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+    ResetOnSpawn = false,
+    DisplayOrder = 999
 })
+
 Library.GUI = GUI
+ProtectGui(GUI)
 
 local KeybindDisplayContainer = Instance.new("Frame")
-KeybindDisplayContainer.Name = "Keybinds"
+KeybindDisplayContainer.Name = "KeybindDisplay"
 KeybindDisplayContainer.BackgroundTransparency = 1
-KeybindDisplayContainer.Size = UDim2.new(0, 200, 1, 0)
-KeybindDisplayContainer.Position = UDim2.new(1, -210, 0, 0)
+KeybindDisplayContainer.Size = UDim2.new(0, 250, 1, 0)
+KeybindDisplayContainer.Position = UDim2.new(1, -260, 0, 0)
 KeybindDisplayContainer.AnchorPoint = Vector2.new(0, 0)
 KeybindDisplayContainer.Parent = GUI
 
@@ -2194,7 +2195,7 @@ end
 local viewportPointToWorld, getOffset = unpack({ viewportPointToWorld, getOffset })
 
 local BlurFolder = Instance.new("Folder")
-BlurFolder.Name = "BlurEffects"
+BlurFolder.Name = "FluentBlur"
 do
 	local ws = game:GetService("Workspace")
 	local function attachToCurrentCamera()
@@ -3394,7 +3395,7 @@ Components.Tab = (function()
 					NewSubTab.TransparencyMotor:setGoal(Instant(1))
 				end)
 
-				   -- task.wait() removed for instant tab switch
+				task.wait()
 
 				pcall(function()
 					OldSubTab.XMotor:setGoal(Spring(-Direction * SlideDistance, { frequency = 4, dampingRatio = 0.7 }))
@@ -3572,22 +3573,25 @@ Components.Tab = (function()
 				NewTab.ContainerTransparencyMotor:setGoal(Spring(0, { frequency = 4, dampingRatio = 0.7 }))
 			end)
 
-			   if TabModule.CurrentAnimationTab == Tab and TabModule.Tabs[PreviousTab] then
-				   local OldContainer = TabModule.Tabs[PreviousTab].ContainerAnim
-				   local OldTab = TabModule.Tabs[PreviousTab]
-				   if OldContainer and OldContainer.Parent then
-					   OldContainer.Visible = false
-					   OldContainer.Position = UDim2.fromOffset(0, 0)
-					   OldContainer.GroupTransparency = 0
-				   end
-				   if OldTab and OldTab.ContainerXMotor and OldTab.ContainerTransparencyMotor then
-					   pcall(function()
-						   OldTab.ContainerXMotor:setGoal(Instant(0))
-						   OldTab.ContainerTransparencyMotor:setGoal(Instant(0))
-					   end)
-				   end
-				   TabModule.AnimationTask = nil
-			   end
+			TabModule.AnimationTask = task.spawn(function()
+				task.wait(0.5)
+				if TabModule.CurrentAnimationTab == Tab and TabModule.Tabs[PreviousTab] then
+					local OldContainer = TabModule.Tabs[PreviousTab].ContainerAnim
+					local OldTab = TabModule.Tabs[PreviousTab]
+					if OldContainer and OldContainer.Parent then
+						OldContainer.Visible = false
+						OldContainer.Position = UDim2.fromOffset(0, 0)
+						OldContainer.GroupTransparency = 0
+					end
+					if OldTab and OldTab.ContainerXMotor and OldTab.ContainerTransparencyMotor then
+						pcall(function()
+							OldTab.ContainerXMotor:setGoal(Instant(0))
+							OldTab.ContainerTransparencyMotor:setGoal(Instant(0))
+						end)
+					end
+					TabModule.AnimationTask = nil
+				end
+			end)
 		else
 			for idx, Container in next, TabModule.Containers do
 				if Container then
@@ -8998,6 +9002,7 @@ local SaveManager = {} do
 
 			return true, decoded
 
+
 		end
 
 
@@ -9997,6 +10002,7 @@ Library.CreateWindow = function(self, Config)
 
 
 
+
 		if Icon == "" or Icon == nil then
 
 
@@ -10814,8 +10820,7 @@ end
 
 
 
-
-_G.Nexus = Library
+_G.Fluent = Library
 
 
 
@@ -10994,6 +10999,7 @@ local MinimizeButton = New("TextButton", {
 	})
 
 })
+
 
 
 
