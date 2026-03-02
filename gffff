@@ -2047,19 +2047,19 @@ local New = Creator.New
 
 local playerGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
 local GUI = Creator.New("ScreenGui", {
-	Name = "NexusFluentUI_" .. tostring(math.random(100000,999999)),
+	Name = "MainUI",
 	Parent = playerGui,
-	ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-	ResetOnSpawn = false,
-	DisplayOrder = 999
+	ZIndexBehavior = Enum.ZIndexBehavior.Global,
+	ResetOnSpawn = true,
+	DisplayOrder = 1
 })
 Library.GUI = GUI
 
 local KeybindDisplayContainer = Instance.new("Frame")
-KeybindDisplayContainer.Name = "KeybindDisplay"
+KeybindDisplayContainer.Name = "Keybinds"
 KeybindDisplayContainer.BackgroundTransparency = 1
-KeybindDisplayContainer.Size = UDim2.new(0, 250, 1, 0)
-KeybindDisplayContainer.Position = UDim2.new(1, -260, 0, 0)
+KeybindDisplayContainer.Size = UDim2.new(0, 200, 1, 0)
+KeybindDisplayContainer.Position = UDim2.new(1, -210, 0, 0)
 KeybindDisplayContainer.AnchorPoint = Vector2.new(0, 0)
 KeybindDisplayContainer.Parent = GUI
 
@@ -2194,7 +2194,7 @@ end
 local viewportPointToWorld, getOffset = unpack({ viewportPointToWorld, getOffset })
 
 local BlurFolder = Instance.new("Folder")
-BlurFolder.Name = "FluentBlur"
+BlurFolder.Name = "BlurEffects"
 do
 	local ws = game:GetService("Workspace")
 	local function attachToCurrentCamera()
@@ -10819,7 +10819,8 @@ end
 
 
 
-_G.Fluent = Library
+
+_G.Nexus = Library
 
 
 
