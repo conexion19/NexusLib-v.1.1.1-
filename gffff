@@ -2055,9 +2055,6 @@ local GUI = Creator.New("ScreenGui", {
 })
 Library.GUI = GUI
 
-pcall(function()
-
-
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "Keybinds"
 KeybindDisplayContainer.BackgroundTransparency = 1
@@ -2065,7 +2062,6 @@ KeybindDisplayContainer.Size = UDim2.new(0, 200, 1, 0)
 KeybindDisplayContainer.Position = UDim2.new(1, -210, 0, 0)
 KeybindDisplayContainer.AnchorPoint = Vector2.new(0, 0)
 KeybindDisplayContainer.Parent = GUI
-
 
 local KeybindDisplayList = Instance.new("UIListLayout")
 KeybindDisplayList.SortOrder = Enum.SortOrder.LayoutOrder
@@ -2769,12 +2765,10 @@ Components.Element = (function()
 			Creator.AddSignal(Element.Frame.MouseLeave, function()
 				SetTransparency(Creator.GetThemeProperty("ElementTransparency"))
 			end)
-			Creator.AddSignal(Element.Frame.MouseButton1Down, function(x, y)
-				if typeof(x) == "Instance" and x:IsA("InputObject") then x.UserInputState = Enum.UserInputState.End end
+			Creator.AddSignal(Element.Frame.MouseButton1Down, function()
 				SetTransparency(Creator.GetThemeProperty("ElementTransparency") + Creator.GetThemeProperty("HoverChange"))
 			end)
-			Creator.AddSignal(Element.Frame.MouseButton1Up, function(x, y)
-				if typeof(x) == "Instance" and x:IsA("InputObject") then x.UserInputState = Enum.UserInputState.End end
+			Creator.AddSignal(Element.Frame.MouseButton1Up, function()
 				SetTransparency(Creator.GetThemeProperty("ElementTransparency") - Creator.GetThemeProperty("HoverChange"))
 			end)
 		end
@@ -3042,8 +3036,7 @@ Components.Tab = (function()
 			Tab.SetTransparency(Tab.Selected and 0.89 or 0.92)
 			game:GetService("TweenService"):Create(Tab.Frame, TweenInfo.new(0.3), {BackgroundColor3 = Creator.GetThemeProperty("Tab")}):Play()
 		end)
-		Creator.AddSignal(Tab.Frame.MouseButton1Down, function(x, y)
-			if typeof(x) == "Instance" and x:IsA("InputObject") then x.UserInputState = Enum.UserInputState.End end
+		Creator.AddSignal(Tab.Frame.MouseButton1Down, function()
 			Tab.SetTransparency(0.92)
 		end)
 		Creator.AddSignal(Tab.Frame.MouseButton1Up, function()
@@ -9005,7 +8998,6 @@ local SaveManager = {} do
 
 			return true, decoded
 
-
 		end
 
 
@@ -10001,7 +9993,6 @@ Library.CreateWindow = function(self, Config)
 
 
 		end
-
 
 
 
@@ -11003,7 +10994,6 @@ local MinimizeButton = New("TextButton", {
 	})
 
 })
-
 
 
 
