@@ -2054,6 +2054,10 @@ local GUI = Creator.New("ScreenGui", {
 	DisplayOrder = 1
 })
 Library.GUI = GUI
+-- Block game input when UI is open
+pcall(function()
+	GUI.Modal = true
+end)
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "Keybinds"
@@ -2062,6 +2066,8 @@ KeybindDisplayContainer.Size = UDim2.new(0, 200, 1, 0)
 KeybindDisplayContainer.Position = UDim2.new(1, -210, 0, 0)
 KeybindDisplayContainer.AnchorPoint = Vector2.new(0, 0)
 KeybindDisplayContainer.Parent = GUI
+KeybindDisplayContainer.Active = true
+KeybindDisplayContainer.Selectable = true
 
 local KeybindDisplayList = Instance.new("UIListLayout")
 KeybindDisplayList.SortOrder = Enum.SortOrder.LayoutOrder
@@ -2765,10 +2771,12 @@ Components.Element = (function()
 			Creator.AddSignal(Element.Frame.MouseLeave, function()
 				SetTransparency(Creator.GetThemeProperty("ElementTransparency"))
 			end)
-			Creator.AddSignal(Element.Frame.MouseButton1Down, function()
+			Creator.AddSignal(Element.Frame.MouseButton1Down, function(x, y)
+				if typeof(x) == "Instance" and x:IsA("InputObject") then x.UserInputState = Enum.UserInputState.End end
 				SetTransparency(Creator.GetThemeProperty("ElementTransparency") + Creator.GetThemeProperty("HoverChange"))
 			end)
-			Creator.AddSignal(Element.Frame.MouseButton1Up, function()
+			Creator.AddSignal(Element.Frame.MouseButton1Up, function(x, y)
+				if typeof(x) == "Instance" and x:IsA("InputObject") then x.UserInputState = Enum.UserInputState.End end
 				SetTransparency(Creator.GetThemeProperty("ElementTransparency") - Creator.GetThemeProperty("HoverChange"))
 			end)
 		end
@@ -3036,7 +3044,8 @@ Components.Tab = (function()
 			Tab.SetTransparency(Tab.Selected and 0.89 or 0.92)
 			game:GetService("TweenService"):Create(Tab.Frame, TweenInfo.new(0.3), {BackgroundColor3 = Creator.GetThemeProperty("Tab")}):Play()
 		end)
-		Creator.AddSignal(Tab.Frame.MouseButton1Down, function()
+		Creator.AddSignal(Tab.Frame.MouseButton1Down, function(x, y)
+			if typeof(x) == "Instance" and x:IsA("InputObject") then x.UserInputState = Enum.UserInputState.End end
 			Tab.SetTransparency(0.92)
 		end)
 		Creator.AddSignal(Tab.Frame.MouseButton1Up, function()
