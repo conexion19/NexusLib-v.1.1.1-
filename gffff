@@ -10839,16 +10839,6 @@ end
 
 _G.Fluent = Library
 
--- Export with safe wrapper
-return (function()
-    local success = Library ~= nil and GUI ~= nil
-    if not success then
-        warn("Warning: Fluent Library may not be fully initialized")
-    end
-    return Library, SaveManager, InterfaceManager, Mobile
-end)()
-
-
 
 
 
