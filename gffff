@@ -2046,15 +2046,28 @@ local New = Creator.New
 
 local get_hui = gethui or function() return game:GetService("CoreGui") end
 
-local GUI = Creator.New("ScreenGui", {
-    Parent = get_hui(), 
-    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-    ResetOnSpawn = false,
-    DisplayOrder = 999
-})
+-- Safely create main GUI with error handling
+local GUI
+local guiCreationSuccess = pcall(function()
+    GUI = Creator.New("ScreenGui", {
+        Parent = get_hui(), 
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        ResetOnSpawn = false,
+        DisplayOrder = 10
+    })
+end)
+
+if not guiCreationSuccess or not GUI then
+    warn("Failed to create main GUI - retrying with Instance.new")
+    GUI = Instance.new("ScreenGui")
+    GUI.Parent = pcall(get_hui) and get_hui() or game:GetService("CoreGui")
+    GUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    GUI.ResetOnSpawn = false
+    GUI.DisplayOrder = 10
+end
 
 Library.GUI = GUI
-ProtectGui(GUI)
+if pcall(ProtectGui) then ProtectGui(GUI) end
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "KeybindDisplay"
@@ -3866,7 +3879,7 @@ Components.Notification = (function()
 			AnchorPoint = Vector2.new(1, 1),
 			BackgroundTransparency = 1,
 			Parent = GUI,
-			ZIndex = 2000,
+			ZIndex = 10,
 		}, {
 			New("UIListLayout", {
 				HorizontalAlignment = Enum.HorizontalAlignment.Center,
@@ -5025,7 +5038,7 @@ Window.Root = New("Frame", {
     Size = Window.Size,
     Position = Window.Position,
     Parent = Config.Parent,
-    ZIndex = 100, 
+    ZIndex = 10, 
 }, rootChildren)
 
 		CenterWindow()
@@ -5940,7 +5953,7 @@ local DropdownHolderCanvas = New("Frame", {
     Size = UDim2.fromOffset(170, 300),
     Parent = Library.GUI,
     Visible = false,
-    ZIndex = 1000, 
+    ZIndex = 10, 
 }, {
     DropdownHolderFrame,
     New("UISizeConstraint", {
@@ -7756,7 +7769,11 @@ ElementsTable.Input = (function()
 end)()
 
 local NotificationModule = Components.Notification
-NotificationModule:Init(GUI)
+if NotificationModule and NotificationModule.Init then
+    pcall(function()
+        NotificationModule:Init(GUI)
+    end)
+end
 
 local New = Creator.New
 
@@ -10133,7 +10150,7 @@ function Library:CreateMinimizer(Config)
 	local parentGui = Library.GUI or GUI
 
 
-	if parentGui then parentGui.DisplayOrder = 1000 end
+	if parentGui then parentGui.DisplayOrder = 10 end
 
 
 	local isMobile = Mobile and true or false
@@ -10329,7 +10346,7 @@ function Library:CreateMinimizer(Config)
 			BackgroundTransparency = 1,
 
 
-			ZIndex = 999999999,
+			ZIndex = 10,
 
 
 			Visible = (Config.Visible ~= false),
@@ -10357,7 +10374,7 @@ function Library:CreateMinimizer(Config)
 			BackgroundTransparency = 1,
 
 
-			ZIndex = 999999999,
+			ZIndex = 10,
 
 
 			Visible = (Config.Visible ~= false),
@@ -10821,6 +10838,15 @@ end
 
 
 _G.Fluent = Library
+
+-- Export with safe wrapper
+return (function()
+    local success = Library ~= nil and GUI ~= nil
+    if not success then
+        warn("Warning: Fluent Library may not be fully initialized")
+    end
+    return Library, SaveManager, InterfaceManager, Mobile
+end)()
 
 
 
@@ -11352,9 +11378,11 @@ AddSignal(MinimizeButton.MouseButton1Click, function()
 
 
 	if not isDragging then
-
-		Library.Window:Minimize()
-
+		if Library.Window and Library.Window.Minimize then
+			pcall(function()
+				Library.Window:Minimize()
+			end)
+		end
 	end
 
 
@@ -11554,30 +11582,34 @@ function Library:AddSnowfallToWindow(Config)
 end
 
 if RunService:IsStudio() then task.wait(0.01) end
-task.spawn(function()
-	local hue = 0
-	RunService.Heartbeat:Connect(function(dt)
-		if Library.Theme == "RGB" then
-			hue = hue + dt * 0.1
-			if hue > 1 then hue = 0 end
-			local rgbColor = Color3.fromHSV(hue, 0.8, 1)
-			local rgbColor2 = Color3.fromHSV((hue + 0.5) % 1, 0.8, 1)
-			local theme = Themes["RGB"]
-			if theme then
-				theme.Accent = rgbColor
-				theme.TitleBarLine = rgbColor
-				theme.Tab = rgbColor 
-				theme.ElementBorder = rgbColor
-				theme.ToggleToggled = rgbColor
-				theme.SliderRail = rgbColor
-				theme.DropdownFrame = rgbColor
-				theme.InputIndicatorFocus = rgbColor
-				theme.Text = Color3.new(1,1,1)
-				if Library.Window then
-					Library:SetTheme("Slate") 
+
+local initSuccess = pcall(function()
+	task.spawn(function()
+		local hue = 0
+		RunService.Heartbeat:Connect(function(dt)
+			if Library.Theme == "RGB" then
+				hue = hue + dt * 0.1
+				if hue > 1 then hue = 0 end
+				local rgbColor = Color3.fromHSV(hue, 0.8, 1)
+				local rgbColor2 = Color3.fromHSV((hue + 0.5) % 1, 0.8, 1)
+				local theme = Themes["RGB"]
+				if theme then
+					theme.Accent = rgbColor
+					theme.TitleBarLine = rgbColor
+					theme.Tab = rgbColor 
+					theme.ElementBorder = rgbColor
+					theme.ToggleToggled = rgbColor
+					theme.SliderRail = rgbColor
+					theme.DropdownFrame = rgbColor
+					theme.InputIndicatorFocus = rgbColor
+					theme.Text = Color3.new(1,1,1)
+					if Library.Window then
+						Library:SetTheme("Slate") 
+					end
 				end
 			end
-		end
+		end)
 	end)
 end)
+
 return Library, SaveManager, InterfaceManager, Mobile
