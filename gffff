@@ -1,3 +1,4 @@
+local Library = (function()
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -11581,3 +11582,14 @@ task.spawn(function()
 	end)
 end)
 return Library, SaveManager, InterfaceManager, Mobile
+end)() 
+local Window = Library:CreateWindow({
+    Title = "Test",
+    SubTitle = "test",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Acrylic = false,
+    Theme = "Slate",
+})
+
+local Tab = Window:AddTab({ Title = "Main" })
