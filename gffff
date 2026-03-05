@@ -1,13 +1,3 @@
-
---[[
-	Nexus Library usage recommendation:
-	For correct method calls, always do:
-		local Fluent = Library
-	or
-		setmetatable(Fluent, {__index = Library})
-	This ensures :CreateWindow() and other methods work as expected.
-]]
-
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -17,6 +7,8 @@ local TextService = game:GetService("TextService")
 local Camera = game:GetService("Workspace").CurrentCamera
 local Mouse = LocalPlayer:GetMouse()
 local httpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 local Mobile = not RunService:IsStudio() and table.find({Enum.Platform.IOS, Enum.Platform.Android}, UserInputService:GetPlatform()) ~= nil
 
@@ -27,7 +19,6 @@ if game.GameId == 5750914919 then
 end
 
 local RenderStepped = RunService.RenderStepped
-
 
 local ProtectGui = protectgui or (syn and syn.protect_gui) or function() end
 
@@ -892,13 +883,6 @@ local Themes = {
 
 }
 
--- Force all theme element transparencies to zero so no GUI element starts semi‑opaque.
-for _, theme in pairs(Themes) do
-	if type(theme) == "table" then
-		theme.ElementTransparency = 0
-	end
-end
-
 local Library = {
 	Version = "1.2.2",
 
@@ -920,31 +904,6 @@ local Library = {
 	MinimizeKeybind = nil,
 	MinimizeKey = Enum.KeyCode.LeftControl,
 }
-
--- global flag to disable any transparency being created or left on GUI objects
-Library.ForceNoTransparency = true
-if Library.ForceNoTransparency then
-	local function makeOpaque(obj)
-		if obj:IsA("GuiObject") then
-			if obj.BackgroundTransparency ~= nil then obj.BackgroundTransparency = 0 end
-			if obj.BorderTransparency ~= nil then obj.BorderTransparency = 0 end
-			if obj.ImageTransparency ~= nil then obj.ImageTransparency = 0 end
-			if obj.TextTransparency ~= nil then obj.TextTransparency = 0 end
-			if obj.TextStrokeTransparency ~= nil then obj.TextStrokeTransparency = 0 end
-			if obj.FillTransparency ~= nil then obj.FillTransparency = 0 end
-			if obj.OutlineTransparency ~= nil then obj.OutlineTransparency = 0 end
-			if obj.Transparency ~= nil then obj.Transparency = 0 end
-		end
-		for _, child in ipairs(obj:GetChildren()) do
-			makeOpaque(child)
-		end
-	end
-	RunService.RenderStepped:Connect(function()
-		if Library.Window and Library.Window.Root then
-			makeOpaque(Library.Window.Root)
-		end
-	end)
-end
 
 local LanguageManager = {
 	CurrentLanguage = "English",
@@ -2033,20 +1992,6 @@ function Creator.New(Name, Properties, Children)
 			Object[Name] = Value
 		end
 	end
-
-	-- immediately clear any transparency on newly created GUI objects
-	if Library.ForceNoTransparency and Object:IsA("GuiObject") then
-		Object.BackgroundTransparency = 0
-		Object.BorderTransparency = 0
-		Object.ImageTransparency = 0
-		if Object:IsA("TextLabel") or Object:IsA("TextBox") then
-			Object.TextTransparency = 0
-			Object.TextStrokeTransparency = 0
-		end
-		if Object.FillTransparency ~= nil then Object.FillTransparency = 0 end
-		if Object.OutlineTransparency ~= nil then Object.OutlineTransparency = 0 end
-		if Object.Transparency ~= nil then Object.Transparency = 0 end
-	end
 	
 	if originalText and type(originalText) == "string" and originalText:match("<[^>]+>") then
 		Object.Text = MiniMessageToRichText(originalText)
@@ -2121,9 +2066,8 @@ if not guiCreationSuccess or not GUI then
     GUI.DisplayOrder = 10
 end
 
-
 Library.GUI = GUI
-if type(ProtectGui) == "function" then pcall(ProtectGui, GUI) end
+if pcall(ProtectGui) then ProtectGui(GUI) end
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "KeybindDisplay"
@@ -5022,11 +4966,16 @@ Window.ContainerCanvas = New("Frame", {
     Window.ContainerHolder
 })
 
-		-- force opaque backgrounds
-		local backgroundTransparency = 0
+		local backgroundTransparency = Config.BackgroundTransparency
+		if backgroundTransparency == nil then
+			backgroundTransparency = 0.5
+		end
 		Window.BackgroundTransparency = backgroundTransparency
 
-		local backgroundImageTransparency = 0
+		local backgroundImageTransparency = Config.BackgroundImageTransparency
+		if backgroundImageTransparency == nil then
+			backgroundImageTransparency = backgroundTransparency
+		end
 		Window.BackgroundImageTransparency = backgroundImageTransparency
 
 		local rootChildren = {}
@@ -5482,13 +5431,14 @@ Window.Root = New("Frame", {
 
 		function Window:SetBackgroundImage(imageUrl, imageTransparency)
 			if not Window.BackgroundImage then
+				local imgTransparency = imageTransparency or Window.BackgroundImageTransparency or Window.BackgroundTransparency or 0.5
 				local BackgroundImageFrame = New("ImageLabel", {
 					Name = "BackgroundImage",
 					Size = UDim2.fromScale(1, 1),
 					Position = UDim2.fromOffset(0, 0),
 					BackgroundTransparency = 1,
 					Image = imageUrl,
-					ImageTransparency = 0,
+					ImageTransparency = math.max(0, math.min(1, imgTransparency)),
 					ZIndex = 0,
 					ScaleType = Enum.ScaleType.Stretch,
 					Parent = Window.Root,
@@ -5498,17 +5448,22 @@ Window.Root = New("Frame", {
 					}),
 				})
 				Window.BackgroundImage = BackgroundImageFrame
-				Window.BackgroundImageTransparency = 0
+				if imageTransparency ~= nil then
+					Window.BackgroundImageTransparency = imageTransparency
+				end
 			else
 				Window.BackgroundImage.Image = imageUrl
 				Window.BackgroundImage.ScaleType = Enum.ScaleType.Stretch
-				Window.BackgroundImageTransparency = 0
-				Window.BackgroundImage.ImageTransparency = 0
+				if imageTransparency ~= nil then
+					Window.BackgroundImageTransparency = imageTransparency
+					Window.BackgroundImage.ImageTransparency = math.max(0, math.min(1, imageTransparency))
+				end
 			end
 		end
 
 		function Window:SetBackgroundTransparency(transparency)
-			Window.BackgroundTransparency = 0
+			transparency = transparency or 0.5
+			Window.BackgroundTransparency = transparency
 		end
 
 		function Window:SetBackgroundImageTransparency(transparency)
@@ -5547,20 +5502,6 @@ Window.Root = New("Frame", {
 						Window.AcrylicPaint.Model.Transparency = 0.98
 					end
 				end
-			end
-		end
-
-		-- override background image transparency setter to always opaque
-		function Window:SetBackgroundImageTransparency(transparency)
-			Window.BackgroundImageTransparency = 0
-			if Window.BackgroundImage then
-				Window.BackgroundImage.ImageTransparency = 0
-			end
-			if Window.AcrylicPaint and Window.AcrylicPaint.Frame then
-				if Window.AcrylicPaint.Model then
-					Window.AcrylicPaint.Model.Transparency = 0
-				end
-				Window.AcrylicPaint.Frame.BackgroundTransparency = 0
 			end
 		end
 
@@ -6674,22 +6615,11 @@ ElementsTable.Slider = (function()
 
 	function Element:New(Idx, Config)
 		assert(Config.Title, "Slider - Missing Title.")
-	if Config.Default == nil then
-		warn("Slider - Missing default value; using min as default")
-		Config.Default = Config.Min or 0
-	end
-	if Config.Min == nil then
-		warn("Slider - Missing minimum value; defaulting to 0")
-		Config.Min = 0
-	end
-	if Config.Max == nil then
-		warn("Slider - Missing maximum value; defaulting to 1")
-		Config.Max = 1
-	end
-	if Config.Rounding == nil then
-		warn("Slider - Missing rounding value; defaulting to 0")
-		Config.Rounding = 0
-	end
+		assert(Config.Default, "Slider - Missing default value.")
+		assert(Config.Min, "Slider - Missing minimum value.")
+		assert(Config.Max, "Slider - Missing maximum value.")
+		assert(Config.Rounding, "Slider - Missing rounding value.")
+
 		local Slider = {
 			Value = nil,
 			Min = Config.Min,
@@ -7042,10 +6972,8 @@ ElementsTable.Keybind = (function()
 
 	function Element:New(Idx, Config)
 		assert(Config.Title, "KeyBind - Missing Title")
-	if Config.Default == nil then
-		warn("KeyBind - Missing default value; using 'None' fallback")
-		Config.Default = "None"
-	end
+		assert(Config.Default, "KeyBind - Missing default value.")
+
 		local Keybind = {
 			Value = Config.Default,
 			Toggled = Config.Toggled or false,
@@ -7263,10 +7191,8 @@ ElementsTable.Colorpicker = (function()
 
 	function Element:New(Idx, Config)
 		assert(Config.Title, "Colorpicker - Missing Title")
-	if Config.Default == nil then
-		warn("Colorpicker - Missing default value; using white #ffffff")
-		Config.Default = Color3.new(1,1,1)
-	end
+		assert(Config.Default, "AddColorPicker: Missing default value.")
+
 		local Colorpicker = {
 			Value = Config.Default,
 			Transparency = Config.Transparency or 0,
@@ -7768,9 +7694,6 @@ ElementsTable.Input = (function()
 
 	function Element:New(Idx, Config)
 		assert(Config.Title, "Input - Missing Title")
-	if Config.Default == nil then
-		Config.Default = ""
-	end
 		Config.Callback = Config.Callback or function() end
 
 		local Input = {
@@ -10029,13 +9952,14 @@ end
 end
 
 
-
 Library.CreateWindow = function(self, Config)
+
 	assert(Config.Title, "Window - Missing Title")
+
 	if Library.Window then
 		-- log suppressed to keep library load less conspicuous
 		-- print("You cannot create more than one window.")
-		return Library.Window
+		return
 	end
 
 	Library.MinimizeKey = Config.MinimizeKey or Enum.KeyCode.LeftControl
@@ -10743,24 +10667,14 @@ end
 
 
 function Library:ToggleAcrylic(Value)
-
-
-	if Library.Window then
-
-
-		if Library.UseAcrylic then
-
-
-			Library.Acrylic = Value
-
-
-			if Library.Window.AcrylicPaint and Library.Window.AcrylicPaint.Model then
-
-
-				Library.Window.AcrylicPaint.Model.Transparency = Value and 0.95 or 1
-
-
-			end
+    -- acrylic feature disabled to avoid any see-through effects
+    if Library.Window then
+        -- ensure acrylic flag stays off
+        Library.Acrylic = false
+        if Library.Window.AcrylicPaint and Library.Window.AcrylicPaint.Model then
+            Library.Window.AcrylicPaint.Model.Transparency = 1
+        end
+    end
 
 
 		end
@@ -10775,9 +10689,10 @@ end
 
 
 
+-- Override to keep interface fully opaque regardless of requests
 function Library:ToggleTransparency(Value)
-    -- transparency is disabled; always ensure background is opaque
-    if Library.Window and Library.Window.AcrylicPaint and Library.Window.AcrylicPaint.Frame and Library.Window.AcrylicPaint.Frame.Background then
+    if Library.Window then
+        -- ignore incoming value, always set 0 transparency
         Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = 0
     end
 end
@@ -10785,11 +10700,15 @@ end
 
 function Library:SetWindowTransparency(Value)
 
+    if Library.Window and Library.UseAcrylic then
+        -- disable any transparency changes; keep window fully opaque
+        Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = 0
+        Library.NotificationTransparency = 0
+        return
+    end
 
-	if Library.Window and Library.UseAcrylic then
-
-
-		Value = math.clamp(Value, 0, 3)
+    if Library.Window and Library.UseAcrylic then
+        Value = math.clamp(Value, 0, 3)
 
 
 
@@ -11066,7 +10985,9 @@ local MinimizeButton = New("TextButton", {
 
 
 		ImageTransparency = 0.1,
+
 	}, {
+
 		New("UIAspectRatioConstraint", {
 
 
