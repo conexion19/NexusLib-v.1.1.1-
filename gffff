@@ -10668,24 +10668,14 @@ end
 
 
 function Library:ToggleAcrylic(Value)
-
-
-	if Library.Window then
-
-
-		if Library.UseAcrylic then
-
-
-			Library.Acrylic = Value
-
-
-			if Library.Window.AcrylicPaint and Library.Window.AcrylicPaint.Model then
-
-
-				Library.Window.AcrylicPaint.Model.Transparency = Value and 0.95 or 1
-
-
-			end
+    -- acrylic feature disabled to avoid any see-through effects
+    if Library.Window then
+        -- ensure acrylic flag stays off
+        Library.Acrylic = false
+        if Library.Window.AcrylicPaint and Library.Window.AcrylicPaint.Model then
+            Library.Window.AcrylicPaint.Model.Transparency = 1
+        end
+    end
 
 
 		end
@@ -10700,28 +10690,26 @@ end
 
 
 
+-- Override to keep interface fully opaque regardless of requests
 function Library:ToggleTransparency(Value)
-
-
-	if Library.Window then
-
-
-		Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = Value and 0.35 or 0
-
-
-	end
-
-
+    if Library.Window then
+        -- ignore incoming value, always set 0 transparency
+        Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = 0
+    end
 end
 
 
 function Library:SetWindowTransparency(Value)
 
+    if Library.Window and Library.UseAcrylic then
+        -- disable any transparency changes; keep window fully opaque
+        Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = 0
+        Library.NotificationTransparency = 0
+        return
+    end
 
-	if Library.Window and Library.UseAcrylic then
-
-
-		Value = math.clamp(Value, 0, 3)
+    if Library.Window and Library.UseAcrylic then
+        Value = math.clamp(Value, 0, 3)
 
 
 
