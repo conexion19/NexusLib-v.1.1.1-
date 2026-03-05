@@ -2046,28 +2046,30 @@ local New = Creator.New
 
 local get_hui = gethui or function() return game:GetService("CoreGui") end
 
--- Safely create main GUI with error handling
 local GUI
 local guiCreationSuccess = pcall(function()
     GUI = Creator.New("ScreenGui", {
-        Parent = get_hui(), 
+        Parent = LocalPlayer:FindFirstChild("PlayerGui") or game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"),
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
         ResetOnSpawn = false,
-        DisplayOrder = 10
+        DisplayOrder = 10,
+        Name = game:GetService("HttpService"):GenerateGUID(false)
     })
 end)
 
 if not guiCreationSuccess or not GUI then
-    warn("Failed to create main GUI - retrying with Instance.new")
     GUI = Instance.new("ScreenGui")
-    GUI.Parent = pcall(get_hui) and get_hui() or game:GetService("CoreGui")
+    GUI.Parent = LocalPlayer:FindFirstChild("PlayerGui") or game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
     GUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     GUI.ResetOnSpawn = false
     GUI.DisplayOrder = 10
+    GUI.Name = game:GetService("HttpService"):GenerateGUID(false)
 end
 
-Library.GUI = GUI
 if pcall(ProtectGui) then ProtectGui(GUI) end
+
+Library.GUI = GUI
+Library.HiddenParent = GUI
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "KeybindDisplay"
@@ -3888,6 +3890,7 @@ Components.Notification = (function()
 				Padding = UDim.new(0, 20),
 			}),
 		})
+		Library.NotificationHolder = Notification.Holder
 	end
 
 	function Notification:New(Config)
@@ -5362,6 +5365,17 @@ Window.Root = New("Frame", {
 		function Window:Minimize()
 			Window.Minimized = not Window.Minimized
 			Window.Root.Visible = not Window.Minimized
+			
+			if Library.GUI and Library.GUI.Parent then
+				if Window.Minimized then
+					Library.GUI.Parent = nil
+				else
+					local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
+					if playerGui and Library.GUI.Parent == nil then
+						Library.GUI.Parent = playerGui
+					end
+				end
+			end
 
 			if game.GameId == 93978595733734 and InterfaceManager.Settings.AutoCursorUnlock then
 				pcall(function()
