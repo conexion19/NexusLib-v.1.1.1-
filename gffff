@@ -903,6 +903,7 @@ local Library = {
 	Transparency = false,
 	MinimizeKeybind = nil,
 	MinimizeKey = Enum.KeyCode.LeftControl,
+	Connections = {},
 }
 
 local LanguageManager = {
@@ -2073,10 +2074,43 @@ Library.HiddenParent = GUI
 Library.GUIStoredParent = get_hui()
 Library.GUIHidden = false
 Library.GUIDisplayOrder = 999
+Library.MinimizeTogglePending = false
+Library.LastMinimizeTime = 0
+Library.MinimizeDebounce = 0.2
 
 local HiddenStorage = Instance.new("Folder")
 HiddenStorage.Name = game:GetService("HttpService"):GenerateGUID(false)
 Library.HiddenStorage = HiddenStorage
+
+local GlobalMinimizeHandler = RunService.InputBegan:Connect(function(Input, gameProcessedEvent)
+	if Input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+	
+	local now = tick()
+	if now - Library.LastMinimizeTime < Library.MinimizeDebounce then return end
+	
+	local shouldMinimize = false
+	
+	if type(Library.MinimizeKeybind) == "table" and Library.MinimizeKeybind.Type == "Keybind" then
+		if Input.KeyCode == Library.MinimizeKeybind.Value then
+			shouldMinimize = true
+		end
+	elseif type(Library.MinimizeKey) == "userdata" then
+		if Input.KeyCode == Library.MinimizeKey then
+			shouldMinimize = true
+		end
+	end
+	
+	if shouldMinimize and Library.Window then
+		Library.LastMinimizeTime = now
+		task.defer(function()
+			if Library.Window and Library.Window.Minimize then
+				Library.Window:Minimize()
+			end
+		end)
+	end
+end)
+
+table.insert(Library.Connections or {}, GlobalMinimizeHandler)
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "KeybindDisplay"
@@ -5339,32 +5373,6 @@ Window.Root = New("Frame", {
 			end
 		end)
 
-		Creator.AddSignal(UserInputService.InputBegan, function(Input, gameProcessedEvent)
-			-- Don't return on gameProcessedEvent for minimize key - needs to work globally
-			-- Only proceed if it's a keyboard input
-			if Input.UserInputType ~= Enum.UserInputType.Keyboard then return end
-			
-			local shouldMinimize = false
-			
-			if type(Library.MinimizeKeybind) == "table" and Library.MinimizeKeybind.Type == "Keybind" then
-				-- Compare KeyCode enums properly
-				if Input.KeyCode == Library.MinimizeKeybind.Value then
-					shouldMinimize = true
-				end
-			elseif type(Library.MinimizeKey) == "userdata" then
-				-- Direct enum comparison is most reliable
-				if Input.KeyCode == Library.MinimizeKey then
-					shouldMinimize = true
-				end
-			end
-			
-			if shouldMinimize then
-				Window:Minimize()
-			end
-		end)
-
-		function Window:ToggleSearch()
-			Window.ShowSearch = not Window.ShowSearch
 			SearchFrame.Visible = Window.ShowSearch
 			local topOffset = Window.TopOffset or 25
 			local searchOffset = Window.HasImage and (Window.ImageSize + 10 + topOffset) or topOffset
@@ -5391,6 +5399,8 @@ Window.Root = New("Frame", {
 				Library.GUI.Parent = Library.GUIStoredParent
 				Library.GUI.DisplayOrder = Library.GUIDisplayOrder
 			end
+
+			Library.MinimizeTogglePending = true
 
 			if game.GameId == 93978595733734 and InterfaceManager.Settings.AutoCursorUnlock then
 				pcall(function()
