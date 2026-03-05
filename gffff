@@ -2053,7 +2053,8 @@ local guiCreationSuccess = pcall(function()
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
         ResetOnSpawn = false,
         DisplayOrder = 999,
-        Name = game:GetService("HttpService"):GenerateGUID(false)
+        Name = game:GetService("HttpService"):GenerateGUID(false),
+        ClipsDescendants = false
     })
 end)
 
@@ -2064,6 +2065,7 @@ if not guiCreationSuccess or not GUI then
     GUI.ResetOnSpawn = false
     GUI.DisplayOrder = 999
     GUI.Name = game:GetService("HttpService"):GenerateGUID(false)
+    GUI.ClipsDescendants = false
 end
 
 if pcall(ProtectGui) then ProtectGui(GUI) end
@@ -2071,6 +2073,12 @@ if pcall(ProtectGui) then ProtectGui(GUI) end
 Library.GUI = GUI
 Library.HiddenParent = GUI
 Library.GUIStoredParent = get_hui()
+Library.GUIHidden = false
+Library.GUIDisplayOrder = 999
+
+local HiddenStorage = Instance.new("Folder")
+HiddenStorage.Name = game:GetService("HttpService"):GenerateGUID(false)
+Library.HiddenStorage = HiddenStorage
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "KeybindDisplay"
@@ -5377,10 +5385,13 @@ Window.Root = New("Frame", {
 			Window.Minimized = not Window.Minimized
 			Window.Root.Visible = not Window.Minimized
 			
+			Library.GUIHidden = Window.Minimized
 			if Window.Minimized then
-				Library.GUI.Parent = nil
+				Library.GUI.Parent = Library.HiddenStorage
+				Library.GUI.DisplayOrder = -999
 			else
 				Library.GUI.Parent = Library.GUIStoredParent
+				Library.GUI.DisplayOrder = Library.GUIDisplayOrder
 			end
 
 			if game.GameId == 93978595733734 and InterfaceManager.Settings.AutoCursorUnlock then
