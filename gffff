@@ -2046,28 +2046,31 @@ local New = Creator.New
 
 local get_hui = gethui or function() return game:GetService("CoreGui") end
 
--- Safely create main GUI with error handling
 local GUI
 local guiCreationSuccess = pcall(function()
     GUI = Creator.New("ScreenGui", {
-        Parent = get_hui(), 
+        Parent = get_hui(),
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
         ResetOnSpawn = false,
-        DisplayOrder = 10
+        DisplayOrder = 999,
+        Name = game:GetService("HttpService"):GenerateGUID(false)
     })
 end)
 
 if not guiCreationSuccess or not GUI then
-    warn("Failed to create main GUI - retrying with Instance.new")
     GUI = Instance.new("ScreenGui")
-    GUI.Parent = pcall(get_hui) and get_hui() or game:GetService("CoreGui")
+    GUI.Parent = get_hui()
     GUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     GUI.ResetOnSpawn = false
-    GUI.DisplayOrder = 10
+    GUI.DisplayOrder = 999
+    GUI.Name = game:GetService("HttpService"):GenerateGUID(false)
 end
 
-Library.GUI = GUI
 if pcall(ProtectGui) then ProtectGui(GUI) end
+
+Library.GUI = GUI
+Library.HiddenParent = GUI
+Library.GUIStoredParent = get_hui()
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "KeybindDisplay"
@@ -3888,6 +3891,7 @@ Components.Notification = (function()
 				Padding = UDim.new(0, 20),
 			}),
 		})
+		Library.NotificationHolder = Notification.Holder
 	end
 
 	function Notification:New(Config)
@@ -5330,15 +5334,25 @@ Window.Root = New("Frame", {
 		end)
 
 		Creator.AddSignal(UserInputService.InputBegan, function(Input, gameProcessedEvent)
-			if gameProcessedEvent then return end
-			if
-				type(Library.MinimizeKeybind) == "table"
-				and Library.MinimizeKeybind.Type == "Keybind"
-			then
-				if Input.KeyCode.Name == Library.MinimizeKeybind.Value then
-					Window:Minimize()
+			-- Don't return on gameProcessedEvent for minimize key - needs to work globally
+			-- Only proceed if it's a keyboard input
+			if Input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+			
+			local shouldMinimize = false
+			
+			if type(Library.MinimizeKeybind) == "table" and Library.MinimizeKeybind.Type == "Keybind" then
+				-- Compare KeyCode enums properly
+				if Input.KeyCode == Library.MinimizeKeybind.Value then
+					shouldMinimize = true
 				end
-			elseif Input.KeyCode == Library.MinimizeKey then
+			elseif type(Library.MinimizeKey) == "userdata" then
+				-- Direct enum comparison is most reliable
+				if Input.KeyCode == Library.MinimizeKey then
+					shouldMinimize = true
+				end
+			end
+			
+			if shouldMinimize then
 				Window:Minimize()
 			end
 		end)
@@ -5362,6 +5376,12 @@ Window.Root = New("Frame", {
 		function Window:Minimize()
 			Window.Minimized = not Window.Minimized
 			Window.Root.Visible = not Window.Minimized
+			
+			if Window.Minimized then
+				Library.GUI.Parent = nil
+			else
+				Library.GUI.Parent = Library.GUIStoredParent
+			end
 
 			if game.GameId == 93978595733734 and InterfaceManager.Settings.AutoCursorUnlock then
 				pcall(function()
@@ -10998,6 +11018,7 @@ local MinimizeButton = New("TextButton", {
 		ImageTransparency = 0.1,
 
 	}, {
+
 
 		New("UIAspectRatioConstraint", {
 
