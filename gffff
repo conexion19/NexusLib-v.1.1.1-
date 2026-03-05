@@ -1,3 +1,8 @@
+-- compatibility stub: some remote/minified builds refer to hm1value as a function
+if type(hm1value) ~= "function" then
+    hm1value = function() end
+end
+
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
