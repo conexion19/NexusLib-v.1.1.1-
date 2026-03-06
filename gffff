@@ -1534,10 +1534,7 @@ local function setupMiniMessageSupport(object, properties)
 		end
 		
 		if text:match("<[^>]+>") then
-		local hasMiniMessagePattern = 
-			text:match("<%w+>") or
-			text:match("<color:") or
-			text:match("<#[%x%x%x%x%x%x]>") or
+		local hasMiniMessagePattern = text:match("<%w+>") or text:match("<color:") or text:match("<#[%x%x%x%x%x%x]>") or
 			text:match("<gradient:") or
 			text:match("<reset>") or
 			text:match("<obfuscated>") or
@@ -3452,8 +3449,7 @@ Components.Dialog = (function()
 
 			for _, Btn in next, NewDialog.ButtonHolder:GetChildren() do
 				if Btn:IsA("TextButton") then
-					Btn.Size =
-						UDim2.new(1 / NewDialog.Buttons, -(((NewDialog.Buttons - 1) * 10) / NewDialog.Buttons), 0, 32)
+					Btn.Size = UDim2.new(1 / NewDialog.Buttons, -(((NewDialog.Buttons - 1) * 10) / NewDialog.Buttons), 0, 32)
 				end
 			end
 
@@ -4909,8 +4905,7 @@ Window.Root = New("Frame", {
 				local StartSize = Window.Size
 
 				local TargetSize = Vector3.new(StartSize.X.Offset, StartSize.Y.Offset, 0) + Vector3.new(1, 1, 0) * Delta
-				local TargetSizeClamped =
-					Vector2.new(math.clamp(TargetSize.X, 470, 2048), math.clamp(TargetSize.Y, 380, 2048))
+				local TargetSizeClamped = Vector2.new(math.clamp(TargetSize.X, 470, 2048), math.clamp(TargetSize.Y, 380, 2048))
 
 				SizeMotor:setGoal({
 					X = Flipper.Instant.new(TargetSizeClamped.X),
@@ -7130,8 +7125,7 @@ ElementsTable.Colorpicker = (function()
 			Creator.AddSignal(GreenInput.Input.FocusLost, function(Enter)
 				if Enter then
 					local CurrentColor = GetRGB()
-					local Success, Result =
-						pcall(Color3.fromRGB, CurrentColor["R"], GreenInput.Input.Text, CurrentColor["B"])
+					local Success, Result = pcall(Color3.fromRGB, CurrentColor["R"], GreenInput.Input.Text, CurrentColor["B"])
 					if Success and typeof(Result) == "Color3" then
 						if tonumber(GreenInput.Input.Text) <= 255 then
 							Hue, Sat, Vib = Color3.toHSV(Result)
@@ -7144,8 +7138,7 @@ ElementsTable.Colorpicker = (function()
 			Creator.AddSignal(BlueInput.Input.FocusLost, function(Enter)
 				if Enter then
 					local CurrentColor = GetRGB()
-					local Success, Result =
-						pcall(Color3.fromRGB, CurrentColor["R"], CurrentColor["G"], BlueInput.Input.Text)
+					local Success, Result = pcall(Color3.fromRGB, CurrentColor["R"], CurrentColor["G"], BlueInput.Input.Text)
 					if Success and typeof(Result) == "Color3" then
 						if tonumber(BlueInput.Input.Text) <= 255 then
 							Hue, Sat, Vib = Color3.toHSV(Result)
