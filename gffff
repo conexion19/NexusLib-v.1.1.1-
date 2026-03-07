@@ -33,15 +33,15 @@ if _chk() then
 end
 
 -- === ОСНОВНЫЕ СЕРВИСЫ (ЛОКАЛИЗИРОВАНЫ) ===
-local _l = game:GetService("Lighting")
-local _rs = game:GetService("RunService")
-local _p = game:GetService("Players").LocalPlayer or game:GetService("Players"):WaitForChild("LocalPlayer")
-local _uis = game:GetService("UserInputService")
-local _ts = game:GetService("TweenService")
-local _txs = game:GetService("TextService")
-local _cam = game:GetService("Workspace").CurrentCamera
+local _l = game:GetService("Lighting") or error("Lighting service failed")
+local _rs = game:GetService("RunService") or error("RunService failed")
+local _p = game:GetService("Players").LocalPlayer or game:GetService("Players"):WaitForChild("LocalPlayer", 5) or error("LocalPlayer not found")
+local _uis = game:GetService("UserInputService") or error("UserInputService failed")
+local _ts = game:GetService("TweenService") or error("TweenService failed")
+local _txs = game:GetService("TextService") or error("TextService failed")
+local _cam = (game:GetService("Workspace") and game:GetService("Workspace").CurrentCamera) or error("Camera not found")
 local _m = (_p and _p:GetMouse()) or (function() return {Hit = CFrame.new(), X = 0, Y = 0} end)()
-local _h = game:GetService("HttpService")
+local _h = game:GetService("HttpService") or error("HttpService failed")
 
 -- === МОБИЛЬНАЯ ПЛАТФОРМА ===
 local _mobile = (not _rs:IsStudio() and (_uis:GetPlatform() == Enum.Platform.IOS or _uis:GetPlatform() == Enum.Platform.Android)) or false
@@ -50,25 +50,31 @@ local _mobile = (not _rs:IsStudio() and (_uis:GetPlatform() == Enum.Platform.IOS
 local _g = (function()
     if _rs:IsStudio() then
         local _st = game:GetService("StarterGui")
-        return _st
+        return _st or game:GetService("CoreGui")
     end
     local _f, _gf = pcall(function() return gethui() end)
-    if _f then return _gf end
-    return game:FindFirstChild("CoreGui") or game:GetService("StarterGui")
+    if _f and _gf then return _gf end
+    local _cg = game:FindFirstChild("CoreGui")
+    if _cg then return _cg end
+    return game:GetService("StarterGui")
 end)()
 
 -- === ЗАЩИТА GUI ===
 local _pg = (function()
     if type(syn) == "table" and type(syn.protect_gui) == "function" then
-        return syn.protect_gui
+        return function(x) 
+            return pcall(syn.protect_gui, x) and x or x
+        end
     end
     if type(protectgui) == "function" then
-        return protectgui
+        return function(x)
+            return pcall(protectgui, x) and x or x
+        end
     end
     return function(x) 
         pcall(function() 
-            x.IgnoreGuiInset = true
-            if x:IsA("ScreenGui") then
+            if x and x:IsA("ScreenGui") then
+                x.IgnoreGuiInset = true
                 x.ResetOnSpawn = false
             end
         end)
@@ -1148,13 +1154,26 @@ local _u = {
 _u.__index = _u
 
 -- === ГЛАВНЫЙ GUI КОНТЕЙНЕР ===
-local _gui = _c.New("ScreenGui", {
-    Parent = _g,
-    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-    ResetOnSpawn = false,
-    DisplayOrder = 999
-})
-_pg(_gui)
+local _gui = nil
+pcall(function()
+    _gui = _c.New("ScreenGui", {
+        Parent = _g,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        ResetOnSpawn = false,
+        DisplayOrder = 999
+    })
+    if type(_pg) == "function" then
+        _pg(_gui)
+    end
+end)
+
+if not _gui then
+    _gui = Instance.new("ScreenGui")
+    _gui.Parent = _g
+    _gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    _gui.ResetOnSpawn = false
+    _gui.DisplayOrder = 999
+end
 
 -- === ФУНКЦИИ БИБЛИОТЕКИ ===
 function _u:CreateWindow(_cfg)
@@ -1536,8 +1555,10 @@ function _um:_bd()
     
     for i = 1, #_p do
         local _str = _p[i]
-        if not isfolder(_str) then
-            pcall(function() makefolder(_str) end)
+        if type(isfolder) == "function" then
+            if not isfolder(_str) and type(makefolder) == "function" then
+                pcall(function() makefolder(_str) end)
+            end
         end
     end
 end
@@ -1547,19 +1568,23 @@ function _um:SaveSettings()
         self:_bd()
         local _path = self._f .. "/options.json"
         local _encoded = _h:JSONEncode(self._s)
-        writefile(_path, _encoded)
+        if type(writefile) == "function" then
+            writefile(_path, _encoded)
+        end
     end)
 end
 
 function _um:LoadSettings()
     local _path = self._f .. "/options.json"
-    if isfile(_path) then
-        local _data = readfile(_path)
-        local _success, _decoded = pcall(_h.JSONDecode, _h, _data)
-        
-        if _success and type(_decoded) == "table" then
-            for _k, _v in pairs(_decoded) do
-                self._s[_k] = _v
+    if type(isfile) == "function" and isfile(_path) then
+        if type(readfile) == "function" then
+            local _data = readfile(_path)
+            local _success, _decoded = pcall(_h.JSONDecode, _h, _data)
+            
+            if _success and type(_decoded) == "table" then
+                for _k, _v in pairs(_decoded) do
+                    self._s[_k] = _v
+                end
             end
         end
     end
@@ -1732,8 +1757,7 @@ end
 
 setmetatable(_G, _g_mt)
 
--- === ЭКСПОРТ ===
-return _u
+-- === КОД ПРОДОЛЖАЕТСЯ ДАЛЬШЕ ===
 
 	
     
@@ -12379,4 +12403,5 @@ task.spawn(function()
 		end
 	end)
 end)
-return Library, SaveManager, InterfaceManager, Mobile
+
+return Library, SaveManager, InterfaceManager
