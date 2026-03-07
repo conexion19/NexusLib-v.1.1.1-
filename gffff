@@ -44,7 +44,7 @@ local _m = _p:GetMouse()
 local _h = game:GetService("HttpService")
 
 -- === МОБИЛЬНАЯ ПЛАТФОРМА ===
-local _mobile = not _rs:IsStudio() and table.find({Enum.Platform.IOS, Enum.Platform.Android}, _uis:GetPlatform()) ~= nil
+local _mobile = (not _rs:IsStudio() and (_uis:GetPlatform() == Enum.Platform.IOS or _uis:GetPlatform() == Enum.Platform.Android)) or false
 
 -- === ПОЛУЧЕНИЕ GUI КОНТЕЙНЕРА (СКРЫТО) ===
 local _g = (function()
