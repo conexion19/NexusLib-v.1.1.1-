@@ -1103,9 +1103,17 @@ function _c.GetThemeProperty(_prop)
 end
 
 function _c.AddSignal(_s, _fn)
-    local _conn = _s:Connect(_fn)
-    table.insert(_c.Signals, _conn)
-    return _conn
+    if type(_fn) ~= "function" then
+        warn("[NexusLib] Warning: attempt to connect non-function as signal handler")
+        return {disconnect = function() end}
+    end
+    local _conn = pcall(function() return _s:Connect(_fn) end)
+    if _conn then
+        table.insert(_c.Signals, _conn)
+        return _conn
+    else
+        return {disconnect = function() end}
+    end
 end
 
 function _c.Disconnect()
@@ -1303,7 +1311,7 @@ function _u:CreateWindow(_cfg)
                     BorderSizePixel = 0,
                 })
                 
-                if _cfg.Callback then
+                if _cfg and _cfg.Callback and type(_cfg.Callback) == "function" then
                     _c.AddSignal(_btn.MouseButton1Click, _cfg.Callback)
                 end
                 
@@ -1330,8 +1338,8 @@ function _u:CreateWindow(_cfg)
                 _c.AddSignal(_tg_btn.MouseButton1Click, function()
                     _toggle.Value = not _toggle.Value
                     _tg_btn.BackgroundColor3 = _toggle.Value and _c.GetThemeProperty("Success") or _c.GetThemeProperty("Hover")
-                    if _toggle._cb then
-                        _toggle._cb(_toggle.Value)
+                    if _toggle._cb and type(_toggle._cb) == "function" then
+                        pcall(_toggle._cb, _toggle.Value)
                     end
                 end)
                 
@@ -1403,8 +1411,8 @@ function _u:CreateWindow(_cfg)
                 
                 _c.AddSignal(_txt:GetPropertyChangedSignal("Text"), function()
                     _inp.Value = _txt.Text
-                    if _inp._cb then
-                        _inp._cb(_inp.Value)
+                    if _inp._cb and type(_inp._cb) == "function" then
+                        pcall(_inp._cb, _inp.Value)
                     end
                 end)
                 
@@ -1441,8 +1449,8 @@ function _u:CreateWindow(_cfg)
                             _kb.Value = _inp.KeyCode.Name
                             _btn.Text = (_cfg.Title or "Keybind") .. ": [" .. _kb.Value .. "]"
                             _conn:Disconnect()
-                            if _kb._cb then
-                                _kb._cb(_kb.Value)
+                            if _kb._cb and type(_kb._cb) == "function" then
+                                pcall(_kb._cb, _kb.Value)
                             end
                         end
                     end)
@@ -2919,7 +2927,7 @@ function Library:RemoveKeybindDisplay(idx)
 end
 
 function Library:SafeCallback(Function, ...)
-	if not Function then
+	if not Function or type(Function) ~= "function" then
 		return
 	end
 
@@ -7841,7 +7849,9 @@ ElementsTable.Keybind = (function()
 
 		function Keybind:OnChanged(Callback)
 			Keybind.Changed = Callback
-			Callback(Keybind.Value)
+			if Callback and type(Callback) == "function" then
+				Library:SafeCallback(Callback, Keybind.Value)
+			end
 		end
 
 		function Keybind:DoClick()
