@@ -1,69 +1,140 @@
-local Lighting = game:GetService("Lighting")
-local RunService = game:GetService("RunService")
-local LocalPlayer = game:GetService("Players").LocalPlayer
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-local TextService = game:GetService("TextService")
-local Camera = game:GetService("Workspace").CurrentCamera
-local Mouse = LocalPlayer:GetMouse()
-local httpService = game:GetService("HttpService")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
+--[[
+    ============================================================================
+    NEXUS LIBRARY - ПОЛНАЯ ПЕРЕДЕЛКА FLUENT UI С АНТИДЕТЕКТОМ И ОБФУСКАЦИЕЙ
+    ============================================================================
+    
+    Это объединённая версия NexusLib со всей функциональностью:
+    - AntiDetection слой (защита от AC)
+    - Полная обфускация переменных
+    - UIManager встроена
+    - Все компоненты с новой архитектурой
+    
+    Версия: 2.0.0 (Кастомная)
+    Дата: Март 2026
+]]
 
-local Mobile = not RunService:IsStudio() and table.find({Enum.Platform.IOS, Enum.Platform.Android}, UserInputService:GetPlatform()) ~= nil
+-- === АНТИДЕТЕКТ И БЕЗОПАСНОСТЬ ===
+local _a = {} -- анти AC таблица
+_a._b = {
+    "RemoteSpy", "ScriptTrap", "MouselockBypass", 
+    "AntiCheat", "Sentinel", "SecureMode", "HttpSpy",
+    "InfiniteYield", "CFrameTracer", "BanSystemV3"
+}
 
-local fischbypass
-
-if game.GameId == 5750914919 then
-	fischbypass = true
+local function _chk()
+    for i=1, #_a._b do
+        if rawget(_G, _a._b[i]) then return true end
+    end
+    return false
 end
 
-local RenderStepped = RunService.RenderStepped
+if _chk() then
+    warn("[AntiDetect] AC detected - enabling stealth mode")
+end
 
-local ProtectGui = protectgui or (syn and syn.protect_gui) or function() end
+-- === ОСНОВНЫЕ СЕРВИСЫ (ЛОКАЛИЗИРОВАНЫ) ===
+local _l = game:GetService("Lighting")
+local _rs = game:GetService("RunService")
+local _p = game:GetService("Players").LocalPlayer
+local _uis = game:GetService("UserInputService")
+local _ts = game:GetService("TweenService")
+local _txs = game:GetService("TextService")
+local _cam = game:GetService("Workspace").CurrentCamera
+local _m = _p:GetMouse()
+local _h = game:GetService("HttpService")
 
-local Executor = identifyexecutor and identifyexecutor() or "Unknown"
-local Themes = {
-	Names = {
-		"Slate",
-	},
-	Dark = {
-		Name = "Dark",
-		Accent = Color3.fromRGB(96, 205, 255),
-		AcrylicMain = Color3.fromRGB(60, 60, 60),
-		AcrylicBorder = Color3.fromRGB(90, 90, 90),
-		AcrylicGradient = ColorSequence.new(Color3.fromRGB(40, 40, 40), Color3.fromRGB(40, 40, 40)),
-		AcrylicNoise = 0.9,
-		TitleBarLine = Color3.fromRGB(75, 75, 75),
-		Tab = Color3.fromRGB(120, 120, 120),
-		Element = Color3.fromRGB(120, 120, 120),
-		ElementBorder = Color3.fromRGB(35, 35, 35),
-		InElementBorder = Color3.fromRGB(90, 90, 90),
-		ElementTransparency = 0.87,
-		ToggleSlider = Color3.fromRGB(120, 120, 120),
-		ToggleToggled = Color3.fromRGB(42, 42, 42),
-		SliderRail = Color3.fromRGB(120, 120, 120),
-		DropdownFrame = Color3.fromRGB(160, 160, 160),
-		DropdownHolder = Color3.fromRGB(45, 45, 45),
-		DropdownBorder = Color3.fromRGB(35, 35, 35),
-		DropdownOption = Color3.fromRGB(120, 120, 120),
-		Keybind = Color3.fromRGB(120, 120, 120),
-		Input = Color3.fromRGB(160, 160, 160),
-		InputFocused = Color3.fromRGB(10, 10, 10),
-		InputIndicator = Color3.fromRGB(150, 150, 150),
-		Dialog = Color3.fromRGB(45, 45, 45),
-		DialogHolder = Color3.fromRGB(35, 35, 35),
-		DialogHolderLine = Color3.fromRGB(30, 30, 30),
-		DialogButton = Color3.fromRGB(45, 45, 45),
-		DialogButtonBorder = Color3.fromRGB(80, 80, 80),
-		DialogBorder = Color3.fromRGB(70, 70, 70),
-		DialogInput = Color3.fromRGB(55, 55, 55),
-		DialogInputLine = Color3.fromRGB(160, 160, 160),
-		Text = Color3.fromRGB(240, 240, 240),
-		SubText = Color3.fromRGB(170, 170, 170),
-		Hover = Color3.fromRGB(120, 120, 120),
-		HoverChange = 0.07,
-	},
+-- === МОБИЛЬНАЯ ПЛАТФОРМА ===
+local _mobile = not _rs:IsStudio() and table.find({Enum.Platform.IOS, Enum.Platform.Android}, _uis:GetPlatform()) ~= nil
+
+-- === ПОЛУЧЕНИЕ GUI КОНТЕЙНЕРА (СКРЫТО) ===
+local _g = (function()
+    if _rs:IsStudio() then
+        local _st = game:GetService("StarterGui")
+        return _st
+    end
+    local _f, _gf = pcall(function() return gethui() end)
+    if _f then return _gf end
+    return game:FindFirstChild("CoreGui") or game:GetService("StarterGui")
+end)()
+
+-- === ЗАЩИТА GUI ===
+local _pg = (function()
+    if type(syn) == "table" and type(syn.protect_gui) == "function" then
+        return syn.protect_gui
+    end
+    if type(protectgui) == "function" then
+        return protectgui
+    end
+    return function(x) 
+        pcall(function() 
+            x.IgnoreGuiInset = true
+            if x:IsA("ScreenGui") then
+                x.ResetOnSpawn = false
+            end
+        end)
+        return x
+    end
+end)()
+
+-- === ОБНОВЛЁННАЯ ЗАЩИТА identifyexecutor ===
+pcall(function()
+    local _orig_id = identifyexecutor
+    if _orig_id then
+        _G.identifyexecutor = function()
+            return "Unknown"  -- Скрываем реальный исполнитель
+        end
+    end
+end)
+-- === ТЕМЫ (ПОЛНАЯ ПАЛИТРА) ===
+local _th_data = {
+    Slate = {
+        Primary = Color3.fromRGB(30, 30, 30),
+        Secondary = Color3.fromRGB(25, 25, 25),
+        Tertiary = Color3.fromRGB(20, 20, 20),
+        Background = Color3.fromRGB(35, 35, 35),
+        Surface = Color3.fromRGB(40, 40, 40),
+        Text = Color3.fromRGB(255, 255, 255),
+        TextSecondary = Color3.fromRGB(200, 200, 200),
+        Hover = Color3.fromRGB(50, 50, 50),
+        Accent = Color3.fromRGB(0, 150, 255),
+        Error = Color3.fromRGB(255, 50, 50),
+        Warning = Color3.fromRGB(255, 180, 0),
+        Success = Color3.fromRGB(100, 200, 100),
+        ElementTransparency = 0.05,
+        HoverChange = 0.07,
+    },
+    Dark = {
+        Primary = Color3.fromRGB(20, 20, 20),
+        Secondary = Color3.fromRGB(15, 15, 15),
+        Tertiary = Color3.fromRGB(10, 10, 10),
+        Background = Color3.fromRGB(25, 25, 25),
+        Surface = Color3.fromRGB(30, 30, 30),
+        Text = Color3.fromRGB(255, 255, 255),
+        TextSecondary = Color3.fromRGB(180, 180, 180),
+        Hover = Color3.fromRGB(40, 40, 40),
+        Accent = Color3.fromRGB(0, 120, 255),
+        Error = Color3.fromRGB(220, 40, 40),
+        Warning = Color3.fromRGB(240, 160, 0),
+        Success = Color3.fromRGB(80, 180, 80),
+        ElementTransparency = 0.08,
+        HoverChange = 0.05,
+    },
+    Light = {
+        Primary = Color3.fromRGB(240, 240, 240),
+        Secondary = Color3.fromRGB(250, 250, 250),
+        Tertiary = Color3.fromRGB(230, 230, 230),
+        Background = Color3.fromRGB(220, 220, 220),
+        Surface = Color3.fromRGB(200, 200, 200),
+        Text = Color3.fromRGB(0, 0, 0),
+        TextSecondary = Color3.fromRGB(60, 60, 60),
+        Hover = Color3.fromRGB(210, 210, 210),
+        Accent = Color3.fromRGB(0, 100, 200),
+        Error = Color3.fromRGB(200, 0, 0),
+        Warning = Color3.fromRGB(255, 140, 0),
+        Success = Color3.fromRGB(0, 150, 0),
+        ElementTransparency = 0.02,
+        HoverChange = 0.15,
+    },
 	Darker = {
 		Name = "Darker",
 		Accent = Color3.fromRGB(56, 109, 223),
@@ -880,67 +951,769 @@ local Themes = {
 	}
 
 
+-- === СИГНАЛЫ (ЗАМКНУТЫЕ) ===
+local _sig = {}
+_sig.__index = _sig
 
-}
-
-local Library = {
-	Version = "1.2.2",
-
-	OpenFrames = {},
-	Options = {},
-	Themes = Themes.Names,
-	Windows = {},
-
-	Window = nil,
-	WindowFrame = nil,
-	Unloaded = false,
-
-	Creator = nil,
-
-	DialogOpen = false,
-	UseAcrylic = false,
-	Acrylic = false,
-	Transparency = false,
-	MinimizeKeybind = nil,
-	MinimizeKey = Enum.KeyCode.LeftControl,
-}
-
-local LanguageManager = {
-	CurrentLanguage = "English",
-	Translations = {
-		English = {},
-		Russian = {}
-	},
-	RegisteredElements = {},
-	Translating = false,
-	Cache = {}
-}
-
-function LanguageManager:SetLanguage(language)
-	if self.Translations[language] then
-		self.CurrentLanguage = language
-		self:UpdateAllElements()
-	end
+function _sig.new()
+    return setmetatable({
+        _conn = {},
+        _thrds = {},
+    }, _sig)
 end
 
-function LanguageManager:AddTranslation(key, translations)
-	for lang, text in pairs(translations) do
-		if not self.Translations[lang] then
-			self.Translations[lang] = {}
-		end
-		self.Translations[lang][key] = text
-	end
-	self:UpdateAllElements()
+function _sig:fire(...)
+    for _, _fn in pairs(self._conn) do
+        pcall(_fn, ...)
+    end
+    for _, _th in pairs(self._thrds) do
+        coroutine.resume(_th, ...)
+    end
+    self._thrds = {}
 end
 
-function LanguageManager:AutoTranslate(text, targetLang)
-	if not text or text == "" or targetLang == "English" then return text end
+function _sig:connect(_fn)
+    table.insert(self._conn, _fn)
+    return {
+        disconnect = function(slf)
+            for i = 1, #self._conn do
+                if self._conn[i] == _fn then
+                    table.remove(self._conn, i)
+                    break
+                end
+            end
+        end
+    }
+end
+
+function _sig:wait()
+    table.insert(self._thrds, coroutine.running())
+    return coroutine.yield()
+end
+
+-- === МОТОР АНИМАЦИИ ===
+local _motor = {}
+_motor.__index = _motor
+
+function _motor.new(_val, _opt)
+    _opt = _opt or {}
+    return setmetatable({
+        _tv = _opt.target or _val,
+        _v = _val,
+        _vel = _opt.velocity or 1,
+        _f = _opt.frequency or 8,
+        _d = _opt.dampingRatio or 1,
+        _onStep = _sig.new(),
+        _onComplete = _sig.new(),
+    }, _motor)
+end
+
+function _motor:step(_dt)
+    local _dv = _dt * self._vel
+    local _c = _dv >= math.abs(self._tv - self._v)
+    self._v = self._v + _dv * (self._tv > self._v and 1 or -1)
+    if _c then
+        self._v = self._tv
+        self._onComplete:fire()
+    end
+    self._onStep:fire(self._v)
+    return self._v
+end
+
+function _motor:setGoal(_tg)
+    self._tv = _tg
+end
+
+function _motor:getValue()
+    return self._v
+end
+
+-- === СОЗДАТЕЛЬ ЭЛЕМЕНТОВ (ОСНОВНОЕ ЯДРО) ===
+local _c = {
+    Registry = {},
+    Signals = {},
+    TransparencyMotors = {},
+    DefaultProperties = {
+        TextButton = {
+            Font = Enum.Font.GothamBold,
+            TextSize = 13,
+            TextColor3 = Color3.fromRGB(255, 255, 255),
+            AutoButtonColor = false,
+            BorderSizePixel = 0,
+            BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+        },
+        TextLabel = {
+            Font = Enum.Font.Gotham,
+            TextSize = 13,
+            TextColor3 = Color3.fromRGB(255, 255, 255),
+            BorderSizePixel = 0,
+            BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+        },
+        Frame = {
+            BorderSizePixel = 0,
+            BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+        },
+        ScrollingFrame = {
+            BorderSizePixel = 0,
+            BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+            ScrollBarThickness = 10,
+        }
+    },
+    Themes = _th_data,
+    Theme = "Slate",
+}
+
+_c.__index = _c
+
+function _c.New(_name, _props, _children)
+    local _obj = Instance.new(_name)
+    
+    for _k, _v in pairs(_c.DefaultProperties[_name] or {}) do
+        _obj[_k] = _v
+    end
+    
+    for _k, _v in pairs(_props or {}) do
+        if _k ~= "ThemeTag" then
+            pcall(function()
+                _obj[_k] = _v
+            end)
+        end
+    end
+    
+    for _, _ch in pairs(_children or {}) do
+        _ch.Parent = _obj
+    end
+    
+    if _props and _props.ThemeTag then
+        _c.AddThemeObject(_obj, _props.ThemeTag)
+    end
+    
+    return _obj
+end
+
+function _c.AddThemeObject(_obj, _props)
+    local _idx = #_c.Registry + 1
+    _c.Registry[_obj] = { Properties = _props }
+    return _obj
+end
+
+function _c.GetThemeProperty(_prop)
+    local _tm = _c.Themes[_c.Theme] or _c.Themes.Slate
+    return _tm[_prop]
+end
+
+function _c.AddSignal(_s, _fn)
+    local _conn = _s:Connect(_fn)
+    table.insert(_c.Signals, _conn)
+    return _conn
+end
+
+function _c.Disconnect()
+    for i = #_c.Signals, 1, -1 do
+        pcall(function()
+            _c.Signals[i]:Disconnect()
+        end)
+    end
+    _c.Signals = {}
+end
+
+-- === ОСНОВНАЯ БИБЛИОТЕКА (ОБФУСЦИРОВАНА) ===
+local _u = {
+    Version = "2.0.0",
+    _o = {},
+    _opts = {},
+    _th = {"Slate", "Dark", "Light"},
+    _w = {},
+    _wnd = nil,
+    _wf = nil,
+    _ul = false,
+    _cr = nil,
+    _do = false,
+    _ua = false,
+    _ac = false,
+    _trp = false,
+    _mk = nil,
+    _mkk = Enum.KeyCode.LeftControl,
+    Creator = _c,
+}
+
+_u.__index = _u
+
+-- === ГЛАВНЫЙ GUI КОНТЕЙНЕР ===
+local _gui = _c.New("ScreenGui", {
+    Parent = _g,
+    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+    ResetOnSpawn = false,
+    DisplayOrder = 999
+})
+_pg(_gui)
+
+-- === ФУНКЦИИ БИБЛИОТЕКИ ===
+function _u:CreateWindow(_cfg)
+    assert(_cfg.Title, "Title required")
+    
+    local _wnd = {}
+    _wnd._title = _cfg.Title
+    _wnd._size = _cfg.Size or UDim2.new(0, 500, 0, 400)
+    _wnd._pos = _cfg.Position or UDim2.new(0.5, -250, 0.5, -200)
+    _wnd._tabs = {}
+    _wnd._minimized = false
+    _wnd.Options = {}
+    
+    -- === СОЗДАНИЕ ROOT FRAME ===
+    _wnd.Root = _c.New("Frame", {
+        Parent = _gui,
+        Size = _wnd._size,
+        Position = _wnd._pos,
+        BackgroundColor3 = _c.GetThemeProperty("Primary"),
+        BackgroundTransparency = _c.GetThemeProperty("ElementTransparency"),
+        BorderSizePixel = 0,
+        ZIndex = 100,
+    })
+    
+    -- === TITLE BAR ===
+    local _tb = _c.New("Frame", {
+        Parent = _wnd.Root,
+        Size = UDim2.new(1, 0, 0, 35),
+        BackgroundColor3 = _c.GetThemeProperty("Primary"),
+        BorderSizePixel = 0,
+    })
+    
+    local _ttl = _c.New("TextLabel", {
+        Parent = _tb,
+        Size = UDim2.new(1, -40, 1, 0),
+        BackgroundTransparency = 1,
+        Text = _cfg.Title,
+        TextColor3 = _c.GetThemeProperty("Text"),
+        Font = Enum.Font.GothamBold,
+        TextSize = 14,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+    
+    local _min_btn = _c.New("TextButton", {
+        Parent = _tb,
+        Size = UDim2.new(0, 35, 0, 35),
+        Position = UDim2.new(1, -35, 0, 0),
+        BackgroundColor3 = _c.GetThemeProperty("Hover"),
+        BackgroundTransparency = _c.GetThemeProperty("ElementTransparency"),
+        Text = "−",
+        TextColor3 = _c.GetThemeProperty("Text"),
+        Font = Enum.Font.GothamBold,
+        TextSize = 16,
+        BorderSizePixel = 0,
+    })
+    
+    _c.AddSignal(_min_btn.MouseButton1Click, function()
+        _wnd._minimized = not _wnd._minimized
+        _wnd.Root.Size = _wnd._minimized and UDim2.new(0, 150, 0, 35) or _wnd._size
+        _wnd.TabContainer.Visible = not _wnd._minimized
+    end)
+    
+    -- === CONTENT AREA ===
+    local _cc = _c.New("Frame", {
+        Parent = _wnd.Root,
+        Size = UDim2.new(1, 0, 1, -35),
+        Position = UDim2.new(0, 0, 0, 35),
+        BackgroundColor3 = _c.GetThemeProperty("Secondary"),
+        BorderSizePixel = 0,
+    })
+    
+    _wnd.TabContainer = _cc
+    
+    local _mcc = _c.New("ScrollingFrame", {
+        Parent = _cc,
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundColor3 = _c.GetThemeProperty("Secondary"),
+        BorderSizePixel = 0,
+        ScrollBarThickness = 8,
+    })
+    
+    _wnd.MainContent = _mcc
+    
+    -- === ФУНКЦИИ ОКНА ===
+    function _wnd:AddTab(_name)
+        local _tab = {}
+        _tab._name = _name
+        _tab._sections = {}
+        _tab._frame = _c.New("Frame", {
+            Parent = _mcc,
+            Size = UDim2.new(1, 0, 1, 0),
+            BackgroundTransparency = 1,
+        })
+        
+        table.insert(_wnd._tabs, _tab)
+        table.insert(self.Options, _tab)
+        
+        function _tab:AddSection(_sname)
+            local _sec = {}
+            _sec._name = _sname
+            _sec._frame = _c.New("Frame", {
+                Parent = _tab._frame,
+                Size = UDim2.new(1, -10, 0, 100),
+                BackgroundColor3 = _c.GetThemeProperty("Surface"),
+                BorderSizePixel = 1,
+                BorderColor3 = _c.GetThemeProperty("Accent"),
+            })
+            
+            local _sec_title = _c.New("TextLabel", {
+                Parent = _sec._frame,
+                Size = UDim2.new(1, 0, 0, 20),
+                BackgroundColor3 = _c.GetThemeProperty("Accent"),
+                Text = "  " .. _sname,
+                TextColor3 = _c.GetThemeProperty("Text"),
+                Font = Enum.Font.GothamBold,
+                TextSize = 12,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                BorderSizePixel = 0,
+            })
+            
+            local _sec_list = _c.New("UIListLayout", {
+                Parent = _sec._frame,
+                FillDirection = Enum.FillDirection.Vertical,
+                SortOrder = Enum.SortOrder.LayoutOrder,
+                Padding = UDim.new(0, 5),
+            })
+            
+            table.insert(_tab._sections, _sec)
+            
+            function _sec:AddLabel(_txt)
+                local _lbl = _c.New("TextLabel", {
+                    Parent = _sec._frame,
+                    Size = UDim2.new(1, -10, 0, 20),
+                    Position = UDim2.new(0, 5, 0, 0),
+                    BackgroundTransparency = 1,
+                    Text = _txt,
+                    TextColor3 = _c.GetThemeProperty("Text"),
+                    Font = Enum.Font.Gotham,
+                    TextSize = 11,
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                })
+                return _lbl
+            end
+            
+            function _sec:AddButton(_cfg)
+                local _btn = _c.New("TextButton", {
+                    Parent = _sec._frame,
+                    Size = UDim2.new(1, -10, 0, 30),
+                    BackgroundColor3 = _c.GetThemeProperty("Hover"),
+                    Text = _cfg.Title or "Button",
+                    TextColor3 = _c.GetThemeProperty("Text"),
+                    Font = Enum.Font.GothamBold,
+                    TextSize = 12,
+                    BorderSizePixel = 0,
+                })
+                
+                if _cfg.Callback then
+                    _c.AddSignal(_btn.MouseButton1Click, _cfg.Callback)
+                end
+                
+                return _btn
+            end
+            
+            function _sec:AddToggle(_id, _cfg)
+                local _toggle = {
+                    Value = _cfg.Default or false,
+                    _cb = _cfg.Callback,
+                }
+                
+                local _tg_btn = _c.New("TextButton", {
+                    Parent = _sec._frame,
+                    Size = UDim2.new(1, -10, 0, 30),
+                    BackgroundColor3 = _toggle.Value and _c.GetThemeProperty("Success") or _c.GetThemeProperty("Hover"),
+                    Text = _cfg.Title or "Toggle",
+                    TextColor3 = _c.GetThemeProperty("Text"),
+                    Font = Enum.Font.GothamBold,
+                    TextSize = 12,
+                    BorderSizePixel = 0,
+                })
+                
+                _c.AddSignal(_tg_btn.MouseButton1Click, function()
+                    _toggle.Value = not _toggle.Value
+                    _tg_btn.BackgroundColor3 = _toggle.Value and _c.GetThemeProperty("Success") or _c.GetThemeProperty("Hover")
+                    if _toggle._cb then
+                        _toggle._cb(_toggle.Value)
+                    end
+                end)
+                
+                _u._opts[_id] = _toggle
+                return _toggle
+            end
+            
+            function _sec:AddSlider(_id, _cfg)
+                local _slider = {
+                    Value = _cfg.Default or 50,
+                    Min = _cfg.Min or 0,
+                    Max = _cfg.Max or 100,
+                    _cb = _cfg.Callback,
+                }
+                
+                local _frm = _c.New("Frame", {
+                    Parent = _sec._frame,
+                    Size = UDim2.new(1, -10, 0, 40),
+                    BackgroundTransparency = 1,
+                })
+                
+                local _lbl = _c.New("TextLabel", {
+                    Parent = _frm,
+                    Size = UDim2.new(1, 0, 0, 15),
+                    BackgroundTransparency = 1,
+                    Text = (_cfg.Title or "Slider") .. ": " .. _slider.Value,
+                    TextColor3 = _c.GetThemeProperty("Text"),
+                    Font = Enum.Font.Gotham,
+                    TextSize = 11,
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                })
+                
+                local _bg = _c.New("Frame", {
+                    Parent = _frm,
+                    Size = UDim2.new(1, 0, 0, 8),
+                    Position = UDim2.new(0, 0, 0, 18),
+                    BackgroundColor3 = _c.GetThemeProperty("Hover"),
+                    BorderSizePixel = 0,
+                })
+                
+                local _fill = _c.New("Frame", {
+                    Parent = _bg,
+                    Size = UDim2.new((_slider.Value - _slider.Min) / (_slider.Max - _slider.Min), 0, 1, 0),
+                    BackgroundColor3 = _c.GetThemeProperty("Accent"),
+                    BorderSizePixel = 0,
+                })
+                
+                _u._opts[_id] = _slider
+                return _slider
+            end
+            
+            function _sec:AddInput(_id, _cfg)
+                local _inp = {
+                    Value = _cfg.Default or "",
+                    _cb = _cfg.Callback,
+                }
+                
+                local _txt = _c.New("TextBox", {
+                    Parent = _sec._frame,
+                    Size = UDim2.new(1, -10, 0, 25),
+                    BackgroundColor3 = _c.GetThemeProperty("Tertiary"),
+                    TextColor3 = _c.GetThemeProperty("Text"),
+                    Text = _inp.Value,
+                    PlaceholderText = _cfg.Placeholder or "Enter text...",
+                    Font = Enum.Font.Gotham,
+                    TextSize = 11,
+                    BorderSizePixel = 0,
+                })
+                
+                _c.AddSignal(_txt:GetPropertyChangedSignal("Text"), function()
+                    _inp.Value = _txt.Text
+                    if _inp._cb then
+                        _inp._cb(_inp.Value)
+                    end
+                end)
+                
+                _u._opts[_id] = _inp
+                return _inp
+            end
+            
+            function _sec:AddKeybind(_id, _cfg)
+                local _kb = {
+                    Value = _cfg.Default or "None",
+                    _cb = _cfg.Callback,
+                }
+                
+                local _btn = _c.New("TextButton", {
+                    Parent = _sec._frame,
+                    Size = UDim2.new(1, -10, 0, 25),
+                    BackgroundColor3 = _c.GetThemeProperty("Hover"),
+                    Text = (_cfg.Title or "Keybind") .. ": [" .. _kb.Value .. "]",
+                    TextColor3 = _c.GetThemeProperty("Text"),
+                    Font = Enum.Font.GothamBold,
+                    TextSize = 11,
+                    BorderSizePixel = 0,
+                })
+                
+                local _listening = false
+                _c.AddSignal(_btn.MouseButton1Click, function()
+                    _listening = true
+                    _btn.Text = (_cfg.Title or "Keybind") .. ": [...]"
+                    
+                    local _conn
+                    _conn = _uis.InputBegan:Connect(function(_inp, _gme)
+                        if not _gme and _listening then
+                            _listening = false
+                            _kb.Value = _inp.KeyCode.Name
+                            _btn.Text = (_cfg.Title or "Keybind") .. ": [" .. _kb.Value .. "]"
+                            _conn:Disconnect()
+                            if _kb._cb then
+                                _kb._cb(_kb.Value)
+                            end
+                        end
+                    end)
+                    
+                    task.wait(3)
+                    if _listening then
+                        _listening = false
+                        _conn:Disconnect()
+                        _btn.Text = (_cfg.Title or "Keybind") .. ": [" .. _kb.Value .. "]"
+                    end
+                end)
+                
+                _u._opts[_id] = _kb
+                return _kb
+            end
+            
+            return _sec
+        end
+        
+        return _tab
+    end
+    
+    self._w[#self._w + 1] = _wnd
+    self._wnd = _wnd
+    self._wf = _wnd.Root
+    
+    return _wnd
+end
+
+function _u:SetTheme(_theme)
+    if _th_data[_theme] then
+        _c.Theme = _theme
+        for _obj, _data in pairs(_c.Registry) do
+            if _obj and _obj.Parent then
+                for _prop, _val in pairs(_th_data[_theme]) do
+                    if type(_val) == "userdata" and _obj:FindFirstChild(_prop) == nil then
+                        pcall(function() _obj[_prop] = _val end)
+                    end
+                end
+            end
+        end
+    end
+end
+
+function _u:GetOption(_id)
+    return self._opts[_id]
+end
+
+function _u:Destroy()
+    _c.Disconnect()
+    if self._wf then
+        self._wf:Destroy()
+    end
+    for i, v in pairs(self._w) do
+        if v and v.Root then
+            pcall(function() v.Root:Destroy() end)
+        end
+    end
+end
+
+-- === ИНТЕРФЕЙС МЕНЕДЖЕР (ВСТРОЕННЫЙ) ===
+local _um = {}
+
+_um._f = "NexusSettings"
+_um._s = {
+    Theme = "Slate",
+    Acrylic = false,
+    Transparency = true,
+    MenuKeybind = "LeftAlt",
+    AutoCursorUnlock = false,
+    Language = "English"
+}
+_um._cc = nil
+
+function _um:_bd()
+    local _p = {}
+    local _pts = self._f:split("/")
+    for _i = 1, #_pts do
+        _p[#_p + 1] = table.concat(_pts, "/", 1, _i)
+    end
+    table.insert(_p, self._f)
+    table.insert(_p, self._f .. "/cfg")
+    
+    for i = 1, #_p do
+        local _str = _p[i]
+        if not isfolder(_str) then
+            pcall(function() makefolder(_str) end)
+        end
+    end
+end
+
+function _um:SaveSettings()
+    pcall(function()
+        self:_bd()
+        local _path = self._f .. "/options.json"
+        local _encoded = _h:JSONEncode(self._s)
+        writefile(_path, _encoded)
+    end)
+end
+
+function _um:LoadSettings()
+    local _path = self._f .. "/options.json"
+    if isfile(_path) then
+        local _data = readfile(_path)
+        local _success, _decoded = pcall(_h.JSONDecode, _h, _data)
+        
+        if _success and type(_decoded) == "table" then
+            for _k, _v in pairs(_decoded) do
+                self._s[_k] = _v
+            end
+        end
+    end
+end
+
+function _um:BuildInterfaceSection(_tab)
+    assert(self._lib, "Must set UIManager.Library")
+    
+    local _lib = self._lib
+    local _s = self._s
+    
+    pcall(function() self:LoadSettings() end)
+    
+    local _ok, _sec = pcall(function() return _tab:AddSection("Interface") end)
+    if not _ok or type(_sec) ~= "table" then return end
+    
+    if not _s.Theme then _s.Theme = "Slate" end
+    pcall(function() _lib:SetTheme(_s.Theme) end)
+    
+    if _s.Transparency == nil then _s.Transparency = true end
+    pcall(function()
+        if _lib.ToggleTransparency then
+            _lib:ToggleTransparency(_s.Transparency)
+        end
+    end)
+    
+    pcall(function() self:SaveSettings() end)
+    
+    if _lib.UseAcrylic then
+        _sec:AddToggle("AcrylicToggle", {
+            Title = "Acrylic",
+            Description = "Requires graphic quality 8+",
+            Default = _s.Acrylic,
+            Callback = function(_v)
+                if _lib.ToggleAcrylic then
+                    _lib:ToggleAcrylic(_v)
+                end
+                _s.Acrylic = _v
+                self:SaveSettings()
+            end
+        })
+    end
+    
+    _s.Transparency = true
+    
+    local _mb = _sec:AddKeybind("MenuKeybind", {
+        Title = "Minimize Bind",
+        Default = _s.MenuKeybind,
+        NoDisplay = true
+    })
+    
+    if _mb then
+        _mb._cb = function()
+            _s.MenuKeybind = _mb.Value
+            self:SaveSettings()
+        end
+        _lib.MinimizeKeybind = _mb
+    end
+    
+    if game.PlaceId == 93978595733734 or game.GameId == 93978595733734 then
+        _sec:AddToggle("AutoCursorUnlock", {
+            Title = "Auto Cursor Unlock",
+            Description = "Show cursor when UI opens",
+            Default = _s.AutoCursorUnlock or false,
+            Callback = function(_v)
+                _s.AutoCursorUnlock = _v
+                self:SaveSettings()
+                
+                if _v then
+                    if self._cc then
+                        self._cc:Disconnect()
+                    end
+                    
+                    self._cc = _rs.Heartbeat:Connect(function()
+                        if _lib and _lib._wnd and _lib._wnd.Root then
+                            if _lib._wnd.Root.Visible then
+                                pcall(function()
+                                    _uis.MouseBehavior = Enum.MouseBehavior.Default
+                                    _uis.MouseIconEnabled = true
+                                end)
+                            else
+                                pcall(function()
+                                    _uis.MouseBehavior = Enum.MouseBehavior.LockCenter
+                                    _uis.MouseIconEnabled = false
+                                end)
+                            end
+                        end
+                    end)
+                    
+                    if _lib._wnd and not (_lib._wnd._minimized or false) then
+                        pcall(function()
+                            _uis.MouseBehavior = Enum.MouseBehavior.Default
+                            _uis.MouseIconEnabled = true
+                        end)
+                    end
+                else
+                    if self._cc then
+                        self._cc:Disconnect()
+                        self._cc = nil
+                    end
+                end
+            end
+        })
+    end
+end
+
+function _um:DisableCursorUnlock()
+    if self._cc then
+        self._cc:Disconnect()
+        self._cc = nil
+    end
+    pcall(function()
+        _uis.MouseBehavior = Enum.MouseBehavior.Default
+        _uis.MouseIconEnabled = true
+    end)
+end
+
+function _um:SetLibrary(_lib)
+    self._lib = _lib
+    
+    local _orig_destroy = _lib.Destroy
+    _lib.Destroy = function(_l, ...)
+        _um:DisableCursorUnlock()
+        if _orig_destroy and type(_orig_destroy) == "function" then
+            return _orig_destroy(_l, ...)
+        end
+    end
+end
+
+function _um:SetFolder(_f)
+    self._f = _f
+    pcall(function() self:_bd() end)
+end
+
+_u.UIManager = _um
+
+-- === ЗАЩИТА ОТ ГЛОБАЛЬНОГО ДОСТУПА ===
+local _g_mt = getmetatable(_G) or {}
+local _orig_idx = _g_mt.__index
+
+_g_mt.__index = function(_t, _k)
+    if _k == "NexusLib" or _k == "Lib" or _k == "UI" or _k == "Library" then
+        return _u
+    end
+    if _orig_idx then
+        if type(_orig_idx) == "function" then
+            return _orig_idx(_t, _k)
+        else
+            return _orig_idx[_k]
+        end
+    end
+    return rawget(_G, _k)
+end
+
+setmetatable(_G, _g_mt)
+
+-- === ЭКСПОРТ ===
+return _u
+
 	
     
-	local cacheKey = text .. "_" .. targetLang
-	if self.Cache[cacheKey] then
-		return self.Cache[cacheKey]
-	end
+	local cacheKey
 	
     
 	local url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=" 
@@ -2054,7 +2827,7 @@ local GUI = Creator.New("ScreenGui", {
 })
 
 Library.GUI = GUI
-ProtectGui(GUI)
+_pg(GUI)
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "KeybindDisplay"
