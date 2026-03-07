@@ -1577,49 +1577,64 @@ function _um:BuildInterfaceSection(_tab)
     if not _ok or type(_sec) ~= "table" then return end
     
     if not _s.Theme then _s.Theme = "Slate" end
-    pcall(function() _lib:SetTheme(_s.Theme) end)
+    pcall(function()
+        if type(_lib.SetTheme) == \"function\" then
+            _lib:SetTheme(_s.Theme)
+        end
+    end)
     
     if _s.Transparency == nil then _s.Transparency = true end
     pcall(function()
-        if _lib.ToggleTransparency then
+        if type(_lib.ToggleTransparency) == \"function\" then
             _lib:ToggleTransparency(_s.Transparency)
         end
     end)
     
     pcall(function() self:SaveSettings() end)
     
-    if _lib.UseAcrylic then
-        _sec:AddToggle("AcrylicToggle", {
-            Title = "Acrylic",
-            Description = "Requires graphic quality 8+",
-            Default = _s.Acrylic,
-            Callback = function(_v)
-                if _lib.ToggleAcrylic then
-                    _lib:ToggleAcrylic(_v)
+    if _lib.UseAcrylic and type(_sec.AddToggle) == "function" then
+        pcall(function()
+            _sec:AddToggle("AcrylicToggle", {
+                Title = "Acrylic",
+                Description = "Requires graphic quality 8+",
+                Default = _s.Acrylic,
+                Callback = function(_v)
+                    if type(_lib.ToggleAcrylic) == "function" then
+                        pcall(function() _lib:ToggleAcrylic(_v) end)
+                    end
+                    _s.Acrylic = _v
+                    self:SaveSettings()
                 end
-                _s.Acrylic = _v
-                self:SaveSettings()
-            end
-        })
+            })
+        end)
     end
     
     _s.Transparency = true
     
-    local _mb = _sec:AddKeybind("MenuKeybind", {
-        Title = "Minimize Bind",
-        Default = _s.MenuKeybind,
-        NoDisplay = true
-    })
+    local _mb = nil
+    if type(_sec.AddKeybind) == \"function\" then
+        local _ok, _result = pcall(function() return _sec:AddKeybind(\"MenuKeybind\", {
+            Title = \"Minimize Bind\",
+            Default = _s.MenuKeybind,
+            NoDisplay = true
+        }) end)
+        if _ok and type(_result) == \"table\" then
+            _mb = _result
+        end
+    end
     
-    if _mb then
+    if _mb and type(_mb) == "table" then
         _mb._cb = function()
-            _s.MenuKeybind = _mb.Value
-            self:SaveSettings()
+            if _mb.Value then
+                _s.MenuKeybind = _mb.Value
+                self:SaveSettings()
+            end
         end
         _lib.MinimizeKeybind = _mb
     end
     
-    if game.PlaceId == 93978595733734 or game.GameId == 93978595733734 then
+    if (game.PlaceId == 93978595733734 or game.GameId == 93978595733734) and type(_sec.AddToggle) == "function" then
+        pcall(function()
         _sec:AddToggle("AutoCursorUnlock", {
             Title = "Auto Cursor Unlock",
             Description = "Show cursor when UI opens",
@@ -1663,6 +1678,7 @@ function _um:BuildInterfaceSection(_tab)
                 end
             end
         })
+        end)
     end
 end
 
