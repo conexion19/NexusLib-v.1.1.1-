@@ -35,12 +35,12 @@ end
 -- === ОСНОВНЫЕ СЕРВИСЫ (ЛОКАЛИЗИРОВАНЫ) ===
 local _l = game:GetService("Lighting")
 local _rs = game:GetService("RunService")
-local _p = game:GetService("Players").LocalPlayer
+local _p = game:GetService("Players").LocalPlayer or game:GetService("Players"):WaitForChild("LocalPlayer")
 local _uis = game:GetService("UserInputService")
 local _ts = game:GetService("TweenService")
 local _txs = game:GetService("TextService")
 local _cam = game:GetService("Workspace").CurrentCamera
-local _m = _p:GetMouse()
+local _m = (_p and _p:GetMouse()) or (function() return {Hit = CFrame.new(), X = 0, Y = 0} end)()
 local _h = game:GetService("HttpService")
 
 -- === МОБИЛЬНАЯ ПЛАТФОРМА ===
