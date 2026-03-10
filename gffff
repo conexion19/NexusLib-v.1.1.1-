@@ -18,8 +18,20 @@ end
 
 local RenderStepped = RunService.RenderStepped
 
-local ProtectGui = (syn and type(syn.protect_gui) == "function" and syn.protect_gui) or (gethui and function(x) return x end) or function(x) return x end
-if type(ProtectGui) ~= "function" then ProtectGui = function(x) return x end end
+local ProtectGui = (function()
+    if syn and type(syn.protect_gui) == "function" then return syn.protect_gui end
+    if type(protectgui) == "function" then return protectgui end
+    if type(gethui) == "function" then
+        local success, hui = pcall(gethui)
+        if success and hui then
+            return function(x) 
+                pcall(function() hui().IgnoreGuiInset = true end)
+                return x
+            end
+        end
+    end
+    return function(x) return x end
+end)()
 
 local Executor = "Unknown"
 
