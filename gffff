@@ -18,32 +18,9 @@ end
 
 local RenderStepped = RunService.RenderStepped
 
-local ProtectGui = (function()
-    if syn and type(syn.protect_gui) == "function" then return syn.protect_gui end
-    if type(protectgui) == "function" then return protectgui end
-    if type(gethui) == "function" then
-        local success, hui = pcall(gethui)
-        if success and hui then
-            return function(x) 
-                pcall(function() hui().IgnoreGuiInset = true end)
-                return x
-            end
-        end
-    end
-    return function(x) return x end
-end)()
+local ProtectGui = function(obj) return obj end
 
 local Executor = "Unknown"
-
-local _ProtoInit = {}
-local function _GenerateConfigFolder()
-	local hash = tostring(game.PlaceId):sub(1, 4)
-	local env = (pcall(function() return syn and true end) and "syn") or (pcall(function() return genv and true end) and "genv") or "std"
-	return "Config_" .. env .. "_" .. hash .. "_" .. math.random(1000, 9999)
-end
-
-local _ConfigFolderName = _GenerateConfigFolder()
-local _InitDelayMS = math.random(10, 100)
 local Themes = {
 	Names = {
 		"Slate",
@@ -53,7 +30,7 @@ local Themes = {
 		Accent = Color3.fromRGB(96, 205, 255),
 		AcrylicMain = Color3.fromRGB(60, 60, 60),
 		AcrylicBorder = Color3.fromRGB(90, 90, 90),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 40)), ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 40, 40))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(40, 40, 40), Color3.fromRGB(40, 40, 40)),
 		AcrylicNoise = 0.9,
 		TitleBarLine = Color3.fromRGB(75, 75, 75),
 		Tab = Color3.fromRGB(120, 120, 120),
@@ -90,7 +67,7 @@ local Themes = {
 		Accent = Color3.fromRGB(56, 109, 223),
 		AcrylicMain = Color3.fromRGB(30, 30, 30),
 		AcrylicBorder = Color3.fromRGB(60, 60, 60),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(17, 17, 17)), ColorSequenceKeypoint.new(1, Color3.fromRGB(18, 18, 18))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(17, 17, 17), Color3.fromRGB(18, 18, 18)),
 		AcrylicNoise = 0.94,
 		TitleBarLine = Color3.fromRGB(65, 65, 65),
 		Tab = Color3.fromRGB(100, 100, 100),
@@ -98,18 +75,9 @@ local Themes = {
 		ElementBorder = Color3.fromRGB(25, 25, 25),
 		InElementBorder = Color3.fromRGB(55, 55, 55),
 		ElementTransparency = 0.82,
-		ToggleSlider = Color3.fromRGB(100, 100, 100),
-		ToggleToggled = Color3.fromRGB(35, 35, 35),
-		SliderRail = Color3.fromRGB(100, 100, 100),
 		DropdownFrame = Color3.fromRGB(120, 120, 120),
 		DropdownHolder = Color3.fromRGB(35, 35, 35),
 		DropdownBorder = Color3.fromRGB(25, 25, 25),
-		DropdownOption = Color3.fromRGB(100, 100, 100),
-		Keybind = Color3.fromRGB(100, 100, 100),
-		Input = Color3.fromRGB(100, 100, 100),
-		InputFocused = Color3.fromRGB(10, 10, 10),
-		InputIndicator = Color3.fromRGB(120, 120, 120),
-		InputIndicatorFocus = Color3.fromRGB(150, 150, 150),
 		Dialog = Color3.fromRGB(35, 35, 35),
 		DialogHolder = Color3.fromRGB(25, 25, 25),
 		DialogHolderLine = Color3.fromRGB(20, 20, 20),
@@ -118,17 +86,13 @@ local Themes = {
 		DialogBorder = Color3.fromRGB(50, 50, 50),
 		DialogInput = Color3.fromRGB(45, 45, 45),
 		DialogInputLine = Color3.fromRGB(120, 120, 120),
-		Text = Color3.fromRGB(240, 240, 240),
-		SubText = Color3.fromRGB(170, 170, 170),
-		Hover = Color3.fromRGB(100, 100, 100),
-		HoverChange = 0.06,
 	},
 	AMOLED = {
 		Name = "AMOLED",
 		Accent = Color3.fromRGB(255, 255, 255),
 		AcrylicMain = Color3.fromRGB(0, 0, 0),
 		AcrylicBorder = Color3.fromRGB(20, 20, 20),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(0, 0, 0), Color3.fromRGB(0, 0, 0)),
 		AcrylicNoise = 1,
 		TitleBarLine = Color3.fromRGB(25, 25, 25),
 		Tab = Color3.fromRGB(40, 40, 40),
@@ -166,7 +130,7 @@ local Themes = {
 		Accent = Color3.fromRGB(0, 103, 192),
 		AcrylicMain = Color3.fromRGB(200, 200, 200),
 		AcrylicBorder = Color3.fromRGB(120, 120, 120),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(255, 255, 255)),
 		AcrylicNoise = 0.96,
 		TitleBarLine = Color3.fromRGB(160, 160, 160),
 		Tab = Color3.fromRGB(90, 90, 90),
@@ -204,7 +168,7 @@ local Themes = {
 		Accent = Color3.fromRGB(100, 170, 255),
 		AcrylicMain = Color3.fromRGB(189, 224, 255),
 		AcrylicBorder = Color3.fromRGB(160, 227, 255),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(240, 250, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(210, 235, 250))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(240, 250, 255), Color3.fromRGB(210, 235, 250)),
 		AcrylicNoise = 1,
 		TitleBarLine = Color3.fromRGB(150, 200, 255),
 		Tab = Color3.fromRGB(153, 185, 255),
@@ -242,7 +206,7 @@ local Themes = {
 		Accent = Color3.fromRGB(206, 163, 90),
 		AcrylicMain = Color3.fromRGB(255, 245, 220),
 		AcrylicBorder = Color3.fromRGB(255, 230, 200),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 245, 220)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 235, 210))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(255, 245, 220), Color3.fromRGB(255, 235, 210)),
 		AcrylicNoise = 0.93,
 		TitleBarLine = Color3.fromRGB(255, 220, 190),
 		Tab = Color3.fromRGB(199, 165, 112),
@@ -280,7 +244,7 @@ local Themes = {
 		Accent = Color3.fromRGB(38, 166, 178),
 		AcrylicMain = Color3.fromRGB(18, 54, 61),
 		AcrylicBorder = Color3.fromRGB(80, 118, 130),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(41, 101, 139)), ColorSequenceKeypoint.new(1, Color3.fromRGB(11, 132, 128))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(41, 101, 139), Color3.fromRGB(11, 132, 128)),
 		AcrylicNoise = 0.92,
 		TitleBarLine = Color3.fromRGB(68, 135, 136),
 		Tab = Color3.fromRGB(126, 175, 180),
@@ -317,7 +281,7 @@ local Themes = {
 		Accent = Color3.fromRGB(126, 44, 182),
 		AcrylicMain = Color3.fromRGB(40, 12, 71),
 		AcrylicBorder = Color3.fromRGB(85, 45, 120),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(34, 19, 49)), ColorSequenceKeypoint.new(1, Color3.fromRGB(41, 24, 57))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(34, 19, 49), Color3.fromRGB(41, 24, 57)),
 		AcrylicNoise = 0.92,
 		TitleBarLine = Color3.fromRGB(95, 55, 130),
 		Tab = Color3.fromRGB(135, 75, 170),
@@ -355,7 +319,7 @@ local Themes = {
 		Accent = Color3.fromRGB(219, 48, 123),
 		AcrylicMain = Color3.fromRGB(35, 25, 30),
 		AcrylicBorder = Color3.fromRGB(145, 35, 75),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(65, 25, 45)), ColorSequenceKeypoint.new(1, Color3.fromRGB(75, 30, 50))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(65, 25, 45), Color3.fromRGB(75, 30, 50)),
 		AcrylicNoise = 0.92,
 		TitleBarLine = Color3.fromRGB(150, 65, 95),
 		Tab = Color3.fromRGB(190, 85, 115),
@@ -393,7 +357,7 @@ local Themes = {
 		Accent = Color3.fromRGB(52, 50, 178),
 		AcrylicMain = Color3.fromRGB(20, 20, 20),
 		AcrylicBorder = Color3.fromRGB(83, 83, 130),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(1, 1, 39)), ColorSequenceKeypoint.new(1, Color3.fromRGB(6, 6, 54))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(1, 1, 39), Color3.fromRGB(6, 6, 54)),
 		AcrylicNoise = 0.96,
 		TitleBarLine = Color3.fromRGB(77, 75, 126),
 		Tab = Color3.fromRGB(126, 127, 180),
@@ -412,7 +376,6 @@ local Themes = {
 		Input = Color3.fromRGB(116, 112, 160),
 		InputFocused = Color3.fromRGB(20, 10, 30),
 		InputIndicator = Color3.fromRGB(136, 140, 190),
-		InputIndicatorFocus = Color3.fromRGB(52, 50, 178),
 		Dialog = Color3.fromRGB(37, 37, 80),
 		DialogHolder = Color3.fromRGB(24, 24, 65),
 		DialogHolderLine = Color3.fromRGB(25, 26, 60),
@@ -431,7 +394,7 @@ local Themes = {
 		Accent = Color3.fromRGB(46, 141, 70),
 		AcrylicMain = Color3.fromRGB(20, 35, 25),
 		AcrylicBorder = Color3.fromRGB(50, 90, 60),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 35, 20)), ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 40, 25))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(15, 35, 20), Color3.fromRGB(20, 40, 25)),
 		AcrylicNoise = 0.92,
 		TitleBarLine = Color3.fromRGB(60, 100, 70),
 		Tab = Color3.fromRGB(80, 140, 90),
@@ -469,7 +432,7 @@ local Themes = {
 		Accent = Color3.fromRGB(255, 128, 0),
 		AcrylicMain = Color3.fromRGB(40, 25, 25),
 		AcrylicBorder = Color3.fromRGB(130, 80, 60),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 35, 20)), ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 30, 20))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(70, 35, 20), Color3.fromRGB(60, 30, 20)),
 		AcrylicNoise = 0.92,
 		TitleBarLine = Color3.fromRGB(140, 90, 70),
 		Tab = Color3.fromRGB(180, 120, 90),
@@ -507,7 +470,7 @@ local Themes = {
 		Accent = Color3.fromRGB(0, 141, 255),
 		AcrylicMain = Color3.fromRGB(20, 25, 40),
 		AcrylicBorder = Color3.fromRGB(40, 60, 100),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 25, 45)), ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 30, 50))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(15, 25, 45), Color3.fromRGB(20, 30, 50)),
 		AcrylicNoise = 0.92,
 		TitleBarLine = Color3.fromRGB(50, 70, 120),
 		Tab = Color3.fromRGB(70, 90, 160),
@@ -545,7 +508,7 @@ local Themes = {
 		Accent = Color3.fromRGB(0, 168, 107),
 		AcrylicMain = Color3.fromRGB(20, 35, 30),
 		AcrylicBorder = Color3.fromRGB(30, 100, 80),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 55, 45)), ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 60, 50))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(20, 55, 45), Color3.fromRGB(25, 60, 50)),
 		AcrylicNoise = 0.92,
 		TitleBarLine = Color3.fromRGB(40, 110, 90),
 		Tab = Color3.fromRGB(50, 130, 100),
@@ -583,7 +546,7 @@ local Themes = {
 		Accent = Color3.fromRGB(0, 105, 255),
 		AcrylicMain = Color3.fromRGB(24, 30, 85),
 		AcrylicBorder = Color3.fromRGB(25, 80, 150),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(13, 33, 94)), ColorSequenceKeypoint.new(1, Color3.fromRGB(21, 44, 127))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(13, 33, 94), Color3.fromRGB(21, 44, 127)),
 		AcrylicNoise = 0.88,
 		TitleBarLine = Color3.fromRGB(50, 120, 200),
 		Tab = Color3.fromRGB(60, 140, 220),
@@ -621,7 +584,7 @@ local Themes = {
 		Accent = Color3.fromRGB(27, 114, 138),
 		AcrylicMain = Color3.fromRGB(13, 62, 77),
 		AcrylicBorder = Color3.fromRGB(80, 118, 130),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(51, 74, 83)), ColorSequenceKeypoint.new(1, Color3.fromRGB(4, 47, 66))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(51, 74, 83), Color3.fromRGB(4, 47, 66)),
 		AcrylicNoise = 0.94,
 		TitleBarLine = Color3.fromRGB(97, 97, 97),
 		Tab = Color3.fromRGB(126, 175, 180),
@@ -640,7 +603,6 @@ local Themes = {
 		Input = Color3.fromRGB(112, 156, 160),
 		InputFocused = Color3.fromRGB(14, 35, 40),
 		InputIndicator = Color3.fromRGB(137, 181, 190),
-		InputIndicatorFocus = Color3.fromRGB(27, 114, 138),
 		Dialog = Color3.fromRGB(11, 75, 88),
 		DialogHolder = Color3.fromRGB(18, 77, 93),
 		DialogHolderLine = Color3.fromRGB(33, 76, 86),
@@ -659,7 +621,7 @@ local Themes = {
 		Accent = Color3.fromRGB(183, 176, 223),
 		AcrylicMain = Color3.fromRGB(0, 0, 0),
 		AcrylicBorder = Color3.fromRGB(20, 20, 20),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(6, 0, 16)), ColorSequenceKeypoint.new(1, Color3.fromRGB(6, 0, 16))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(6, 0, 16), Color3.fromRGB(6, 0, 16)),
 		AcrylicNoise = 1,
 		TitleBarLine = Color3.fromRGB(25, 25, 25),
 		Tab = Color3.fromRGB(40, 40, 40),
@@ -697,7 +659,7 @@ local Themes = {
 		Accent = Color3.fromRGB(144, 0, 0),
 		AcrylicMain = Color3.fromRGB(61, 0, 0),
 		AcrylicBorder = Color3.fromRGB(86, 0, 0),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(90, 0, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 0, 0))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(90, 0, 0), Color3.fromRGB(100, 0, 0)),
 		AcrylicNoise = 0.92,
 		TitleBarLine = Color3.fromRGB(126, 0, 0),
 		Tab = Color3.fromRGB(134, 0, 0),
@@ -716,7 +678,6 @@ local Themes = {
 		Input = Color3.fromRGB(150, 30, 30),
 		InputFocused = Color3.fromRGB(40, 10, 10),
 		InputIndicator = Color3.fromRGB(113, 1, 1),
-		InputIndicatorFocus = Color3.fromRGB(144, 0, 0),
 		Dialog = Color3.fromRGB(85, 0, 1),
 		DialogHolder = Color3.fromRGB(77, 0, 8),
 		DialogHolderLine = Color3.fromRGB(88, 4, 4),
@@ -735,7 +696,7 @@ local Themes = {
 		Accent = Color3.fromRGB(64, 224, 255),
 		AcrylicMain = Color3.fromRGB(10, 18, 25),
 		AcrylicBorder = Color3.fromRGB(35, 55, 70),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 25, 35)), ColorSequenceKeypoint.new(1, Color3.fromRGB(18, 30, 40))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(15, 25, 35), Color3.fromRGB(18, 30, 40)),
 		AcrylicNoise = 0.94,
 		TitleBarLine = Color3.fromRGB(45, 70, 90),
 		Tab = Color3.fromRGB(70, 110, 140),
@@ -773,7 +734,7 @@ local Themes = {
 		Accent = Color3.fromRGB(255, 255, 255),
 		AcrylicMain = Color3.fromRGB(25, 25, 28),
 		AcrylicBorder = Color3.fromRGB(25, 25, 28),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 23)), ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 25, 28))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(20, 20, 23), Color3.fromRGB(25, 25, 28)),
 		AcrylicNoise = 0.95,
 		TitleBarLine = Color3.fromRGB(35, 35, 35),
 		Tab = Color3.fromRGB(60, 60, 60),
@@ -792,7 +753,6 @@ local Themes = {
 		Input = Color3.fromRGB(45, 45, 45),
 		InputFocused = Color3.fromRGB(20, 20, 23),
 		InputIndicator = Color3.fromRGB(45, 45, 45),
-		InputIndicatorFocus = Color3.fromRGB(255, 255, 255),
 		Dialog = Color3.fromRGB(25, 25, 28),
 		DialogHolder = Color3.fromRGB(25, 25, 28),
 		DialogHolderLine = Color3.fromRGB(35, 35, 35),
@@ -811,7 +771,7 @@ local Themes = {
 		Accent = Color3.fromRGB(150, 150, 150),
 		AcrylicMain = Color3.fromRGB(80, 80, 80),
 		AcrylicBorder = Color3.fromRGB(110, 110, 110),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(75, 75, 75)), ColorSequenceKeypoint.new(1, Color3.fromRGB(75, 75, 75))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(75, 75, 75), Color3.fromRGB(75, 75, 75)),
 		AcrylicNoise = 0.85,
 		TitleBarLine = Color3.fromRGB(100, 100, 100),
 		Tab = Color3.fromRGB(150, 150, 150),
@@ -830,7 +790,6 @@ local Themes = {
 		Input = Color3.fromRGB(170, 170, 170),
 		InputFocused = Color3.fromRGB(40, 40, 40),
 		InputIndicator = Color3.fromRGB(170, 170, 170),
-		InputIndicatorFocus = Color3.fromRGB(150, 150, 150),
 		Dialog = Color3.fromRGB(70, 70, 70),
 		DialogHolder = Color3.fromRGB(60, 60, 60),
 		DialogHolderLine = Color3.fromRGB(50, 50, 50),
@@ -849,7 +808,7 @@ local Themes = {
 		Accent = Color3.fromRGB(240, 240, 240),
 		AcrylicMain = Color3.fromRGB(5, 5, 5),
 		AcrylicBorder = Color3.fromRGB(80, 80, 80),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 15))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(0, 0, 0), Color3.fromRGB(15, 15, 15)),
 		AcrylicNoise = 1,
 		TitleBarLine = Color3.fromRGB(120, 120, 120),
 		Tab = Color3.fromRGB(180, 180, 180),
@@ -887,7 +846,7 @@ local Themes = {
 		Accent = Color3.fromRGB(255, 0, 0),
 		AcrylicMain = Color3.fromRGB(30, 30, 30),
 		AcrylicBorder = Color3.fromRGB(60, 60, 60),
-		AcrylicGradient = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 20)), ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 25, 25))},
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(20, 20, 20), Color3.fromRGB(25, 25, 25)),
 		AcrylicNoise = 0.9,
 		TitleBarLine = Color3.fromRGB(75, 75, 75),
 		Tab = Color3.fromRGB(120, 120, 120),
@@ -917,7 +876,11 @@ local Themes = {
 		Hover = Color3.fromRGB(130, 130, 130),
 		HoverChange = 0.05
 	}
+
+
+
 }
+
 local Library = {
 	Version = "1.2.2",
 
@@ -2181,10 +2144,29 @@ function Library:RemoveKeybindDisplay(idx)
 end
 
 function Library:SafeCallback(Function, ...)
-	if not Function or type(Function) ~= "function" then return end
-	local s, err = pcall(Function, ...)
-	if not s and err then
-		task.spawn(function() end)
+	if not Function then
+		return
+	end
+
+	local Success, Event = pcall(Function, ...)
+	if not Success then
+		local _, i = Event:find(":%d+: ")
+
+		if not i then
+			return Library:Notify({
+				Title = "Interface",
+				Content = "Callback error",
+				SubContent = Event,
+				Duration = 5,
+			})
+		end
+
+		return Library:Notify({
+			Title = "Interface",
+			Content = "Callback error",
+			SubContent = Event:sub(i + 1),
+			Duration = 5,
+		})
 	end
 end
 function Library:Round(Number, Factor)
@@ -2211,7 +2193,7 @@ end
 local viewportPointToWorld, getOffset = unpack({ viewportPointToWorld, getOffset })
 
 local BlurFolder = Instance.new("Folder")
-BlurFolder.Name = "Blur_" .. math.random(1000, 9999) .. "_" .. tostring(game.PlaceId):sub(-3)
+BlurFolder.Name = "FluentBlur"
 do
 	local ws = game:GetService("Workspace")
 	local function attachToCurrentCamera()
@@ -3047,19 +3029,11 @@ Components.Tab = (function()
 
 		Creator.AddSignal(Tab.Frame.MouseEnter, function()
 			Tab.SetTransparency(Tab.Selected and 0.85 or 0.6)
-			if game and game:GetService and TweenService then
-				pcall(function()
-					TweenService:Create(Tab.Frame, TweenInfo.new(0.3), {BackgroundColor3 = Creator.GetThemeProperty("Accent")}):Play()
-				end)
-			end
+			game:GetService("TweenService"):Create(Tab.Frame, TweenInfo.new(0.3), {BackgroundColor3 = Creator.GetThemeProperty("Accent")}):Play()
 		end)
 		Creator.AddSignal(Tab.Frame.MouseLeave, function()
 			Tab.SetTransparency(Tab.Selected and 0.89 or 0.92)
-			if game and game:GetService and TweenService then
-				pcall(function()
-					TweenService:Create(Tab.Frame, TweenInfo.new(0.3), {BackgroundColor3 = Creator.GetThemeProperty("Tab")}):Play()
-				end)
-			end
+			game:GetService("TweenService"):Create(Tab.Frame, TweenInfo.new(0.3), {BackgroundColor3 = Creator.GetThemeProperty("Tab")}):Play()
 		end)
 		Creator.AddSignal(Tab.Frame.MouseButton1Down, function()
 			Tab.SetTransparency(0.92)
@@ -4369,8 +4343,8 @@ Components.TitleBar = (function()
                 repeat task.wait() until ExpiryLabel.Parent
                 
                 while ExpiryLabel and ExpiryLabel.Parent do
-                    local expiryTime = pcall(function() return Library._ExpiryTime end) and Library._ExpiryTime or nil
-                    local isPremium = pcall(function() return Library._IsPremium end) and Library._IsPremium or false
+                    local expiryTime = _G.NEXUS_EXPIRY_TIME
+                    local isPremium = _G.NEXUS_IS_PREMIUM
                     
                     if expiryTime then
                         if expiryTime == -1 then
@@ -5156,17 +5130,16 @@ Window.Root = New("Frame", {
 			Y = Window.Position.Y.Offset,
 		})
 
-		local DragCounter = 0
-		Window.DragRef = {Count = DragCounter}
+		_G.CDDrag = 0
 		Window.SelectorPosMotor = Flipper.SingleMotor.new(17)
 		Window.SelectorSizeMotor = Flipper.SingleMotor.new(0)
 		Window.ContainerBackMotor = Flipper.SingleMotor.new(0)
 		Window.ContainerPosMotor = Flipper.SingleMotor.new(94)
 		Window.ContainerXMotor = Flipper.SingleMotor.new(0)
+
 		SizeMotor:onStep(function(values)
-			local w = pcall(function() return Window.DragRef.Count end) and Window.DragRef.Count or 0
-			task.wait(w / 10)
-			if Window.Root then Window.Root.Size = UDim2.new(0, values.X, 0, values.Y) end
+			task.wait(_G.CDDrag / 10)
+			Window.Root.Size = UDim2.new(0, values.X, 0, values.Y)
 			task.spawn(function()
 				task.wait(0.01)
 				if Window.UpdateTabHolderLayout then
@@ -5176,9 +5149,8 @@ Window.Root = New("Frame", {
 		end)
 
 		PosMotor:onStep(function(values)
-			local w = pcall(function() return Window.DragRef.Count end) and Window.DragRef.Count or 0
-			task.wait(w / 10)
-			if Window.Root then Window.Root.Position = UDim2.new(0, values.X, 0, values.Y) end
+			task.wait(_G.CDDrag / 10)
+			Window.Root.Position = UDim2.new(0, values.X, 0, values.Y)
 		end)
 
 		local LastValue = 0
@@ -5342,13 +5314,16 @@ Window.Root = New("Frame", {
 			end
 		end)
 
-Creator.AddSignal(UserInputService.InputBegan, function(Input, gameProcessedEvent)
+		Creator.AddSignal(UserInputService.InputBegan, function(Input, gameProcessedEvent)
 			if gameProcessedEvent then return end
-			if type(Library.MinimizeKeybind) == "table" and type(Library.MinimizeKeybind.Type) == "string" and Library.MinimizeKeybind.Type == "Keybind" then
-				if type(Input.KeyCode) == "userdata" and Input.KeyCode.Name == Library.MinimizeKeybind.Value then
+			if
+				type(Library.MinimizeKeybind) == "table"
+				and Library.MinimizeKeybind.Type == "Keybind"
+			then
+				if Input.KeyCode.Name == Library.MinimizeKeybind.Value then
 					Window:Minimize()
 				end
-			elseif type(Library.MinimizeKey) == "userdata" and Input.KeyCode == Library.MinimizeKey then
+			elseif Input.KeyCode == Library.MinimizeKey then
 				Window:Minimize()
 			end
 		end)
@@ -5752,7 +5727,6 @@ ElementsTable.Dropdown = (function()
 			Opened = false,
 			Type = "Dropdown",
 			Callback = Config.Callback or function() end,
-			Changed = function() end,
 			Search = (Config.Search == nil) and true or Config.Search,
 			KeepSearch = Config.KeepSearch == true,
 			OpenToRight = windowDropdownsOutside
@@ -6246,15 +6220,7 @@ local DropdownHolderCanvas = New("Frame", {
 				Input.UserInputType == Enum.UserInputType.MouseButton1
 				or Input.UserInputType == Enum.UserInputType.Touch
 			then
-				local mousePos
-				if Input.UserInputType == Enum.UserInputType.MouseButton1 and Mouse then
-					mousePos = Vector2.new(Mouse.X, Mouse.Y)
-				else
-					mousePos = Input.Position or Vector2.new(0, 0)
-				end
-				
-				if not (DropdownHolderFrame and DropdownHolderFrame.Parent and DropdownInner and DropdownInner.Parent) then return end
-				
+				local mousePos = Input.UserInputType == Enum.UserInputType.MouseButton1 and Vector2.new(Mouse.X, Mouse.Y) or Input.Position
 				local AbsPos, AbsSize = DropdownHolderFrame.AbsolutePosition, DropdownHolderFrame.AbsoluteSize
 				local innerAbsPos, innerAbsSize = DropdownInner.AbsolutePosition, DropdownInner.AbsoluteSize
 				
@@ -6276,39 +6242,29 @@ local DropdownHolderCanvas = New("Frame", {
 			if Dropdown.OpenToRight then
 				Dropdown.SavedY = nil
 			end
-			if Library and Library.OpenFrames then
-				for _, frame in ipairs(Library.OpenFrames) do
-					if frame and frame ~= DropdownHolderCanvas and frame.Visible then
-						pcall(function() 
-							if frame and frame.Parent then
-								frame.Visible = false 
-							end
-						end)
-					end
+			for _, frame in ipairs(Library.OpenFrames) do
+				if frame ~= DropdownHolderCanvas and frame.Visible then
+					frame.Visible = false
 				end
 			end
-			if SearchBox and SearchBox.Parent and not Dropdown.KeepSearch then
+			if SearchBox and not Dropdown.KeepSearch then
 				SearchBox.Text = ""
 			end
-			if DropdownHolderCanvas and DropdownHolderCanvas.Parent then 
-				DropdownHolderCanvas.Visible = true 
-			end
-			if type(RecalculateListPosition) == "function" then RecalculateListPosition() end
-			if type(RecalculateListSize) == "function" then RecalculateListSize() end
-			if type(RecalculateCanvasSize) == "function" then RecalculateCanvasSize() end
+			DropdownHolderCanvas.Visible = true
+			RecalculateListPosition()
+			RecalculateListSize()
+			RecalculateCanvasSize()
 			task.wait()
-			local openBase = 0.25 + (math.random() * 0.2)
-			local openEase = (math.random(1,3) == 1) and Enum.EasingDirection.Out or ((math.random(1,2) == 1) and Enum.EasingDirection.InOut or Enum.EasingDirection.In)
-			if DropdownHolderFrame and DropdownHolderFrame.Parent and TweenService then
-				pcall(function()
-					TweenService:Create(DropdownHolderFrame, TweenInfo.new(openBase, Enum.EasingStyle.Quart, openEase), {Size = UDim2.fromScale(1,1)}):Play()
-				end)
-			end
-			if DropdownIco and DropdownIco.Parent and TweenService then
-				pcall(function()
-					TweenService:Create(DropdownIco, TweenInfo.new(openBase + 0.03, Enum.EasingStyle.Quart, openEase), {Rotation = openRotation}):Play()
-				end)
-			end
+			TweenService:Create(
+				DropdownHolderFrame,
+				TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+				{ Size = UDim2.fromScale(1, 1) }
+			):Play()
+			TweenService:Create(
+				DropdownIco,
+				TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+				{ Rotation = openRotation }
+			):Play()
 		end
 
 		function Dropdown:Close()
@@ -6316,28 +6272,17 @@ local DropdownHolderCanvas = New("Frame", {
 			if Dropdown.OpenToRight then
 				Dropdown.SavedY = nil
 			end
-			if DropdownHolderFrame and DropdownHolderFrame.Parent then 
-				DropdownHolderFrame.Size = UDim2.fromScale(1, 1) 
-			end
-			if DropdownHolderCanvas and DropdownHolderCanvas.Parent then 
-				DropdownHolderCanvas.Visible = false 
-			end
-			local closeBase = 0.2 + (math.random() * 0.1)
-			local closeEase = (math.random(1,2) == 1) and Enum.EasingDirection.Out or Enum.EasingDirection.InOut
-			if DropdownIco and DropdownIco.Parent and TweenService then
-				pcall(function()
-					TweenService:Create(DropdownIco, TweenInfo.new(closeBase, Enum.EasingStyle.Quart, closeEase), {Rotation = closeRotation}):Play()
-				end)
-			end
-			if Dropdown.Display and type(Dropdown.Display) == "function" then 
-				Dropdown:Display() 
-			end
-			if DropdownScrollFrame and DropdownScrollFrame.Parent then
-				local children = DropdownScrollFrame:GetChildren()
-				for _, element in next, children do
-					if element and not element:IsA("UIListLayout") then
-						element.Visible = true
-					end
+			DropdownHolderFrame.Size = UDim2.fromScale(1, 1)
+			DropdownHolderCanvas.Visible = false
+			TweenService:Create(
+				DropdownIco,
+				TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+				{ Rotation = closeRotation }
+			):Play()
+			Dropdown:Display()
+			for _, element in next, DropdownScrollFrame:GetChildren() do
+				if not element:IsA("UIListLayout") then
+					element.Visible = true
 				end
 			end
 		end
@@ -6384,20 +6329,12 @@ local DropdownHolderCanvas = New("Frame", {
 		end
 
 		function Dropdown:BuildDropdownList()
-			if not DropdownScrollFrame or not DropdownScrollFrame.Parent then return end
-			
 			local Values = Dropdown.Values
 			local Buttons = {}
 
-			local elementsToRemove = {}
 			for _, Element in next, DropdownScrollFrame:GetChildren() do
-				if Element and not Element:IsA("UIListLayout") then
-					table.insert(elementsToRemove, Element)
-				end
-			end
-			for _, elem in next, elementsToRemove do
-				if elem and elem.Parent then
-					pcall(function() elem:Destroy() end)
+				if not Element:IsA("UIListLayout") then
+					Element:Destroy()
 				end
 			end
 
@@ -7090,21 +7027,18 @@ ElementsTable.Keybind = (function()
 			if Keybind.Mode == "Always" then
 				return true
 			elseif Keybind.Mode == "Hold" then
-				if Keybind.Value == "None" or not Keybind.Value then
+				if Keybind.Value == "None" then
 					return false
 				end
 
 				local Key = Keybind.Value
-				if type(Key) ~= "string" then return false end
 
 				if Key == "MouseLeft" or Key == "MouseRight" then
-					local ok = pcall(function() return Key == "MouseLeft" and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) or Key == "MouseRight" and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) end)
-					return ok and (Key == "MouseLeft" and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) or Key == "MouseRight" and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)) or false
+					return Key == "MouseLeft" and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)
+						or Key == "MouseRight"
+						and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)
 				else
-					local success, result = pcall(function()
-						return (Enum.KeyCode[Keybind.Value] ~= nil) and UserInputService:IsKeyDown(Enum.KeyCode[Keybind.Value]) or false
-					end)
-					return success and result or false
+					return UserInputService:IsKeyDown(Enum.KeyCode[Keybind.Value])
 				end
 			else
 				return Keybind.Toggled
@@ -8681,10 +8615,6 @@ end
 
 Library.Elements = Elements
 
--- Anti-detection layer
-local _a,_b,_c=debug.getinfo,debug.traceback,getfENV or function()return _G end
-local function _d(t)if type(t)=='table'then for i,v in pairs(t)do if type(v)=='function'then debug.setlocal(2,i,'')end end end return t end
-
 if RunService:IsStudio() then
 	makefolder = function(...) return ... end;
 	makefile = function(...) return ... end;
@@ -8699,7 +8629,7 @@ local SaveManager = {} do
 
 
 
-	SaveManager.Folder = _ConfigFolderName or "Config_Data"
+	SaveManager.Folder = "FluentSettings"
 
 
 	SaveManager.Ignore = {}
@@ -9044,11 +8974,12 @@ local SaveManager = {} do
 
 
 
-		if not (decoded and type(decoded) == "table" and decoded.objects) then 
-			return false, "invalid config format" 
-		end
-		for _, option in next, decoded.objects do
-			if option and self.Parser and self.Parser[option.type] and not self.Ignore[option.idx] then
+
+
+			for _, option in next, decoded.objects do
+
+
+				if self.Parser[option.type] and not self.Ignore[option.idx] then
 
 
 					task.spawn(function() self.Parser[option.type].Load(option.idx, option) end)
@@ -9062,12 +8993,11 @@ local SaveManager = {} do
 
 
 
-			Nexus.SettingLoaded = true
+			Fluent.SettingLoaded = true
 
 
 
 			return true, decoded
-
 
 		end
 
@@ -9653,7 +9583,7 @@ end
 local InterfaceManager = {} do
 
 
-	InterfaceManager.Folder = _ConfigFolderName or "Config_Data"
+	InterfaceManager.Folder = "FluentSettings"
 
 
 	InterfaceManager.Settings = {
@@ -10067,7 +9997,6 @@ Library.CreateWindow = function(self, Config)
 
 
 
-
 		if Icon == "" or Icon == nil then
 
 
@@ -10375,10 +10304,19 @@ function Library:CreateMinimizer(Config)
 
 
 	if isMobile then
+
+
 		holder = New("Frame", {
-			Name = "Minimizer_" .. math.random(1000, 9999),
+
+
+			Name = "FluentMinimizer",
+
+
 			Parent = parentGui,
+
+
 			Size = Config.Size or UDim2.fromOffset(36, 36),
+
 			Position = Config.Position or UDim2.new(0.45, 0, 0.025, 0),
 
 
@@ -10570,13 +10508,27 @@ function Library:CreateMinimizer(Config)
 
 
 			Creator.AddSignal(RunService.Heartbeat, function()
-			if isDragging and dragStart and dragOffset and holder and holder.Parent then
-				local mouse = LocalPlayer and type(LocalPlayer.GetMouse) == "function" and pcall(function() return LocalPlayer:GetMouse() end) and LocalPlayer:GetMouse() or nil
-				if not mouse then return end
-				local current = Vector2.new(mouse.X, mouse.Y)
-				local delta = current - dragStart
-				local newX = dragOffset.X.Offset + delta.X
-				local newY = dragOffset.Y.Offset + delta.Y
+
+
+				if isDragging and dragStart and dragOffset and holder and holder.Parent then
+
+
+					local mouse = LocalPlayer:GetMouse()
+
+
+					local current = Vector2.new(mouse.X, mouse.Y)
+
+
+					local delta = current - dragStart
+
+
+					local newX = dragOffset.X.Offset + delta.X
+
+
+					local newY = dragOffset.Y.Offset + delta.Y
+
+
+					local viewport = workspace.Camera.ViewportSize
 
 
 					local size = holder.AbsoluteSize
@@ -10851,18 +10803,18 @@ end
 
 
 function Library:Notify(Config)
-	if NotificationModule and type(NotificationModule.New) == "function" then
-		return pcall(function() return NotificationModule:New(Config) end)
-	end
+
+
+	return NotificationModule:New(Config)
+
+
 end
 
 
 
 
 
-Library._Name = "NexusUI"
-Library._Version = 1.2
-if not getfenv then setmetatable(Library, {__metatable = false}) end
+_G.Fluent = Library
 
 
 
@@ -11041,7 +10993,6 @@ local MinimizeButton = New("TextButton", {
 	})
 
 })
-
 
 
 
@@ -11329,9 +11280,14 @@ Creator.AddSignal(RunService.Heartbeat, function()
 
 
 		if debugCount % 30 == 1 then
+
+
 		end
-		local Mouse = pcall(function() return game:GetService("Players").LocalPlayer:GetMouse() end) and game:GetService("Players").LocalPlayer:GetMouse() or nil
-		if not Mouse then return end
+
+
+		local Mouse = game:GetService("Players").LocalPlayer:GetMouse()
+
+
 		local currentMousePos = Vector2.new(Mouse.X, Mouse.Y)
 
 
@@ -11617,10 +11573,4 @@ task.spawn(function()
 		end
 	end)
 end)
-do
-	local _mt = {__metatable=""}
-	if type(setmetatable) == "function" then pcall(function() setmetatable(Library, _mt) end) end
-	if type(setmetatable) == "function" then pcall(function() setmetatable(SaveManager, _mt) end) end
-	if type(setmetatable) == "function" then pcall(function() setmetatable(InterfaceManager, _mt) end) end
-end
 return Library, SaveManager, InterfaceManager, Mobile
