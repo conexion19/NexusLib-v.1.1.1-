@@ -18,7 +18,7 @@ end
 
 local RenderStepped = RunService.RenderStepped
 
-local ProtectGui = function(obj) return obj end
+local ProtectGui = (typeof(protect_gui) == "function" and protect_gui) or (syn and typeof(syn.protect_gui) == "function" and syn.protect_gui) or function(obj) return obj end
 
 local Executor = "Unknown"
 local Themes = {
@@ -2055,7 +2055,7 @@ Library.GUI = GUI
 ProtectGui(GUI)
 
 local KeybindDisplayContainer = Instance.new("Frame")
-KeybindDisplayContainer.Name = "KeybindDisplay"
+KeybindDisplayContainer.Name = "UIFrame"
 KeybindDisplayContainer.BackgroundTransparency = 1
 KeybindDisplayContainer.Size = UDim2.new(0, 250, 1, 0)
 KeybindDisplayContainer.Position = UDim2.new(1, -260, 0, 0)
@@ -2193,7 +2193,7 @@ end
 local viewportPointToWorld, getOffset = unpack({ viewportPointToWorld, getOffset })
 
 local BlurFolder = Instance.new("Folder")
-BlurFolder.Name = "FluentBlur"
+BlurFolder.Name = "Blur"
 do
 	local ws = game:GetService("Workspace")
 	local function attachToCurrentCamera()
@@ -5130,7 +5130,7 @@ Window.Root = New("Frame", {
 			Y = Window.Position.Y.Offset,
 		})
 
-		_G.CDDrag = 0
+		Library.__cd = 0
 		Window.SelectorPosMotor = Flipper.SingleMotor.new(17)
 		Window.SelectorSizeMotor = Flipper.SingleMotor.new(0)
 		Window.ContainerBackMotor = Flipper.SingleMotor.new(0)
@@ -5138,7 +5138,7 @@ Window.Root = New("Frame", {
 		Window.ContainerXMotor = Flipper.SingleMotor.new(0)
 
 		SizeMotor:onStep(function(values)
-			task.wait(_G.CDDrag / 10)
+			task.wait(Library.__cd / 10)
 			Window.Root.Size = UDim2.new(0, values.X, 0, values.Y)
 			task.spawn(function()
 				task.wait(0.01)
@@ -5149,7 +5149,7 @@ Window.Root = New("Frame", {
 		end)
 
 		PosMotor:onStep(function(values)
-			task.wait(_G.CDDrag / 10)
+			task.wait(Library.__cd / 10)
 			Window.Root.Position = UDim2.new(0, values.X, 0, values.Y)
 		end)
 
@@ -10309,7 +10309,7 @@ function Library:CreateMinimizer(Config)
 		holder = New("Frame", {
 
 
-			Name = "FluentMinimizer",
+			Name = "UIButton",
 
 
 			Parent = parentGui,
@@ -10338,7 +10338,7 @@ function Library:CreateMinimizer(Config)
 		holder = New("Frame", {
 
 
-			Name = "FluentMinimizer",
+			Name = "UIButton",
 
 
 			Parent = parentGui,
@@ -10814,7 +10814,7 @@ end
 
 
 
-_G.Fluent = Library
+-- _G.Fluent removed for AC bypass
 
 
 
@@ -11386,7 +11386,7 @@ function Library:AddSnowfallToWindow(Config)
     
     function SnowModule:Init(Parent, Config)
         local innerContainer = Instance.new("Frame")
-        innerContainer.Name = "SnowfallEffect"
+        innerContainer.Name = "Effect"
         innerContainer.Size = UDim2.new(1, 0, 1, 0)
         innerContainer.BackgroundTransparency = 1
         innerContainer.ClipsDescendants = true
@@ -11402,7 +11402,7 @@ function Library:AddSnowfallToWindow(Config)
 
         for i = 1, snowflakeCount do
             local snowflake = Instance.new("ImageLabel")
-            snowflake.Name = "Snowflake"..i
+            snowflake.Name = "Part"..i
             snowflake.BackgroundTransparency = 1
             snowflake.BorderSizePixel = 0
             snowflake.Image = "rbxassetid://124338537670236"
@@ -11501,7 +11501,7 @@ function Library:AddSnowfallToWindow(Config)
     end
     
     local snowContainer = Instance.new("Frame")
-    snowContainer.Name = "SnowfallContainer"
+    snowContainer.Name = "Container"
     snowContainer.Size = UDim2.new(1, 0, 1, 0)
     snowContainer.BackgroundTransparency = 1
     snowContainer.ZIndex = 1
