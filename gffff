@@ -2233,9 +2233,9 @@ function AcrylicPaint()
 end
 
 local Acrylic = {
-	AcrylicBlur = {},
+	AcrylicBlur = AcrylicBlur(),
 	CreateAcrylic = createAcrylic,
-	AcrylicPaint = {},
+	AcrylicPaint = AcrylicPaint(),
 }
 
 function Acrylic.init()
