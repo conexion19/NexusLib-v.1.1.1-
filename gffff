@@ -4492,10 +4492,10 @@ Components.TitleBar = (function()
 
 		local StatsLabel = New("TextLabel", {
 			Name = "StatsLabel",
-			Text = "FPS: 0 | Ping: 0ms| 00:00:00",
+			Text = "FPS:0|Ping: 0ms|00:00:00",
 			TextTransparency = 0.4,
 			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-			TextSize = 12,
+			TextSize = 8,
 			TextXAlignment = Enum.TextXAlignment.Right,
 			Size = UDim2.new(0, 300, 1, 0),
 			AnchorPoint = Vector2.new(1, 0),
@@ -4507,15 +4507,26 @@ Components.TitleBar = (function()
 			},
 		})
 
+		local RunService = game:GetService("RunService")
+		local FrameCount = 0
+		local FPSConnection
+		FPSConnection = RunService.RenderStepped:Connect(function()
+			FrameCount = FrameCount + 1
+		end)
+
         task.spawn(function()
             local Stats = game:GetService("Stats")
             while TitleBar.Frame and TitleBar.Frame.Parent do
                 local ping = 0
                 pcall(function() ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
-                local fps = math.floor(workspace:GetRealPhysicsFPS())
-                StatsLabel.Text = string.format("FPS: %d   |   Ping: %dms   |   %s", fps, ping, os.date("%H:%M:%S"))
+                
+				local fps = FrameCount
+				FrameCount = 0
+
+                StatsLabel.Text = string.format("FPS:%d|Ping:%dms|%s", fps, ping, os.date("%H:%M:%S"))
                 task.wait(1)
             end
+			if FPSConnection then FPSConnection:Disconnect() end
         end)
 
         return TitleBar
@@ -5685,9 +5696,7 @@ ElementsTable.Toggle = (function()
 			Image = "rbxassetid://10709790644",
 			ImageTransparency = 1,
 			BackgroundTransparency = 1,
-			ThemeTag = {
-				ImageColor3 = "Text",
-			},
+			ImageColor3 = Color3.fromRGB(0, 0, 0),
 		})
 
 		local ToggleBorder = New("UIStroke", {
