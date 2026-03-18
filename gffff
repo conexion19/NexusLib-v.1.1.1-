@@ -20,7 +20,21 @@ local RenderStepped = RunService.RenderStepped
 
 local ProtectGui = (typeof(protect_gui) == "function" and protect_gui) or (syn and typeof(syn.protect_gui) == "function" and syn.protect_gui) or function(obj) return obj end
 
-local Executor = "Unknown"
+local Executor = (function()
+	if identifyexecutor then return identifyexecutor() end
+	if getexecutorname then return getexecutorname() end 
+	if syn then return "Synapse X" end
+	if secure_load then return "Sentinel" end
+	if is_sirhurt_closure then return "Sirhurt" end
+	if pebc_execute then return "ProtoSmasher" end
+	if KRNL_LOADED then return "Krnl" end
+	if WrapGlobal then return "WeAreDevs" end
+	if isvm then return "Proxo" end
+	if shadow_env then return "Shadow" end
+	if jit and jit.os then return jit.os end
+	return "Unknown"
+end)()
+
 local Themes = {
 	Names = {
 		"Slate",
@@ -4476,6 +4490,34 @@ Components.TitleBar = (function()
             Library.Window:Minimize()
         end)
 
+		local StatsLabel = New("TextLabel", {
+			Name = "StatsLabel",
+			Text = "FPS: 0 | Ping: 0ms| 00:00:00",
+			TextTransparency = 0.4,
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+			TextSize = 12,
+			TextXAlignment = Enum.TextXAlignment.Right,
+			Size = UDim2.new(0, 300, 1, 0),
+			AnchorPoint = Vector2.new(1, 0),
+			Position = UDim2.new(1, -80, 0, 0), 
+			BackgroundTransparency = 1,
+			Parent = TitleBar.Frame,
+			ThemeTag = {
+				TextColor3 = "SubText",
+			},
+		})
+
+        task.spawn(function()
+            local Stats = game:GetService("Stats")
+            while TitleBar.Frame and TitleBar.Frame.Parent do
+                local ping = 0
+                pcall(function() ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
+                local fps = math.floor(workspace:GetRealPhysicsFPS())
+                StatsLabel.Text = string.format("FPS: %d   |   Ping: %dms   |   %s", fps, ping, os.date("%H:%M:%S"))
+                task.wait(1)
+            end
+        end)
+
         return TitleBar
     end
 end)()
@@ -5636,6 +5678,18 @@ ElementsTable.Toggle = (function()
 			},
 		})
 
+		local ToggleCheck = New("ImageLabel", {
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Size = UDim2.fromOffset(14, 14),
+			Position = UDim2.new(0.5, 0, 0.5, 0),
+			Image = "rbxassetid://10709790644",
+			ImageTransparency = 1,
+			BackgroundTransparency = 1,
+			ThemeTag = {
+				ImageColor3 = "Text",
+			},
+		})
+
 		local ToggleBorder = New("UIStroke", {
 			Transparency = 0.5,
 			ThemeTag = {
@@ -5657,6 +5711,7 @@ ElementsTable.Toggle = (function()
 				CornerRadius = UDim.new(0, 4),
 			}),
 			ToggleBorder,
+			ToggleCheck,
 			ToggleCircle,
 		})
 
@@ -5675,6 +5730,12 @@ ElementsTable.Toggle = (function()
 				ToggleSlider,
 				TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
 				{ BackgroundTransparency = Toggle.Value and 0 or 1 }
+			):Play()
+
+			TweenService:Create(
+				ToggleCheck,
+				TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+				{ ImageTransparency = Toggle.Value and 0 or 1 }
 			):Play()
 
 			Library:SafeCallback(Toggle.Callback, Toggle.Value)
