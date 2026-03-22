@@ -6738,7 +6738,9 @@ ElementsTable.Slider = (function()
 		}
 
 		local Dragging = false
-		local isDisabled = false(Config.Title, Config.Description, self.Container, false, Config)
+		local isDisabled = false
+
+		local SliderFrame = Components.Element(Config.Title, Config.Description, self.Container, false, Config)
 		SliderFrame.DescLabel.Size = UDim2.new(1, -170, 0, 14)
 
 		Slider.Elements = SliderFrame
