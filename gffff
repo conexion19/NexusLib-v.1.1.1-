@@ -5717,6 +5717,7 @@ ElementsTable.Toggle = (function()
 			Value = Config.Default or false,
 			Callback = Config.Callback or function(Value) end,
 			Type = "Toggle",
+			_dependents = {},
 		}
 
 		local ToggleFrame = Components.Element(Config.Title, Config.Description, self.Container, true, Config)
@@ -5798,6 +5799,9 @@ ElementsTable.Toggle = (function()
 
 			Library:SafeCallback(Toggle.Callback, Toggle.Value)
 			Library:SafeCallback(Toggle.Changed, Toggle.Value)
+			for _, fn in ipairs(Toggle._dependents) do
+				pcall(fn, Toggle.Value)
+			end
 		end
 
 		function Toggle:Destroy()
@@ -6734,8 +6738,7 @@ ElementsTable.Slider = (function()
 		}
 
 		local Dragging = false
-
-		local SliderFrame = Components.Element(Config.Title, Config.Description, self.Container, false, Config)
+		local isDisabled = false(Config.Title, Config.Description, self.Container, false, Config)
 		SliderFrame.DescLabel.Size = UDim2.new(1, -170, 0, 14)
 
 		Slider.Elements = SliderFrame
@@ -6842,6 +6845,18 @@ ElementsTable.Slider = (function()
 			SliderRail,
 		})
 
+		local DisabledOverlay = New("Frame", {
+			Size = UDim2.new(1, 0, 1, 0),
+			BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+			BackgroundTransparency = 1,
+			ZIndex = 50,
+			Parent = SliderFrame.Frame,
+		}, {
+			New("UICorner", {
+				CornerRadius = UDim.new(0, 4),
+			}),
+		})
+
 		local isHovering = false
 		local inputVisible = false
 		local currentWidthTween = nil
@@ -6883,6 +6898,7 @@ ElementsTable.Slider = (function()
 
 		Creator.AddSignal(SliderFrame.Frame.MouseEnter, function()
 			isHovering = true
+			if isDisabled then return end
 			if not SliderInput:IsFocused() then
 				SliderDisplay.Visible = false
 				SliderInput.Text = tostring(Slider.Value)
@@ -6975,6 +6991,7 @@ ElementsTable.Slider = (function()
 		end)
 
 		Creator.AddSignal(SliderInput.Focused, function()
+			if isDisabled then SliderInput:ReleaseFocus() return end
 			SliderInput.Text = tostring(Slider.Value)
 			updateInputWidth(tostring(Slider.Value), false)
 		end)
@@ -6986,6 +7003,7 @@ ElementsTable.Slider = (function()
 		end)
 
 		Creator.AddSignal(SliderDot.InputBegan, function(Input)
+			if isDisabled then return end
 			if
 				Input.UserInputType == Enum.UserInputType.MouseButton1
 				or Input.UserInputType == Enum.UserInputType.Touch
@@ -7020,6 +7038,7 @@ ElementsTable.Slider = (function()
 		end)
 
 		Creator.AddSignal(SliderRail.InputBegan, function(Input)
+			if isDisabled then return end
 			if Input.UserInputType == Enum.UserInputType.Touch then
 				Dragging = true
 				local SizeScale = math.clamp((Input.Position.X - SliderRail.AbsolutePosition.X) / SliderRail.AbsoluteSize.X, 0, 1)
@@ -7036,6 +7055,24 @@ ElementsTable.Slider = (function()
 		function Slider:OnChanged(Func)
 			Slider.Changed = Func
 			Func(Slider.Value)
+		end
+
+		function Slider:SetDisabled(disabled)
+			isDisabled = disabled
+			if disabled then Dragging = false end
+			local tweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+			TweenService:Create(DisabledOverlay, tweenInfo, {
+				BackgroundTransparency = disabled and 0.55 or 1,
+			}):Play()
+			TweenService:Create(SliderDot, tweenInfo, {
+				ImageTransparency = disabled and 0.65 or 0,
+			}):Play()
+			TweenService:Create(SliderFill, tweenInfo, {
+				BackgroundTransparency = disabled and 0.7 or 0,
+			}):Play()
+			TweenService:Create(SliderInner, tweenInfo, {
+				BackgroundTransparency = disabled and 0.8 or 0.4,
+			}):Play()
 		end
 
 		function Slider:SetValue(Value)
@@ -7064,6 +7101,21 @@ ElementsTable.Slider = (function()
 		Slider:SetValue(Config.Default)
 
 		Library.Options[Idx] = Slider
+
+		if Config.DependsOn then
+			task.spawn(function()
+				task.wait()
+				local depToggle = Library.Options[Config.DependsOn]
+				if depToggle and depToggle.Type == "Toggle" then
+					Slider:SetDisabled(not depToggle.Value)
+					if not depToggle._dependents then depToggle._dependents = {} end
+					table.insert(depToggle._dependents, function(value)
+						Slider:SetDisabled(not value)
+					end)
+				end
+			end)
+		end
+
 		return Slider
 	end
 
