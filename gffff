@@ -798,39 +798,39 @@ local Themes = {
 	},
 	Slate = {
 		Name = "Slate",
-		Accent = Color3.fromRGB(200, 35, 35),
-		AcrylicMain = Color3.fromRGB(15, 8, 8),
-		AcrylicBorder = Color3.fromRGB(15, 8, 8),
-		AcrylicGradient = ColorSequence.new(Color3.fromRGB(12, 6, 6), Color3.fromRGB(18, 10, 10)),
+		Accent = Color3.fromRGB(210, 30, 30),
+		AcrylicMain = Color3.fromRGB(10, 5, 5),
+		AcrylicBorder = Color3.fromRGB(14, 7, 7),
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(8, 4, 4), Color3.fromRGB(16, 8, 8)),
 		AcrylicNoise = 0.95,
-		TitleBarLine = Color3.fromRGB(18, 10, 10),
-		Tab = Color3.fromRGB(38, 18, 18),
-		Element = Color3.fromRGB(20, 11, 11),
-		ElementBorder = Color3.fromRGB(20, 11, 11),
-		InElementBorder = Color3.fromRGB(20, 11, 11),
-		ElementTransparency = 0.92,
-		ToggleSlider = Color3.fromRGB(40, 20, 20),
-		ToggleToggled = Color3.fromRGB(200, 35, 35),
-		SliderRail = Color3.fromRGB(40, 20, 20),
-		DropdownFrame = Color3.fromRGB(40, 20, 20),
-		DropdownHolder = Color3.fromRGB(18, 10, 10),
-		DropdownBorder = Color3.fromRGB(18, 10, 10),
-		DropdownOption = Color3.fromRGB(32, 16, 16),
-		Keybind = Color3.fromRGB(40, 20, 20),
-		Input = Color3.fromRGB(32, 16, 16),
-		InputFocused = Color3.fromRGB(12, 6, 6),
-		InputIndicator = Color3.fromRGB(200, 35, 35),
-		Dialog = Color3.fromRGB(18, 10, 10),
-		DialogHolder = Color3.fromRGB(20, 11, 11),
-		DialogHolderLine = Color3.fromRGB(28, 14, 14),
-		DialogButton = Color3.fromRGB(30, 15, 15),
-		DialogButtonBorder = Color3.fromRGB(30, 15, 15),
-		DialogBorder = Color3.fromRGB(18, 10, 10),
-		DialogInput = Color3.fromRGB(18, 10, 10),
-		DialogInputLine = Color3.fromRGB(90, 30, 30),
-		Text = Color3.fromRGB(245, 220, 220),
-		SubText = Color3.fromRGB(170, 110, 110),
-		Hover = Color3.fromRGB(38, 20, 20),
+		TitleBarLine = Color3.fromRGB(24, 10, 10),
+		Tab = Color3.fromRGB(50, 22, 22),
+		Element = Color3.fromRGB(24, 11, 11),
+		ElementBorder = Color3.fromRGB(30, 14, 14),
+		InElementBorder = Color3.fromRGB(28, 13, 13),
+		ElementTransparency = 0.88,
+		ToggleSlider = Color3.fromRGB(45, 20, 20),
+		ToggleToggled = Color3.fromRGB(210, 30, 30),
+		SliderRail = Color3.fromRGB(45, 20, 20),
+		DropdownFrame = Color3.fromRGB(45, 20, 20),
+		DropdownHolder = Color3.fromRGB(14, 7, 7),
+		DropdownBorder = Color3.fromRGB(20, 9, 9),
+		DropdownOption = Color3.fromRGB(36, 16, 16),
+		Keybind = Color3.fromRGB(45, 20, 20),
+		Input = Color3.fromRGB(36, 16, 16),
+		InputFocused = Color3.fromRGB(10, 5, 5),
+		InputIndicator = Color3.fromRGB(210, 30, 30),
+		Dialog = Color3.fromRGB(14, 7, 7),
+		DialogHolder = Color3.fromRGB(20, 10, 10),
+		DialogHolderLine = Color3.fromRGB(30, 14, 14),
+		DialogButton = Color3.fromRGB(32, 15, 15),
+		DialogButtonBorder = Color3.fromRGB(32, 15, 15),
+		DialogBorder = Color3.fromRGB(14, 7, 7),
+		DialogInput = Color3.fromRGB(14, 7, 7),
+		DialogInputLine = Color3.fromRGB(100, 32, 32),
+		Text = Color3.fromRGB(255, 230, 230),
+		SubText = Color3.fromRGB(165, 95, 95),
+		Hover = Color3.fromRGB(44, 20, 20),
 		HoverChange = 0.03,
 	},
 	Gray = {
@@ -3097,18 +3097,18 @@ Components.Tab = (function()
 		Tab.Motor, Tab.SetTransparency = Creator.SpringMotor(0.92, Tab.Frame, "BackgroundTransparency")
 
 		Creator.AddSignal(Tab.Frame.MouseEnter, function()
-			Tab.SetTransparency(Tab.Selected and 0.85 or 0.6)
-			game:GetService("TweenService"):Create(Tab.Frame, TweenInfo.new(0.3), {BackgroundColor3 = Creator.GetThemeProperty("Accent")}):Play()
+			Tab.SetTransparency(Tab.Selected and 0.58 or 0.78)
+			game:GetService("TweenService"):Create(Tab.Frame, TweenInfo.new(0.25), {BackgroundColor3 = Creator.GetThemeProperty("Accent")}):Play()
 		end)
 		Creator.AddSignal(Tab.Frame.MouseLeave, function()
-			Tab.SetTransparency(Tab.Selected and 0.89 or 0.92)
-			game:GetService("TweenService"):Create(Tab.Frame, TweenInfo.new(0.3), {BackgroundColor3 = Creator.GetThemeProperty("Tab")}):Play()
+			Tab.SetTransparency(Tab.Selected and 0.68 or 0.92)
+			game:GetService("TweenService"):Create(Tab.Frame, TweenInfo.new(0.25), {BackgroundColor3 = Creator.GetThemeProperty("Tab")}):Play()
 		end)
 		Creator.AddSignal(Tab.Frame.MouseButton1Down, function()
-			Tab.SetTransparency(0.92)
+			Tab.SetTransparency(0.85)
 		end)
 		Creator.AddSignal(Tab.Frame.MouseButton1Up, function()
-			Tab.SetTransparency(Tab.Selected and 0.85 or 0.89)
+			Tab.SetTransparency(Tab.Selected and 0.68 or 0.85)
 		end)
 		Creator.AddSignal(Tab.Frame.MouseButton1Click, function()
 			TabModule:SelectTab(TabIndex)
@@ -3567,7 +3567,7 @@ Components.Tab = (function()
 			TabObject.SetTransparency(0.92)
 			TabObject.Selected = false
 		end
-		TabModule.Tabs[Tab].SetTransparency(0.89)
+		TabModule.Tabs[Tab].SetTransparency(0.68)
 		TabModule.Tabs[Tab].Selected = true
 
         
@@ -4358,20 +4358,22 @@ Components.TitleBar = (function()
         })
         local LogoGradient = New("UIGradient", {
             Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0,   Color3.fromRGB(255, 60,  60)),
-                ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 80,  80)),
-                ColorSequenceKeypoint.new(0.5, Color3.fromRGB(180, 0,   0)),
-                ColorSequenceKeypoint.new(0.8, Color3.fromRGB(255, 80,  80)),
-                ColorSequenceKeypoint.new(1,   Color3.fromRGB(255, 60,  60)),
+                ColorSequenceKeypoint.new(0,    Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(0.3,  Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(0.42, Color3.fromRGB(255, 160, 160)),
+                ColorSequenceKeypoint.new(0.5,  Color3.fromRGB(255, 55,  55)),
+                ColorSequenceKeypoint.new(0.58, Color3.fromRGB(255, 160, 160)),
+                ColorSequenceKeypoint.new(0.7,  Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(1,    Color3.fromRGB(255, 255, 255)),
             }),
             Parent = LogoIcon,
         })
         task.spawn(function()
             local ok, TS = pcall(game.GetService, game, "TweenService")
             if ok and TS then
-                local tInfo = TweenInfo.new(3, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, false)
-                LogoGradient.Offset = Vector2.new(-0.8, 0)
-                TS:Create(LogoGradient, tInfo, {Offset = Vector2.new(0.8, 0)}):Play()
+                local tInfo = TweenInfo.new(2.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, false)
+                LogoGradient.Offset = Vector2.new(-1.6, 0)
+                TS:Create(LogoGradient, tInfo, {Offset = Vector2.new(1.6, 0)}):Play()
             end
         end)
 
