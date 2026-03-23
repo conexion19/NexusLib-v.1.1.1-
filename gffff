@@ -1,99 +1,52 @@
--- [[ Anti-Detect ]] --
 local cloneref = cloneref or function(o) return o end
 
--- Thread identity
 pcall(function()
-	if syn and syn.set_thread_identity then
-		syn.set_thread_identity(8)
-	elseif set_thread_identity then
-		set_thread_identity(8)
-	end
-end)
-
--- Disable abuse report screenshots via flags
-pcall(function()
-	if setfflag then
-		setfflag("AbuseReportScreenshot", "False")
-		setfflag("AbuseReportScreenshotPercentage", "0")
-		setfflag("DebugLogErrors", "False")
-	end
-end)
-
--- Metatables-based CoreGui protection (не использует hookmetamethod)
-pcall(function()
-	local mt = getrawmetatable and getrawmetatable(game)
+	if not getrawmetatable then return end
+	local mt = getrawmetatable(game)
 	if not mt then return end
 
-	local oldIndex = rawget(mt, "__index")
+	local oldIndex    = rawget(mt, "__index")
 	local oldNamecall = rawget(mt, "__namecall")
 
-	-- Protect __index: game.CoreGui / game.RobloxGui -> cloneref
-	local function safeIndex(self, key)
-		if tostring(key) == "CoreGui" or tostring(key) == "RobloxGui" then
-			local ok, svc = pcall(function() return rawget(mt, "__index")(self, key) end)
-			if ok and svc then return cloneref(svc) end
-		end
-		if type(oldIndex) == "function" then
-			return oldIndex(self, key)
-		end
-		return rawget(self, key)
+	local function wrap(f)
+		return (newcclosure and newcclosure(f)) or f
 	end
 
-	-- Protect __namecall: :GetService("CoreGui") -> cloneref
-	local function safeNamecall(self, ...)
-		local method = rawget(mt, "__namecall") -- refresh each call
+	local function unlock()
+		if make_writeable then make_writeable(mt, true)
+		elseif setreadonly then setreadonly(mt, false) end
+	end
+	local function lock()
+		if make_writeable then make_writeable(mt, false)
+		elseif setreadonly then setreadonly(mt, true) end
+	end
+
+	local PROTECTED = { CoreGui = true, RobloxGui = true }
+
+	unlock()
+
+	rawset(mt, "__index", wrap(function(self, key)
+		if PROTECTED[tostring(key)] then
+			local ok, svc = pcall(oldIndex, self, key)
+			if ok and svc then return cloneref(svc) end
+		end
+		return oldIndex(self, key)
+	end))
+
+	rawset(mt, "__namecall", wrap(function(self, ...)
 		local m = getnamecallmethod and getnamecallmethod() or ""
-		if (m == "GetService" or m == "FindService") then
-			local args = {...}
-			local sname = tostring(args[1] or "")
-			if sname == "CoreGui" or sname == "RobloxGui" then
-				local ok, svc = pcall(game.GetService, game, sname)
+		if m == "GetService" or m == "FindService" then
+			local sname = tostring((...) or "")
+			if PROTECTED[sname] then
+				local ok, svc = pcall(oldNamecall, self, ...)
 				if ok and svc then return cloneref(svc) end
 			end
 		end
-		if type(oldNamecall) == "function" then
-			return oldNamecall(self, ...)
-		end
-	end
+		return oldNamecall(self, ...)
+	end))
 
-	-- Use make_writeable / setreadonly pattern
-	local ok = pcall(function()
-		if make_writeable then make_writeable(mt, true)
-		elseif setreadonly then setreadonly(mt, false) end
-
-		rawset(mt, "__index", newcclosure and newcclosure(safeIndex) or safeIndex)
-		rawset(mt, "__namecall", newcclosure and newcclosure(safeNamecall) or safeNamecall)
-
-		if make_writeable then make_writeable(mt, false)
-		elseif setreadonly then setreadonly(mt, true) end
-	end)
+	lock()
 end)
-
--- Hide debug.traceback from anticheat scanners
-pcall(function()
-	local mt = getrawmetatable and getrawmetatable(debug)
-	if mt then
-		local ok = pcall(function()
-			if setreadonly then setreadonly(mt, false) end
-			local orig = rawget(mt, "__index")
-			rawset(mt, "__index", newcclosure and newcclosure(function(t, k)
-				if k == "traceback" then
-					return function(...)
-						if checkcaller and not checkcaller() then return "" end
-						return debug.traceback(...)
-					end
-				end
-				if type(orig) == "function" then return orig(t, k) end
-				return rawget(t, k)
-			end) or function(t, k)
-				if type(orig) == "function" then return orig(t, k) end
-				return rawget(t, k)
-			end)
-			if setreadonly then setreadonly(mt, true) end
-		end)
-	end
-end)
--- [[ End Anti-Detect ]] --
 
 
 local Lighting = cloneref(game:GetService("Lighting"))
