@@ -798,40 +798,40 @@ local Themes = {
 	},
 	Slate = {
 		Name = "Slate",
-		Accent = Color3.fromRGB(210, 30, 30),
-		AcrylicMain = Color3.fromRGB(10, 5, 5),
-		AcrylicBorder = Color3.fromRGB(14, 7, 7),
-		AcrylicGradient = ColorSequence.new(Color3.fromRGB(8, 4, 4), Color3.fromRGB(16, 8, 8)),
+		Accent = Color3.fromRGB(230, 80, 135),
+		AcrylicMain = Color3.fromRGB(252, 238, 248),
+		AcrylicBorder = Color3.fromRGB(235, 198, 220),
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(255, 245, 252), Color3.fromRGB(248, 228, 244)),
 		AcrylicNoise = 0.95,
-		TitleBarLine = Color3.fromRGB(24, 10, 10),
-		Tab = Color3.fromRGB(50, 22, 22),
-		Element = Color3.fromRGB(24, 11, 11),
-		ElementBorder = Color3.fromRGB(30, 14, 14),
-		InElementBorder = Color3.fromRGB(28, 13, 13),
-		ElementTransparency = 0.96,
-		ToggleSlider = Color3.fromRGB(45, 20, 20),
-		ToggleToggled = Color3.fromRGB(210, 30, 30),
-		SliderRail = Color3.fromRGB(45, 20, 20),
-		DropdownFrame = Color3.fromRGB(45, 20, 20),
-		DropdownHolder = Color3.fromRGB(14, 7, 7),
-		DropdownBorder = Color3.fromRGB(20, 9, 9),
-		DropdownOption = Color3.fromRGB(36, 16, 16),
-		Keybind = Color3.fromRGB(45, 20, 20),
-		Input = Color3.fromRGB(36, 16, 16),
-		InputFocused = Color3.fromRGB(10, 5, 5),
-		InputIndicator = Color3.fromRGB(210, 30, 30),
-		Dialog = Color3.fromRGB(14, 7, 7),
-		DialogHolder = Color3.fromRGB(20, 10, 10),
-		DialogHolderLine = Color3.fromRGB(30, 14, 14),
-		DialogButton = Color3.fromRGB(32, 15, 15),
-		DialogButtonBorder = Color3.fromRGB(32, 15, 15),
-		DialogBorder = Color3.fromRGB(14, 7, 7),
-		DialogInput = Color3.fromRGB(14, 7, 7),
-		DialogInputLine = Color3.fromRGB(100, 32, 32),
-		Text = Color3.fromRGB(255, 230, 230),
-		SubText = Color3.fromRGB(165, 95, 95),
-		Hover = Color3.fromRGB(44, 20, 20),
-		HoverChange = 0.03,
+		TitleBarLine = Color3.fromRGB(235, 198, 220),
+		Tab = Color3.fromRGB(248, 226, 240),
+		Element = Color3.fromRGB(252, 238, 248),
+		ElementBorder = Color3.fromRGB(240, 208, 230),
+		InElementBorder = Color3.fromRGB(244, 214, 234),
+		ElementTransparency = 0.65,
+		ToggleSlider = Color3.fromRGB(228, 192, 214),
+		ToggleToggled = Color3.fromRGB(230, 80, 135),
+		SliderRail = Color3.fromRGB(228, 192, 214),
+		DropdownFrame = Color3.fromRGB(248, 226, 240),
+		DropdownHolder = Color3.fromRGB(252, 238, 248),
+		DropdownBorder = Color3.fromRGB(238, 204, 226),
+		DropdownOption = Color3.fromRGB(250, 232, 244),
+		Keybind = Color3.fromRGB(248, 226, 240),
+		Input = Color3.fromRGB(250, 232, 244),
+		InputFocused = Color3.fromRGB(255, 246, 252),
+		InputIndicator = Color3.fromRGB(230, 80, 135),
+		Dialog = Color3.fromRGB(252, 238, 248),
+		DialogHolder = Color3.fromRGB(248, 226, 240),
+		DialogHolderLine = Color3.fromRGB(238, 204, 226),
+		DialogButton = Color3.fromRGB(244, 214, 234),
+		DialogButtonBorder = Color3.fromRGB(238, 206, 228),
+		DialogBorder = Color3.fromRGB(234, 198, 222),
+		DialogInput = Color3.fromRGB(252, 238, 248),
+		DialogInputLine = Color3.fromRGB(240, 130, 175),
+		Text = Color3.fromRGB(75, 38, 62),
+		SubText = Color3.fromRGB(158, 108, 138),
+		Hover = Color3.fromRGB(244, 214, 234),
+		HoverChange = 0.05,
 	},
 	Gray = {
 		Name = "Gray",
@@ -5759,7 +5759,7 @@ ElementsTable.Toggle = (function()
 		}
 
 		local ToggleFrame = Components.Element(Config.Title, Config.Description, self.Container, true, Config)
-		ToggleFrame.DescLabel.Size = UDim2.new(1, -61, 0, 14)
+		ToggleFrame.DescLabel.Size = UDim2.new(1, -57, 0, 14)
 
 		Toggle.SetTitle = ToggleFrame.SetTitle
 		Toggle.SetDesc = ToggleFrame.SetDesc
@@ -5767,7 +5767,7 @@ ElementsTable.Toggle = (function()
 		Toggle.Elements = ToggleFrame
 
 		local ToggleTrack = New("Frame", {
-			Size = UDim2.fromOffset(44, 13),
+			Size = UDim2.fromOffset(40, 13),
 			AnchorPoint = Vector2.new(1, 0.5),
 			Position = UDim2.new(1, -10, 0.5, 0),
 			Parent = ToggleFrame.Frame,
@@ -5832,7 +5832,7 @@ ElementsTable.Toggle = (function()
 			}):Play()
 
 			TweenService:Create(ToggleThumb, tweenInfo, {
-				Position = Toggle.Value and UDim2.fromOffset(34, 3) or UDim2.fromOffset(3, 3),
+				Position = Toggle.Value and UDim2.fromOffset(30, 3) or UDim2.fromOffset(3, 3),
 				BackgroundTransparency = Toggle.Value and 0 or 0.1,
 			}):Play()
 
@@ -10298,16 +10298,11 @@ Library.CreateWindow = function(self, Config)
             local snowfallEnabled = configAllowsSnow and userWantsSnow
             
             
-            if false and snowfallEnabled then
-                 Library:AddSnowfallToWindow({
-                    Count = 38,
+            if snowfallEnabled then
+                Library:AddSnowfallToWindow({
+                    Count = 35,
                     Speed = 9.5
                 })
-            else
-                
-                if Library.Snowfall then
-                    Library.Snowfall:SetVisible(false)
-                end
             end
         end
     end)
@@ -11603,7 +11598,7 @@ function Library:AddSnowfallToWindow(Config)
         local snowflakeCount = Config.Count or 50
         local fallSpeed = Config.Speed or 60
 
-        local snowflakeColor = Color3.fromRGB(255, 255, 255)
+        local snowflakeColor = Color3.fromRGB(255, 165, 200)
         
         local snowflakes = {}
         local connections = {}
@@ -11615,10 +11610,11 @@ function Library:AddSnowfallToWindow(Config)
             snowflake.BorderSizePixel = 0
             snowflake.Image = "rbxassetid://124338537670236"
             snowflake.ImageColor3 = snowflakeColor
-            snowflake.ImageTransparency = 0.1
+            snowflake.ImageTransparency = 0.15
+            snowflake.Rotation = math.random(0, 360)
             snowflake.ScaleType = Enum.ScaleType.Fit
             
-            local size = math.random(9, 15)
+            local size = math.random(10, 18)
             snowflake.Size = UDim2.new(0, size, 0, size)
             
             snowflake.Position = UDim2.new(
@@ -11634,7 +11630,9 @@ function Library:AddSnowfallToWindow(Config)
             snowflakes[i] = {
                 frame = snowflake,
                 speed = speed,
-                size = size
+                size = size,
+                drift = (math.random() - 0.5) * 0.18,
+                spin = (math.random() - 0.5) * 120
             }
         end
         
@@ -11656,7 +11654,8 @@ function Library:AddSnowfallToWindow(Config)
                 local currentPos = frame.Position
 
                 local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 100)
-                local newX = currentPos.X.Scale
+                local newX = currentPos.X.Scale + (snowflake.drift * deltaTime)
+                frame.Rotation = frame.Rotation + snowflake.spin * deltaTime
                 
                 if newX < containerBounds.left then
                     newX = containerBounds.right
@@ -11668,9 +11667,12 @@ function Library:AddSnowfallToWindow(Config)
                     newY = containerBounds.top - 0.1
                     newX = math.random() * 0.95
                     
-                    local newSize = math.random(8, 14)
+                    local newSize = math.random(10, 18)
                     frame.Size = UDim2.new(0, newSize, 0, newSize)
                     snowflake.size = newSize
+                    frame.Rotation = math.random(0, 360)
+                    snowflake.drift = (math.random() - 0.5) * 0.18
+                    snowflake.spin = (math.random() - 0.5) * 120
                 end
                 
                 frame.Position = UDim2.new(
