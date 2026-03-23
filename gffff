@@ -2419,7 +2419,9 @@ function AcrylicPaint()
 			BackgroundTransparency = 0.9,
 			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
 			BorderSizePixel = 0,
+			ClipsDescendants = true,
 		}, {
+			New("UICorner", { CornerRadius = UDim.new(0, 12) }),
 			New("ImageLabel", {
 				Image = "rbxassetid://8992230677",
 				ScaleType = "Slice",
@@ -2439,6 +2441,8 @@ function AcrylicPaint()
 				ThemeTag = {
 					BackgroundColor3 = "AcrylicMain",
 				},
+			}, {
+				New("UICorner", { CornerRadius = UDim.new(0, 12) }),
 			}),
 
 			New("Frame", {
@@ -2446,6 +2450,7 @@ function AcrylicPaint()
 				BackgroundTransparency = 0.4,
 				Size = UDim2.fromScale(1, 1),
 			}, {
+				New("UICorner", { CornerRadius = UDim.new(0, 12) }),
 				New("UIGradient", {
 					Rotation = 90,
 					ThemeTag = {
@@ -2480,6 +2485,7 @@ function AcrylicPaint()
 				Size = UDim2.fromScale(1, 1),
 				ZIndex = 2,
 			}, {
+				New("UICorner", { CornerRadius = UDim.new(0, 12) }),
 				New("UIStroke", {
 					Transparency = 0.5,
 					Thickness = 1,
@@ -5124,7 +5130,8 @@ Window.Root = New("Frame", {
     Size = Window.Size,
     Position = Window.Position,
     Parent = Config.Parent,
-    ZIndex = 100, 
+    ZIndex = 100,
+    ClipsDescendants = true,
 }, rootChildren)
 
 		do
@@ -5753,7 +5760,7 @@ ElementsTable.Toggle = (function()
 		}
 
 		local ToggleFrame = Components.Element(Config.Title, Config.Description, self.Container, true, Config)
-		ToggleFrame.DescLabel.Size = UDim2.new(1, -54, 0, 14)
+		ToggleFrame.DescLabel.Size = UDim2.new(1, -61, 0, 14)
 
 		Toggle.SetTitle = ToggleFrame.SetTitle
 		Toggle.SetDesc = ToggleFrame.SetDesc
@@ -5761,7 +5768,7 @@ ElementsTable.Toggle = (function()
 		Toggle.Elements = ToggleFrame
 
 		local ToggleTrack = New("Frame", {
-			Size = UDim2.fromOffset(37, 17),
+			Size = UDim2.fromOffset(44, 13),
 			AnchorPoint = Vector2.new(1, 0.5),
 			Position = UDim2.new(1, -10, 0.5, 0),
 			Parent = ToggleFrame.Frame,
@@ -5785,7 +5792,7 @@ ElementsTable.Toggle = (function()
 		})
 
 		local ToggleThumb = New("Frame", {
-			Size = UDim2.fromOffset(11, 11),
+			Size = UDim2.fromOffset(7, 7),
 			Position = UDim2.fromOffset(3, 3),
 			BorderSizePixel = 0,
 			BackgroundTransparency = 0.1,
@@ -5826,7 +5833,7 @@ ElementsTable.Toggle = (function()
 			}):Play()
 
 			TweenService:Create(ToggleThumb, tweenInfo, {
-				Position = Toggle.Value and UDim2.fromOffset(23, 3) or UDim2.fromOffset(3, 3),
+				Position = Toggle.Value and UDim2.fromOffset(34, 3) or UDim2.fromOffset(3, 3),
 				BackgroundTransparency = Toggle.Value and 0 or 0.1,
 			}):Play()
 
