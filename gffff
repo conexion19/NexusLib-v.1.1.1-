@@ -4602,6 +4602,7 @@ Components.TitleBar = (function()
         return TitleBar
     end
 end)()
+
 Components.Window = (function()
 	local Spring = Flipper.Spring.new
 	local Instant = Flipper.Instant.new
@@ -5749,50 +5750,33 @@ ElementsTable.Toggle = (function()
 		Toggle.Visible = ToggleFrame.Visible
 		Toggle.Elements = ToggleFrame
 
-		local ToggleCircle = New("ImageLabel", {
-			AnchorPoint = Vector2.new(0.5, 0.5),
-			Size = UDim2.fromOffset(0, 0),
-			Position = UDim2.new(0.5, 0, 0.5, 0),
-			Image = "",
-			ImageTransparency = 1,
-			ThemeTag = {
-				ImageColor3 = "ToggleSlider",
-			},
-		})
-
-		local ToggleCheck = New("ImageLabel", {
-			AnchorPoint = Vector2.new(0.5, 0.5),
-			Size = UDim2.fromOffset(14, 14),
-			Position = UDim2.new(0.5, 0, 0.5, 0),
-			Image = "rbxassetid://10709790644",
-			ImageTransparency = 1,
-			BackgroundTransparency = 1,
-			ImageColor3 = Color3.fromRGB(0, 0, 0),
-		})
-
-		local ToggleBorder = New("UIStroke", {
-			Transparency = 0.5,
-			ThemeTag = {
-				Color = "ToggleSlider",
-			},
-		})
-
-		local ToggleSlider = New("Frame", {
-			Size = UDim2.fromOffset(20, 20),
+		local ToggleTrack = New("Frame", {
+			Size = UDim2.fromOffset(36, 20),
 			AnchorPoint = Vector2.new(1, 0.5),
 			Position = UDim2.new(1, -10, 0.5, 0),
 			Parent = ToggleFrame.Frame,
-			BackgroundTransparency = 1,
+			BorderSizePixel = 0,
 			ThemeTag = {
-				BackgroundColor3 = "Accent",
+				BackgroundColor3 = "ToggleSlider",
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
+				CornerRadius = UDim.new(1, 0),
 			}),
-			ToggleBorder,
-			ToggleCheck,
-			ToggleCircle,
+		})
+
+		local ToggleThumb = New("Frame", {
+			Size = UDim2.fromOffset(14, 14),
+			Position = UDim2.fromOffset(3, 3),
+			BorderSizePixel = 0,
+			Parent = ToggleTrack,
+			ThemeTag = {
+				BackgroundColor3 = "Text",
+			},
+		}, {
+			New("UICorner", {
+				CornerRadius = UDim.new(1, 0),
+			}),
 		})
 
 		function Toggle:OnChanged(Func)
@@ -5804,24 +5788,25 @@ ElementsTable.Toggle = (function()
 			Value = not not Value
 			Toggle.Value = Value
 
-			Creator.OverrideTag(ToggleBorder, { Color = Toggle.Value and "Accent" or "ToggleSlider" })
-			
-			TweenService:Create(
-				ToggleSlider,
-				TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-				{ BackgroundTransparency = Toggle.Value and 0 or 1 }
-			):Play()
+			local tweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+			local accentColor = Creator.GetThemeProperty("Accent")
+			local trackOffColor = Creator.GetThemeProperty("ToggleSlider")
 
-			TweenService:Create(
-				ToggleCheck,
-				TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-				{ ImageTransparency = Toggle.Value and 0 or 1 }
-			):Play()
+			Creator.OverrideTag(ToggleTrack, { BackgroundColor3 = Toggle.Value and "Accent" or "ToggleSlider" })
+			TweenService:Create(ToggleTrack, tweenInfo, {
+				BackgroundColor3 = Toggle.Value and accentColor or trackOffColor,
+			}):Play()
+
+			TweenService:Create(ToggleThumb, tweenInfo, {
+				Position = Toggle.Value and UDim2.fromOffset(19, 3) or UDim2.fromOffset(3, 3),
+			}):Play()
 
 			Library:SafeCallback(Toggle.Callback, Toggle.Value)
 			Library:SafeCallback(Toggle.Changed, Toggle.Value)
-			for _, fn in ipairs(Toggle._dependents) do
-				pcall(fn, Toggle.Value)
+			if type(Toggle._dependents) == "table" then
+				for _, fn in ipairs(Toggle._dependents) do
+					pcall(fn, Toggle.Value)
+				end
 			end
 		end
 
@@ -6769,20 +6754,24 @@ ElementsTable.Slider = (function()
 		Slider.SetDesc = SliderFrame.SetDesc
 		Slider.Visible = SliderFrame.Visible
 
-		local SliderDot = New("ImageLabel", {
-			AnchorPoint = Vector2.new(0, 0.5),
-			Position = UDim2.new(0, -7, 0.5, 0),
-			Size = UDim2.fromOffset(14, 14),
-			Image = "http://www.roblox.com/asset/?id=12266946128",
+		local SliderDot = New("Frame", {
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.new(0, 0, 0.5, 0),
+			Size = UDim2.fromOffset(2, 14),
+			BorderSizePixel = 0,
 			ThemeTag = {
-				ImageColor3 = "Accent",
+				BackgroundColor3 = "Accent",
 			},
+		}, {
+			New("UICorner", {
+				CornerRadius = UDim.new(1, 0),
+			}),
 		})
 
 		local SliderRail = New("Frame", {
 			BackgroundTransparency = 1,
-			Position = UDim2.fromOffset(7, 0),
-			Size = UDim2.new(1, -14, 1, 0),
+			Position = UDim2.fromOffset(0, 0),
+			Size = UDim2.new(1, 0, 1, 0),
 		}, {
 			SliderDot,
 		})
@@ -7088,7 +7077,7 @@ ElementsTable.Slider = (function()
 				BackgroundTransparency = disabled and 0.55 or 1,
 			}):Play()
 			TweenService:Create(SliderDot, tweenInfo, {
-				ImageTransparency = disabled and 0.65 or 0,
+				BackgroundTransparency = disabled and 0.65 or 0,
 			}):Play()
 			TweenService:Create(SliderFill, tweenInfo, {
 				BackgroundTransparency = disabled and 0.7 or 0,
@@ -7100,7 +7089,7 @@ ElementsTable.Slider = (function()
 
 		function Slider:SetValue(Value)
 			self.Value = Library:Round(math.clamp(Value, Slider.Min, Slider.Max), Slider.Rounding)
-			SliderDot.Position = UDim2.new((self.Value - Slider.Min) / (Slider.Max - Slider.Min), -7, 0.5, 0)
+			SliderDot.Position = UDim2.new((self.Value - Slider.Min) / (Slider.Max - Slider.Min), 0, 0.5, 0)
 			SliderFill.Size = UDim2.fromScale((self.Value - Slider.Min) / (Slider.Max - Slider.Min), 1)
 			SliderDisplay.Text = tostring(self.Value)
 
