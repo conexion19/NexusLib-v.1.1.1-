@@ -2135,6 +2135,57 @@ KeybindDisplayList.Parent = KeybindDisplayContainer
 Library.KeybindDisplayLabels = {}
 Library.KeybindDisplayOrder = 0
 
+do
+	local StatsContainer = Instance.new("Frame")
+	StatsContainer.Name = "StatsContainer"
+	StatsContainer.Size = UDim2.fromOffset(0, 24)
+	StatsContainer.AutomaticSize = Enum.AutomaticSize.X
+	StatsContainer.AnchorPoint = Vector2.new(1, 1)
+	StatsContainer.Position = UDim2.new(1, -10, 1, -10)
+	StatsContainer.BackgroundTransparency = 0.35
+	StatsContainer.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+	StatsContainer.ZIndex = 1000
+	StatsContainer.Parent = GUI
+	local _sc = Instance.new("UICorner")
+	_sc.CornerRadius = UDim.new(0, 7)
+	_sc.Parent = StatsContainer
+	local _sp = Instance.new("UIPadding")
+	_sp.PaddingLeft = UDim.new(0, 8)
+	_sp.PaddingRight = UDim.new(0, 8)
+	_sp.Parent = StatsContainer
+
+	local StatsLabel = Instance.new("TextLabel")
+	StatsLabel.Name = "StatsLabel"
+	StatsLabel.Text = "FPS: 0 | Ping: 0ms | 00:00:00"
+	StatsLabel.TextTransparency = 0
+	StatsLabel.Font = Enum.Font.GothamBold
+	StatsLabel.TextSize = 11
+	StatsLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+	StatsLabel.TextXAlignment = Enum.TextXAlignment.Center
+	StatsLabel.Size = UDim2.new(0, 0, 1, 0)
+	StatsLabel.AutomaticSize = Enum.AutomaticSize.X
+	StatsLabel.BackgroundTransparency = 1
+	StatsLabel.ZIndex = 1001
+	StatsLabel.Parent = StatsContainer
+
+	local _statsFrameCount = 0
+	RunService.RenderStepped:Connect(function()
+		_statsFrameCount = _statsFrameCount + 1
+	end)
+
+	task.spawn(function()
+		local Stats = game:GetService("Stats")
+		while StatsContainer and StatsContainer.Parent do
+			local ping = 0
+			pcall(function() ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
+			local fps = _statsFrameCount
+			_statsFrameCount = 0
+			StatsLabel.Text = string.format("FPS: %d | Ping: %dms | %s", fps, ping, os.date("%H:%M:%S"))
+			task.wait(1)
+		end
+	end)
+end
+
 function Library:AddKeybindDisplay(idx, title, key, isToggled)
 	if Library.KeybindDisplayLabels[idx] then
 		Library:UpdateKeybindDisplay(idx, key, isToggled)
@@ -4538,67 +4589,6 @@ Components.TitleBar = (function()
             Library.Window:Minimize()
         end)
 
-		local StatsContainer = New("Frame", {
-			Name = "StatsContainer",
-			Size = UDim2.new(0, 0, 0, 22),
-			AutomaticSize = Enum.AutomaticSize.X,
-			AnchorPoint = Vector2.new(1, 1),
-			Position = UDim2.new(1, -8, 1, -8),
-			BackgroundTransparency = 0.45,
-			ZIndex = 10,
-			Parent = GUI,
-			ThemeTag = {
-				BackgroundColor3 = "Background",
-			},
-		}, {
-			New("UICorner", { CornerRadius = UDim.new(0, 6) }),
-			New("UIPadding", {
-				PaddingLeft = UDim.new(0, 7),
-				PaddingRight = UDim.new(0, 7),
-			}),
-		})
-
-		local StatsLabel = New("TextLabel", {
-			Name = "StatsLabel",
-			Text = "FPS: 0 | Ping: 0ms | 00:00:00",
-			TextTransparency = 0.2,
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-			TextSize = 11,
-			TextXAlignment = Enum.TextXAlignment.Center,
-			Size = UDim2.new(0, 0, 1, 0),
-			AutomaticSize = Enum.AutomaticSize.X,
-			AnchorPoint = Vector2.new(0, 0),
-			Position = UDim2.new(0, 0, 0, 0),
-			BackgroundTransparency = 1,
-			ZIndex = 11,
-			Parent = StatsContainer,
-			ThemeTag = {
-				TextColor3 = "SubText",
-			},
-		})
-
-		local RunService = game:GetService("RunService")
-		local FrameCount = 0
-		local FPSConnection
-		FPSConnection = RunService.RenderStepped:Connect(function()
-			FrameCount = FrameCount + 1
-		end)
-
-        task.spawn(function()
-            local Stats = game:GetService("Stats")
-            while StatsContainer and StatsContainer.Parent do
-                local ping = 0
-                pcall(function() ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
-                
-				local fps = FrameCount
-				FrameCount = 0
-
-                StatsLabel.Text = string.format("FPS: %d | Ping: %dms | %s", fps, ping, os.date("%H:%M:%S"))
-                task.wait(1)
-            end
-			if FPSConnection then FPSConnection:Disconnect() end
-        end)
-
         return TitleBar
     end
 end)()
@@ -5751,7 +5741,7 @@ ElementsTable.Toggle = (function()
 		Toggle.Elements = ToggleFrame
 
 		local ToggleTrack = New("Frame", {
-			Size = UDim2.fromOffset(36, 20),
+			Size = UDim2.fromOffset(46, 22),
 			AnchorPoint = Vector2.new(1, 0.5),
 			Position = UDim2.new(1, -10, 0.5, 0),
 			Parent = ToggleFrame.Frame,
@@ -5766,7 +5756,7 @@ ElementsTable.Toggle = (function()
 		})
 
 		local ToggleThumb = New("Frame", {
-			Size = UDim2.fromOffset(14, 14),
+			Size = UDim2.fromOffset(16, 16),
 			Position = UDim2.fromOffset(3, 3),
 			BorderSizePixel = 0,
 			Parent = ToggleTrack,
@@ -5798,7 +5788,7 @@ ElementsTable.Toggle = (function()
 			}):Play()
 
 			TweenService:Create(ToggleThumb, tweenInfo, {
-				Position = Toggle.Value and UDim2.fromOffset(19, 3) or UDim2.fromOffset(3, 3),
+				Position = Toggle.Value and UDim2.fromOffset(27, 3) or UDim2.fromOffset(3, 3),
 			}):Play()
 
 			Library:SafeCallback(Toggle.Callback, Toggle.Value)
@@ -6757,7 +6747,7 @@ ElementsTable.Slider = (function()
 		local SliderDot = New("Frame", {
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			Position = UDim2.new(0, 0, 0.5, 0),
-			Size = UDim2.fromOffset(2, 14),
+			Size = UDim2.fromOffset(3, 18),
 			BorderSizePixel = 0,
 			ThemeTag = {
 				BackgroundColor3 = "Accent",
