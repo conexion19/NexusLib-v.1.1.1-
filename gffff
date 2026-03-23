@@ -799,9 +799,9 @@ local Themes = {
 	Slate = {
 		Name = "Slate",
 		Accent = Color3.fromRGB(200, 58, 18),
-		AcrylicMain = Color3.fromRGB(245, 232, 218),
-		AcrylicBorder = Color3.fromRGB(195, 155, 120),
-		AcrylicGradient = ColorSequence.new(Color3.fromRGB(248, 236, 222), Color3.fromRGB(240, 224, 206)),
+		AcrylicMain = Color3.fromRGB(185, 78, 20),
+		AcrylicBorder = Color3.fromRGB(210, 120, 60),
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(205, 95, 30), Color3.fromRGB(175, 65, 12)),
 		AcrylicNoise = 0.95,
 		TitleBarLine = Color3.fromRGB(205, 165, 130),
 		Tab = Color3.fromRGB(236, 218, 198),
@@ -5128,7 +5128,8 @@ Window.Root = New("Frame", {
     Size = Window.Size,
     Position = Window.Position,
     Parent = Config.Parent,
-    ZIndex = 100, 
+    ZIndex = 100,
+    ClipsDescendants = true,
 }, rootChildren)
 
 		do
