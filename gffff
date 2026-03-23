@@ -4353,21 +4353,20 @@ Components.TitleBar = (function()
         })
         local LogoGradient = New("UIGradient", {
             Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0,    Color3.fromHSV(0,    0.85, 1)),
-                ColorSequenceKeypoint.new(0.16, Color3.fromHSV(0.16, 0.85, 1)),
-                ColorSequenceKeypoint.new(0.33, Color3.fromHSV(0.33, 0.85, 1)),
-                ColorSequenceKeypoint.new(0.5,  Color3.fromHSV(0.5,  0.85, 1)),
-                ColorSequenceKeypoint.new(0.66, Color3.fromHSV(0.66, 0.85, 1)),
-                ColorSequenceKeypoint.new(0.83, Color3.fromHSV(0.83, 0.85, 1)),
-                ColorSequenceKeypoint.new(1,    Color3.fromHSV(0,    0.85, 1)),
+                ColorSequenceKeypoint.new(0,   Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(0.5, Color3.fromRGB(100, 100, 100)),
+                ColorSequenceKeypoint.new(0.8, Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(1,   Color3.fromRGB(255, 255, 255)),
             }),
-            Rotation = 0,
             Parent = LogoIcon,
         })
         task.spawn(function()
             local ok, TS = pcall(game.GetService, game, "TweenService")
             if ok and TS then
-                TS:Create(LogoGradient, TweenInfo.new(4, Enum.EasingStyle.Linear, Enum.EasingDirection.In, -1, false), {Rotation = 360}):Play()
+                local tInfo = TweenInfo.new(3, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, false)
+                LogoGradient.Offset = Vector2.new(-0.8, 0)
+                TS:Create(LogoGradient, tInfo, {Offset = Vector2.new(0.8, 0)}):Play()
             end
         end)
 
@@ -5112,43 +5111,27 @@ Window.Root = New("Frame", {
 
 		do
 			local _rs = game:GetService("RunService")
-			local StatsContainer = Instance.new("Frame")
-			StatsContainer.Name = "StatsContainer"
-			StatsContainer.Size = UDim2.fromOffset(0, 22)
-			StatsContainer.AutomaticSize = Enum.AutomaticSize.X
-			StatsContainer.AnchorPoint = Vector2.new(0, 1)
-			StatsContainer.Position = UDim2.new(0, 10, 1, -8)
-			StatsContainer.BackgroundTransparency = 0.35
-			StatsContainer.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-			StatsContainer.ZIndex = 200
-			StatsContainer.Parent = Window.Root
-			local _sc = Instance.new("UICorner")
-			_sc.CornerRadius = UDim.new(0, 6)
-			_sc.Parent = StatsContainer
-			local _sp = Instance.new("UIPadding")
-			_sp.PaddingLeft = UDim.new(0, 8)
-			_sp.PaddingRight = UDim.new(0, 8)
-			_sp.Parent = StatsContainer
 			local StatsLabel = Instance.new("TextLabel")
 			StatsLabel.Name = "StatsLabel"
 			StatsLabel.Text = "FPS: 0 | Ping: 0ms | 00:00:00"
-			StatsLabel.TextTransparency = 0
 			StatsLabel.Font = Enum.Font.GothamBold
 			StatsLabel.TextSize = 11
-			StatsLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
-			StatsLabel.TextXAlignment = Enum.TextXAlignment.Center
-			StatsLabel.Size = UDim2.new(0, 0, 1, 0)
-			StatsLabel.AutomaticSize = Enum.AutomaticSize.X
+			StatsLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+			StatsLabel.TextTransparency = 0.2
+			StatsLabel.TextXAlignment = Enum.TextXAlignment.Left
 			StatsLabel.BackgroundTransparency = 1
-			StatsLabel.ZIndex = 201
-			StatsLabel.Parent = StatsContainer
+			StatsLabel.Size = UDim2.new(0, 200, 0, 18)
+			StatsLabel.AnchorPoint = Vector2.new(0, 1)
+			StatsLabel.Position = UDim2.new(0, 10, 1, -6)
+			StatsLabel.ZIndex = 200
+			StatsLabel.Parent = Window.Root
 			local _statsFrameCount = 0
 			_rs.RenderStepped:Connect(function()
 				_statsFrameCount = _statsFrameCount + 1
 			end)
 			task.spawn(function()
 				local GameStats = game:GetService("Stats")
-				while StatsContainer and StatsContainer.Parent do
+				while StatsLabel and StatsLabel.Parent do
 					local ping = 0
 					pcall(function() ping = math.floor(GameStats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
 					local fps = _statsFrameCount
@@ -5760,11 +5743,12 @@ ElementsTable.Toggle = (function()
 		Toggle.Elements = ToggleFrame
 
 		local ToggleTrack = New("Frame", {
-			Size = UDim2.fromOffset(52, 18),
+			Size = UDim2.fromOffset(36, 20),
 			AnchorPoint = Vector2.new(1, 0.5),
 			Position = UDim2.new(1, -10, 0.5, 0),
 			Parent = ToggleFrame.Frame,
 			BorderSizePixel = 0,
+			BackgroundTransparency = 0.3,
 			ThemeTag = {
 				BackgroundColor3 = "ToggleSlider",
 			},
@@ -5772,12 +5756,21 @@ ElementsTable.Toggle = (function()
 			New("UICorner", {
 				CornerRadius = UDim.new(1, 0),
 			}),
+			New("UIStroke", {
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+				Transparency = 0.7,
+				Thickness = 1,
+				ThemeTag = {
+					Color = "Text",
+				},
+			}),
 		})
 
 		local ToggleThumb = New("Frame", {
-			Size = UDim2.fromOffset(12, 12),
+			Size = UDim2.fromOffset(14, 14),
 			Position = UDim2.fromOffset(3, 3),
 			BorderSizePixel = 0,
+			BackgroundTransparency = 0.1,
 			Parent = ToggleTrack,
 			ThemeTag = {
 				BackgroundColor3 = "Text",
@@ -5785,6 +5778,13 @@ ElementsTable.Toggle = (function()
 		}, {
 			New("UICorner", {
 				CornerRadius = UDim.new(1, 0),
+			}),
+			New("UIGradient", {
+				Color = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 200, 200)),
+				}),
+				Rotation = 90,
 			}),
 		})
 
@@ -5804,10 +5804,12 @@ ElementsTable.Toggle = (function()
 			Creator.OverrideTag(ToggleTrack, { BackgroundColor3 = Toggle.Value and "Accent" or "ToggleSlider" })
 			TweenService:Create(ToggleTrack, tweenInfo, {
 				BackgroundColor3 = Toggle.Value and accentColor or trackOffColor,
+				BackgroundTransparency = Toggle.Value and 0.15 or 0.3,
 			}):Play()
 
 			TweenService:Create(ToggleThumb, tweenInfo, {
-				Position = Toggle.Value and UDim2.fromOffset(37, 3) or UDim2.fromOffset(3, 3),
+				Position = Toggle.Value and UDim2.fromOffset(19, 3) or UDim2.fromOffset(3, 3),
+				BackgroundTransparency = Toggle.Value and 0 or 0.1,
 			}):Play()
 
 			Library:SafeCallback(Toggle.Callback, Toggle.Value)
