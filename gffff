@@ -2135,56 +2135,7 @@ KeybindDisplayList.Parent = KeybindDisplayContainer
 Library.KeybindDisplayLabels = {}
 Library.KeybindDisplayOrder = 0
 
-do
-	local StatsContainer = Instance.new("Frame")
-	StatsContainer.Name = "StatsContainer"
-	StatsContainer.Size = UDim2.fromOffset(0, 24)
-	StatsContainer.AutomaticSize = Enum.AutomaticSize.X
-	StatsContainer.AnchorPoint = Vector2.new(1, 1)
-	StatsContainer.Position = UDim2.new(1, -10, 1, -10)
-	StatsContainer.BackgroundTransparency = 0.35
-	StatsContainer.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-	StatsContainer.ZIndex = 1000
-	StatsContainer.Parent = GUI
-	local _sc = Instance.new("UICorner")
-	_sc.CornerRadius = UDim.new(0, 7)
-	_sc.Parent = StatsContainer
-	local _sp = Instance.new("UIPadding")
-	_sp.PaddingLeft = UDim.new(0, 8)
-	_sp.PaddingRight = UDim.new(0, 8)
-	_sp.Parent = StatsContainer
 
-	local StatsLabel = Instance.new("TextLabel")
-	StatsLabel.Name = "StatsLabel"
-	StatsLabel.Text = "FPS: 0 | Ping: 0ms | 00:00:00"
-	StatsLabel.TextTransparency = 0
-	StatsLabel.Font = Enum.Font.GothamBold
-	StatsLabel.TextSize = 11
-	StatsLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
-	StatsLabel.TextXAlignment = Enum.TextXAlignment.Center
-	StatsLabel.Size = UDim2.new(0, 0, 1, 0)
-	StatsLabel.AutomaticSize = Enum.AutomaticSize.X
-	StatsLabel.BackgroundTransparency = 1
-	StatsLabel.ZIndex = 1001
-	StatsLabel.Parent = StatsContainer
-
-	local _statsFrameCount = 0
-	RunService.RenderStepped:Connect(function()
-		_statsFrameCount = _statsFrameCount + 1
-	end)
-
-	task.spawn(function()
-		local Stats = game:GetService("Stats")
-		while StatsContainer and StatsContainer.Parent do
-			local ping = 0
-			pcall(function() ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
-			local fps = _statsFrameCount
-			_statsFrameCount = 0
-			StatsLabel.Text = string.format("FPS: %d | Ping: %dms | %s", fps, ping, os.date("%H:%M:%S"))
-			task.wait(1)
-		end
-	end)
-end
 
 function Library:AddKeybindDisplay(idx, title, key, isToggled)
 	if Library.KeybindDisplayLabels[idx] then
@@ -4400,6 +4351,25 @@ Components.TitleBar = (function()
             Image = "rbxassetid://113682947140762",
             ImageColor3 = Color3.fromRGB(255, 255, 255),
         })
+        local LogoGradient = New("UIGradient", {
+            Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0,    Color3.fromHSV(0,    0.85, 1)),
+                ColorSequenceKeypoint.new(0.16, Color3.fromHSV(0.16, 0.85, 1)),
+                ColorSequenceKeypoint.new(0.33, Color3.fromHSV(0.33, 0.85, 1)),
+                ColorSequenceKeypoint.new(0.5,  Color3.fromHSV(0.5,  0.85, 1)),
+                ColorSequenceKeypoint.new(0.66, Color3.fromHSV(0.66, 0.85, 1)),
+                ColorSequenceKeypoint.new(0.83, Color3.fromHSV(0.83, 0.85, 1)),
+                ColorSequenceKeypoint.new(1,    Color3.fromHSV(0,    0.85, 1)),
+            }),
+            Rotation = 0,
+            Parent = LogoIcon,
+        })
+        task.spawn(function()
+            local ok, TS = pcall(game.GetService, game, "TweenService")
+            if ok and TS then
+                TS:Create(LogoGradient, TweenInfo.new(4, Enum.EasingStyle.Linear, Enum.EasingDirection.In, -1, false), {Rotation = 360}):Play()
+            end
+        end)
 
         local SubtitleLabel
         local ExpiryLabel
@@ -5140,6 +5110,55 @@ Window.Root = New("Frame", {
     ZIndex = 100, 
 }, rootChildren)
 
+		do
+			local _rs = game:GetService("RunService")
+			local StatsContainer = Instance.new("Frame")
+			StatsContainer.Name = "StatsContainer"
+			StatsContainer.Size = UDim2.fromOffset(0, 22)
+			StatsContainer.AutomaticSize = Enum.AutomaticSize.X
+			StatsContainer.AnchorPoint = Vector2.new(0, 1)
+			StatsContainer.Position = UDim2.new(0, 10, 1, -8)
+			StatsContainer.BackgroundTransparency = 0.35
+			StatsContainer.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+			StatsContainer.ZIndex = 200
+			StatsContainer.Parent = Window.Root
+			local _sc = Instance.new("UICorner")
+			_sc.CornerRadius = UDim.new(0, 6)
+			_sc.Parent = StatsContainer
+			local _sp = Instance.new("UIPadding")
+			_sp.PaddingLeft = UDim.new(0, 8)
+			_sp.PaddingRight = UDim.new(0, 8)
+			_sp.Parent = StatsContainer
+			local StatsLabel = Instance.new("TextLabel")
+			StatsLabel.Name = "StatsLabel"
+			StatsLabel.Text = "FPS: 0 | Ping: 0ms | 00:00:00"
+			StatsLabel.TextTransparency = 0
+			StatsLabel.Font = Enum.Font.GothamBold
+			StatsLabel.TextSize = 11
+			StatsLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+			StatsLabel.TextXAlignment = Enum.TextXAlignment.Center
+			StatsLabel.Size = UDim2.new(0, 0, 1, 0)
+			StatsLabel.AutomaticSize = Enum.AutomaticSize.X
+			StatsLabel.BackgroundTransparency = 1
+			StatsLabel.ZIndex = 201
+			StatsLabel.Parent = StatsContainer
+			local _statsFrameCount = 0
+			_rs.RenderStepped:Connect(function()
+				_statsFrameCount = _statsFrameCount + 1
+			end)
+			task.spawn(function()
+				local GameStats = game:GetService("Stats")
+				while StatsContainer and StatsContainer.Parent do
+					local ping = 0
+					pcall(function() ping = math.floor(GameStats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
+					local fps = _statsFrameCount
+					_statsFrameCount = 0
+					StatsLabel.Text = string.format("FPS: %d | Ping: %dms | %s", fps, ping, os.date("%H:%M:%S"))
+					task.wait(1)
+				end
+			end)
+		end
+
 		CenterWindow()
 		Creator.AddSignal(Camera:GetPropertyChangedSignal("ViewportSize"), function()
 			CenterWindow()
@@ -5741,7 +5760,7 @@ ElementsTable.Toggle = (function()
 		Toggle.Elements = ToggleFrame
 
 		local ToggleTrack = New("Frame", {
-			Size = UDim2.fromOffset(46, 22),
+			Size = UDim2.fromOffset(52, 18),
 			AnchorPoint = Vector2.new(1, 0.5),
 			Position = UDim2.new(1, -10, 0.5, 0),
 			Parent = ToggleFrame.Frame,
@@ -5756,7 +5775,7 @@ ElementsTable.Toggle = (function()
 		})
 
 		local ToggleThumb = New("Frame", {
-			Size = UDim2.fromOffset(16, 16),
+			Size = UDim2.fromOffset(12, 12),
 			Position = UDim2.fromOffset(3, 3),
 			BorderSizePixel = 0,
 			Parent = ToggleTrack,
@@ -5778,7 +5797,7 @@ ElementsTable.Toggle = (function()
 			Value = not not Value
 			Toggle.Value = Value
 
-			local tweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+			local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 			local accentColor = Creator.GetThemeProperty("Accent")
 			local trackOffColor = Creator.GetThemeProperty("ToggleSlider")
 
@@ -5788,7 +5807,7 @@ ElementsTable.Toggle = (function()
 			}):Play()
 
 			TweenService:Create(ToggleThumb, tweenInfo, {
-				Position = Toggle.Value and UDim2.fromOffset(27, 3) or UDim2.fromOffset(3, 3),
+				Position = Toggle.Value and UDim2.fromOffset(37, 3) or UDim2.fromOffset(3, 3),
 			}):Play()
 
 			Library:SafeCallback(Toggle.Callback, Toggle.Value)
