@@ -798,39 +798,39 @@ local Themes = {
 	},
 	Slate = {
 		Name = "Slate",
-		Accent = Color3.fromRGB(200, 60, 20),
-		AcrylicMain = Color3.fromRGB(11, 5, 3),
-		AcrylicBorder = Color3.fromRGB(18, 9, 5),
-		AcrylicGradient = ColorSequence.new(Color3.fromRGB(9, 4, 2), Color3.fromRGB(18, 9, 5)),
+		Accent = Color3.fromRGB(210, 30, 30),
+		AcrylicMain = Color3.fromRGB(10, 5, 5),
+		AcrylicBorder = Color3.fromRGB(14, 7, 7),
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(8, 4, 4), Color3.fromRGB(16, 8, 8)),
 		AcrylicNoise = 0.95,
-		TitleBarLine = Color3.fromRGB(32, 14, 8),
-		Tab = Color3.fromRGB(52, 22, 12),
-		Element = Color3.fromRGB(22, 10, 6),
-		ElementBorder = Color3.fromRGB(38, 16, 9),
-		InElementBorder = Color3.fromRGB(30, 13, 7),
+		TitleBarLine = Color3.fromRGB(24, 10, 10),
+		Tab = Color3.fromRGB(50, 22, 22),
+		Element = Color3.fromRGB(24, 11, 11),
+		ElementBorder = Color3.fromRGB(30, 14, 14),
+		InElementBorder = Color3.fromRGB(28, 13, 13),
 		ElementTransparency = 0.96,
-		ToggleSlider = Color3.fromRGB(50, 22, 12),
-		ToggleToggled = Color3.fromRGB(200, 60, 20),
-		SliderRail = Color3.fromRGB(50, 22, 12),
-		DropdownFrame = Color3.fromRGB(50, 22, 12),
-		DropdownHolder = Color3.fromRGB(16, 7, 4),
-		DropdownBorder = Color3.fromRGB(24, 10, 6),
-		DropdownOption = Color3.fromRGB(38, 16, 9),
-		Keybind = Color3.fromRGB(50, 22, 12),
-		Input = Color3.fromRGB(38, 16, 9),
-		InputFocused = Color3.fromRGB(11, 5, 3),
-		InputIndicator = Color3.fromRGB(200, 60, 20),
-		Dialog = Color3.fromRGB(16, 7, 4),
-		DialogHolder = Color3.fromRGB(22, 10, 6),
-		DialogHolderLine = Color3.fromRGB(34, 14, 8),
-		DialogButton = Color3.fromRGB(35, 15, 8),
-		DialogButtonBorder = Color3.fromRGB(35, 15, 8),
-		DialogBorder = Color3.fromRGB(16, 7, 4),
-		DialogInput = Color3.fromRGB(16, 7, 4),
-		DialogInputLine = Color3.fromRGB(115, 40, 18),
-		Text = Color3.fromRGB(255, 225, 210),
-		SubText = Color3.fromRGB(175, 105, 75),
-		Hover = Color3.fromRGB(48, 20, 11),
+		ToggleSlider = Color3.fromRGB(45, 20, 20),
+		ToggleToggled = Color3.fromRGB(210, 30, 30),
+		SliderRail = Color3.fromRGB(45, 20, 20),
+		DropdownFrame = Color3.fromRGB(45, 20, 20),
+		DropdownHolder = Color3.fromRGB(14, 7, 7),
+		DropdownBorder = Color3.fromRGB(20, 9, 9),
+		DropdownOption = Color3.fromRGB(36, 16, 16),
+		Keybind = Color3.fromRGB(45, 20, 20),
+		Input = Color3.fromRGB(36, 16, 16),
+		InputFocused = Color3.fromRGB(10, 5, 5),
+		InputIndicator = Color3.fromRGB(210, 30, 30),
+		Dialog = Color3.fromRGB(14, 7, 7),
+		DialogHolder = Color3.fromRGB(20, 10, 10),
+		DialogHolderLine = Color3.fromRGB(30, 14, 14),
+		DialogButton = Color3.fromRGB(32, 15, 15),
+		DialogButtonBorder = Color3.fromRGB(32, 15, 15),
+		DialogBorder = Color3.fromRGB(14, 7, 7),
+		DialogInput = Color3.fromRGB(14, 7, 7),
+		DialogInputLine = Color3.fromRGB(100, 32, 32),
+		Text = Color3.fromRGB(255, 230, 230),
+		SubText = Color3.fromRGB(165, 95, 95),
+		Hover = Color3.fromRGB(44, 20, 20),
 		HoverChange = 0.03,
 	},
 	Gray = {
@@ -4370,25 +4370,21 @@ Components.TitleBar = (function()
         local LogoGradient = New("UIGradient", {
             Color = ColorSequence.new({
                 ColorSequenceKeypoint.new(0,    Color3.fromRGB(255, 255, 255)),
-                ColorSequenceKeypoint.new(0.38, Color3.fromRGB(255, 255, 255)),
-                ColorSequenceKeypoint.new(0.45, Color3.fromRGB(255, 185, 100)),
-                ColorSequenceKeypoint.new(0.5,  Color3.fromRGB(210, 55,  10)),
-                ColorSequenceKeypoint.new(0.55, Color3.fromRGB(255, 185, 100)),
-                ColorSequenceKeypoint.new(0.62, Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(0.3,  Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(0.42, Color3.fromRGB(255, 160, 160)),
+                ColorSequenceKeypoint.new(0.5,  Color3.fromRGB(255, 55,  55)),
+                ColorSequenceKeypoint.new(0.58, Color3.fromRGB(255, 160, 160)),
+                ColorSequenceKeypoint.new(0.7,  Color3.fromRGB(255, 255, 255)),
                 ColorSequenceKeypoint.new(1,    Color3.fromRGB(255, 255, 255)),
             }),
-            Rotation = 0,
             Parent = LogoIcon,
         })
         task.spawn(function()
             local ok, TS = pcall(game.GetService, game, "TweenService")
             if ok and TS then
-                while LogoIcon and LogoIcon.Parent do
-                    LogoGradient.Rotation = 0
-                    local t = TS:Create(LogoGradient, TweenInfo.new(2.5, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false), {Rotation = 360})
-                    t:Play()
-                    t.Completed:Wait()
-                end
+                local tInfo = TweenInfo.new(4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, false)
+                LogoGradient.Offset = Vector2.new(-1.8, 0)
+                TS:Create(LogoGradient, tInfo, {Offset = Vector2.new(1.8, 0)}):Play()
             end
         end)
 
@@ -5002,7 +4998,6 @@ Components.Window = (function()
 		local imageOffset = hasImage and (imageSize + 10 + topOffset) or topOffset
 		local searchHeight = 28
 		local totalOffset = (Window.ShowSearch and searchHeight or 0) + imageOffset
-
 		local TabFrame = New("Frame", {
 			Size = UDim2.new(0, Window.TabWidth, 1, Window.ShowSearch and -63 or -31),
 			Position = UDim2.new(0, 12, 0, Window.ShowSearch and 54 or 19),
@@ -5118,31 +5113,6 @@ Window.ContainerCanvas = New("Frame", {
 		end
 		
 		table.insert(rootChildren, Window.AcrylicPaint.Frame)
-
-		local TabPanelBg = New("Frame", {
-			Name = "TabPanelBg",
-			Size = UDim2.new(0, Window.TabWidth + 24, 1, 0),
-			Position = UDim2.fromOffset(0, 0),
-			BackgroundTransparency = 0.45,
-			ZIndex = 1,
-			ThemeTag = { BackgroundColor3 = "Tab" },
-		}, {
-			New("UICorner", { CornerRadius = UDim.new(0, 12) }),
-		})
-		table.insert(rootChildren, TabPanelBg)
-
-		local ContentPanelBg = New("Frame", {
-			Name = "ContentPanelBg",
-			Size = UDim2.new(1, -(Window.TabWidth + 30), 1, -8),
-			Position = UDim2.fromOffset(Window.TabWidth + 26, 4),
-			BackgroundTransparency = 0.72,
-			ZIndex = 1,
-			ThemeTag = { BackgroundColor3 = "AcrylicMain" },
-		}, {
-			New("UICorner", { CornerRadius = UDim.new(0, 8) }),
-		})
-		table.insert(rootChildren, ContentPanelBg)
-
 		table.insert(rootChildren, Window.TabDisplay)
 		table.insert(rootChildren, Window.ContainerCanvas)
 		table.insert(rootChildren, TabFrame)
@@ -5791,7 +5761,7 @@ ElementsTable.Toggle = (function()
 		Toggle.Elements = ToggleFrame
 
 		local ToggleTrack = New("Frame", {
-			Size = UDim2.fromOffset(50, 20),
+			Size = UDim2.fromOffset(37, 17),
 			AnchorPoint = Vector2.new(1, 0.5),
 			Position = UDim2.new(1, -10, 0.5, 0),
 			Parent = ToggleFrame.Frame,
@@ -5815,7 +5785,7 @@ ElementsTable.Toggle = (function()
 		})
 
 		local ToggleThumb = New("Frame", {
-			Size = UDim2.fromOffset(14, 14),
+			Size = UDim2.fromOffset(11, 11),
 			Position = UDim2.fromOffset(3, 3),
 			BorderSizePixel = 0,
 			BackgroundTransparency = 0.1,
@@ -5856,7 +5826,7 @@ ElementsTable.Toggle = (function()
 			}):Play()
 
 			TweenService:Create(ToggleThumb, tweenInfo, {
-				Position = Toggle.Value and UDim2.fromOffset(33, 3) or UDim2.fromOffset(3, 3),
+				Position = Toggle.Value and UDim2.fromOffset(23, 3) or UDim2.fromOffset(3, 3),
 				BackgroundTransparency = Toggle.Value and 0 or 0.1,
 			}):Play()
 
@@ -6027,7 +5997,6 @@ ElementsTable.Dropdown = (function()
 			}, {
 				New("UICorner", { CornerRadius = UDim.new(0, 4) }),
 			})
-
 			SearchBox = New("TextBox", {
 				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
 				TextColor3 = Color3.fromRGB(200, 200, 200),
@@ -9027,7 +8996,6 @@ local SaveManager = {} do
 
 			end,
 
-
 		},
 
 
@@ -10031,7 +9999,6 @@ end
 
 
 
-
 		if Library.UseAcrylic and not Mobile then
 
 
@@ -11027,7 +10994,6 @@ function Library:SetWindowTransparency(Value)
 
 
 			Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = Value * 0.3
-
 
 		end
 
