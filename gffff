@@ -4538,19 +4538,40 @@ Components.TitleBar = (function()
             Library.Window:Minimize()
         end)
 
+		local StatsContainer = New("Frame", {
+			Name = "StatsContainer",
+			Size = UDim2.new(0, 0, 0, 22),
+			AutomaticSize = Enum.AutomaticSize.X,
+			AnchorPoint = Vector2.new(1, 1),
+			Position = UDim2.new(1, -8, 1, -8),
+			BackgroundTransparency = 0.45,
+			ZIndex = 10,
+			Parent = GUI,
+			ThemeTag = {
+				BackgroundColor3 = "Background",
+			},
+		}, {
+			New("UICorner", { CornerRadius = UDim.new(0, 6) }),
+			New("UIPadding", {
+				PaddingLeft = UDim.new(0, 7),
+				PaddingRight = UDim.new(0, 7),
+			}),
+		})
+
 		local StatsLabel = New("TextLabel", {
 			Name = "StatsLabel",
 			Text = "FPS: 0 | Ping: 0ms | 00:00:00",
-			TextTransparency = 0.4,
+			TextTransparency = 0.2,
 			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-			TextSize = 10,
-			TextXAlignment = Enum.TextXAlignment.Right,
+			TextSize = 11,
+			TextXAlignment = Enum.TextXAlignment.Center,
 			Size = UDim2.new(0, 0, 1, 0),
 			AutomaticSize = Enum.AutomaticSize.X,
-			AnchorPoint = Vector2.new(1, 0),
-			Position = UDim2.new(1, -90, 0, 0), 
+			AnchorPoint = Vector2.new(0, 0),
+			Position = UDim2.new(0, 0, 0, 0),
 			BackgroundTransparency = 1,
-			Parent = TitleBar.Frame,
+			ZIndex = 11,
+			Parent = StatsContainer,
 			ThemeTag = {
 				TextColor3 = "SubText",
 			},
@@ -4565,7 +4586,7 @@ Components.TitleBar = (function()
 
         task.spawn(function()
             local Stats = game:GetService("Stats")
-            while TitleBar.Frame and TitleBar.Frame.Parent do
+            while StatsContainer and StatsContainer.Parent do
                 local ping = 0
                 pcall(function() ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
                 
