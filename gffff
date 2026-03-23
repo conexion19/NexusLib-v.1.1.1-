@@ -2441,8 +2441,6 @@ function AcrylicPaint()
 				ThemeTag = {
 					BackgroundColor3 = "AcrylicMain",
 				},
-			}, {
-				New("UICorner", { CornerRadius = UDim.new(0, 12) }),
 			}),
 
 			New("Frame", {
@@ -2450,7 +2448,6 @@ function AcrylicPaint()
 				BackgroundTransparency = 0.4,
 				Size = UDim2.fromScale(1, 1),
 			}, {
-				New("UICorner", { CornerRadius = UDim.new(0, 12) }),
 				New("UIGradient", {
 					Rotation = 90,
 					ThemeTag = {
@@ -5081,6 +5078,8 @@ Window.ContainerCanvas = New("Frame", {
 				ImageTransparency = math.max(0, math.min(1, backgroundImageTransparency)),
 				ZIndex = 0,
 				ScaleType = Enum.ScaleType.Stretch,
+			}, {
+				New("UICorner", { CornerRadius = UDim.new(0, 12) }),
 			})
 			Window.BackgroundImage = BackgroundImageFrame
 			table.insert(rootChildren, BackgroundImageFrame)
