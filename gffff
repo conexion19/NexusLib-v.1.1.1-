@@ -798,40 +798,40 @@ local Themes = {
 	},
 	Slate = {
 		Name = "Slate",
-		Accent = Color3.fromRGB(210, 30, 30),
-		AcrylicMain = Color3.fromRGB(10, 5, 5),
-		AcrylicBorder = Color3.fromRGB(14, 7, 7),
-		AcrylicGradient = ColorSequence.new(Color3.fromRGB(8, 4, 4), Color3.fromRGB(16, 8, 8)),
+		Accent = Color3.fromRGB(155, 28, 52),
+		AcrylicMain = Color3.fromRGB(242, 224, 228),
+		AcrylicBorder = Color3.fromRGB(218, 188, 198),
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(238, 218, 224), Color3.fromRGB(248, 232, 237)),
 		AcrylicNoise = 0.95,
-		TitleBarLine = Color3.fromRGB(24, 10, 10),
-		Tab = Color3.fromRGB(50, 22, 22),
-		Element = Color3.fromRGB(24, 11, 11),
-		ElementBorder = Color3.fromRGB(30, 14, 14),
-		InElementBorder = Color3.fromRGB(28, 13, 13),
-		ElementTransparency = 0.96,
-		ToggleSlider = Color3.fromRGB(45, 20, 20),
-		ToggleToggled = Color3.fromRGB(210, 30, 30),
-		SliderRail = Color3.fromRGB(45, 20, 20),
-		DropdownFrame = Color3.fromRGB(45, 20, 20),
-		DropdownHolder = Color3.fromRGB(14, 7, 7),
-		DropdownBorder = Color3.fromRGB(20, 9, 9),
-		DropdownOption = Color3.fromRGB(36, 16, 16),
-		Keybind = Color3.fromRGB(45, 20, 20),
-		Input = Color3.fromRGB(36, 16, 16),
-		InputFocused = Color3.fromRGB(10, 5, 5),
-		InputIndicator = Color3.fromRGB(210, 30, 30),
-		Dialog = Color3.fromRGB(14, 7, 7),
-		DialogHolder = Color3.fromRGB(20, 10, 10),
-		DialogHolderLine = Color3.fromRGB(30, 14, 14),
-		DialogButton = Color3.fromRGB(32, 15, 15),
-		DialogButtonBorder = Color3.fromRGB(32, 15, 15),
-		DialogBorder = Color3.fromRGB(14, 7, 7),
-		DialogInput = Color3.fromRGB(14, 7, 7),
-		DialogInputLine = Color3.fromRGB(100, 32, 32),
-		Text = Color3.fromRGB(255, 230, 230),
-		SubText = Color3.fromRGB(165, 95, 95),
-		Hover = Color3.fromRGB(44, 20, 20),
-		HoverChange = 0.03,
+		TitleBarLine = Color3.fromRGB(208, 172, 184),
+		Tab = Color3.fromRGB(246, 228, 234),
+		Element = Color3.fromRGB(242, 224, 228),
+		ElementBorder = Color3.fromRGB(214, 178, 190),
+		InElementBorder = Color3.fromRGB(220, 185, 196),
+		ElementTransparency = 0.12,
+		ToggleSlider = Color3.fromRGB(208, 175, 187),
+		ToggleToggled = Color3.fromRGB(155, 28, 52),
+		SliderRail = Color3.fromRGB(208, 175, 187),
+		DropdownFrame = Color3.fromRGB(214, 182, 194),
+		DropdownHolder = Color3.fromRGB(238, 218, 226),
+		DropdownBorder = Color3.fromRGB(202, 165, 178),
+		DropdownOption = Color3.fromRGB(230, 207, 216),
+		Keybind = Color3.fromRGB(214, 182, 194),
+		Input = Color3.fromRGB(232, 210, 218),
+		InputFocused = Color3.fromRGB(244, 228, 233),
+		InputIndicator = Color3.fromRGB(155, 28, 52),
+		Dialog = Color3.fromRGB(238, 218, 226),
+		DialogHolder = Color3.fromRGB(230, 205, 215),
+		DialogHolderLine = Color3.fromRGB(208, 172, 184),
+		DialogButton = Color3.fromRGB(218, 188, 200),
+		DialogButtonBorder = Color3.fromRGB(218, 188, 200),
+		DialogBorder = Color3.fromRGB(216, 185, 196),
+		DialogInput = Color3.fromRGB(238, 218, 226),
+		DialogInputLine = Color3.fromRGB(155, 88, 108),
+		Text = Color3.fromRGB(62, 14, 28),
+		SubText = Color3.fromRGB(132, 68, 88),
+		Hover = Color3.fromRGB(226, 203, 212),
+		HoverChange = 0.05,
 	},
 	Gray = {
 		Name = "Gray",
@@ -4369,13 +4369,13 @@ Components.TitleBar = (function()
         })
         local LogoGradient = New("UIGradient", {
             Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0,    Color3.fromRGB(255, 255, 255)),
-                ColorSequenceKeypoint.new(0.3,  Color3.fromRGB(255, 255, 255)),
-                ColorSequenceKeypoint.new(0.42, Color3.fromRGB(255, 160, 160)),
-                ColorSequenceKeypoint.new(0.5,  Color3.fromRGB(255, 55,  55)),
-                ColorSequenceKeypoint.new(0.58, Color3.fromRGB(255, 160, 160)),
-                ColorSequenceKeypoint.new(0.7,  Color3.fromRGB(255, 255, 255)),
-                ColorSequenceKeypoint.new(1,    Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(0,    Color3.fromRGB(255, 210, 220)),
+                ColorSequenceKeypoint.new(0.25, Color3.fromRGB(230, 140, 160)),
+                ColorSequenceKeypoint.new(0.4,  Color3.fromRGB(195, 50,  75)),
+                ColorSequenceKeypoint.new(0.5,  Color3.fromRGB(138, 18,  42)),
+                ColorSequenceKeypoint.new(0.6,  Color3.fromRGB(195, 50,  75)),
+                ColorSequenceKeypoint.new(0.75, Color3.fromRGB(230, 140, 160)),
+                ColorSequenceKeypoint.new(1,    Color3.fromRGB(255, 210, 220)),
             }),
             Parent = LogoIcon,
         })
@@ -5753,7 +5753,7 @@ ElementsTable.Toggle = (function()
 		}
 
 		local ToggleFrame = Components.Element(Config.Title, Config.Description, self.Container, true, Config)
-		ToggleFrame.DescLabel.Size = UDim2.new(1, -54, 0, 14)
+		ToggleFrame.DescLabel.Size = UDim2.new(1, -72, 0, 14)
 
 		Toggle.SetTitle = ToggleFrame.SetTitle
 		Toggle.SetDesc = ToggleFrame.SetDesc
@@ -5761,7 +5761,7 @@ ElementsTable.Toggle = (function()
 		Toggle.Elements = ToggleFrame
 
 		local ToggleTrack = New("Frame", {
-			Size = UDim2.fromOffset(37, 17),
+			Size = UDim2.fromOffset(52, 22),
 			AnchorPoint = Vector2.new(1, 0.5),
 			Position = UDim2.new(1, -10, 0.5, 0),
 			Parent = ToggleFrame.Frame,
@@ -5785,7 +5785,7 @@ ElementsTable.Toggle = (function()
 		})
 
 		local ToggleThumb = New("Frame", {
-			Size = UDim2.fromOffset(11, 11),
+			Size = UDim2.fromOffset(16, 16),
 			Position = UDim2.fromOffset(3, 3),
 			BorderSizePixel = 0,
 			BackgroundTransparency = 0.1,
@@ -5826,7 +5826,7 @@ ElementsTable.Toggle = (function()
 			}):Play()
 
 			TweenService:Create(ToggleThumb, tweenInfo, {
-				Position = Toggle.Value and UDim2.fromOffset(23, 3) or UDim2.fromOffset(3, 3),
+				Position = Toggle.Value and UDim2.fromOffset(33, 3) or UDim2.fromOffset(3, 3),
 				BackgroundTransparency = Toggle.Value and 0 or 0.1,
 			}):Play()
 
