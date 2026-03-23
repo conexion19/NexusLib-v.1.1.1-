@@ -5748,7 +5748,7 @@ ElementsTable.Toggle = (function()
 		Toggle.Elements = ToggleFrame
 
 		local ToggleTrack = New("Frame", {
-			Size = UDim2.fromOffset(40, 17),
+			Size = UDim2.fromOffset(37, 17),
 			AnchorPoint = Vector2.new(1, 0.5),
 			Position = UDim2.new(1, -10, 0.5, 0),
 			Parent = ToggleFrame.Frame,
@@ -5813,7 +5813,7 @@ ElementsTable.Toggle = (function()
 			}):Play()
 
 			TweenService:Create(ToggleThumb, tweenInfo, {
-				Position = Toggle.Value and UDim2.fromOffset(26, 3) or UDim2.fromOffset(3, 3),
+				Position = Toggle.Value and UDim2.fromOffset(23, 3) or UDim2.fromOffset(3, 3),
 				BackgroundTransparency = Toggle.Value and 0 or 0.1,
 			}):Play()
 
@@ -6726,40 +6726,6 @@ ElementsTable.Paragraph = (function()
 		Config.Content = Config.Content or ""
 
 		local Paragraph = Components.Element(Config.Title, Config.Content, Paragraph.Container, false, Config)
-
-		-- More visible background
-		Paragraph.Frame.BackgroundTransparency = 0.78
-
-		-- Accent-coloured border
-		Paragraph.Border.Thickness = 1
-		Paragraph.Border.Transparency = 0.35
-		Creator.OverrideTag(Paragraph.Border, { Color = "Accent" })
-
-		-- Accent title
-		Creator.OverrideTag(Paragraph.TitleLabel, { TextColor3 = "Accent" })
-		Paragraph.TitleLabel.FontFace = Font.new(
-			"rbxasset://fonts/families/GothamSSm.json",
-			Enum.FontWeight.Bold,
-			Enum.FontStyle.Normal
-		)
-
-		-- Accent left strip
-		local AccentStrip = New("Frame", {
-			Size = UDim2.new(0, 3, 1, 0),
-			Position = UDim2.fromOffset(0, 0),
-			BorderSizePixel = 0,
-			BackgroundTransparency = 0.1,
-			ZIndex = 2,
-			Parent = Paragraph.Frame,
-			ThemeTag = {
-				BackgroundColor3 = "Accent",
-			},
-		}, {
-			New("UICorner", { CornerRadius = UDim.new(0, 4) }),
-		})
-
-		-- Slightly larger description text
-		Paragraph.DescLabel.TextSize = 13
 
 		Paragraph.SetTitle = Paragraph.SetTitle
 		Paragraph.SetDesc = Paragraph.SetDesc
