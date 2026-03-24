@@ -798,39 +798,39 @@ local Themes = {
 	},
 	Slate = {
 		Name = "Slate",
-		Accent = Color3.fromRGB(210, 30, 30),
-		AcrylicMain = Color3.fromRGB(10, 5, 5),
-		AcrylicBorder = Color3.fromRGB(14, 7, 7),
-		AcrylicGradient = ColorSequence.new(Color3.fromRGB(8, 4, 4), Color3.fromRGB(16, 8, 8)),
+		Accent = Color3.fromRGB(255, 140, 180),
+		AcrylicMain = Color3.fromRGB(20, 10, 15),
+		AcrylicBorder = Color3.fromRGB(25, 12, 18),
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(15, 8, 12), Color3.fromRGB(22, 10, 16)),
 		AcrylicNoise = 0.95,
-		TitleBarLine = Color3.fromRGB(24, 10, 10),
-		Tab = Color3.fromRGB(50, 22, 22),
-		Element = Color3.fromRGB(24, 11, 11),
-		ElementBorder = Color3.fromRGB(30, 14, 14),
-		InElementBorder = Color3.fromRGB(28, 13, 13),
+		TitleBarLine = Color3.fromRGB(30, 15, 20),
+		Tab = Color3.fromRGB(60, 30, 45),
+		Element = Color3.fromRGB(35, 18, 25),
+		ElementBorder = Color3.fromRGB(45, 25, 35),
+		InElementBorder = Color3.fromRGB(40, 22, 30),
 		ElementTransparency = 0.96,
-		ToggleSlider = Color3.fromRGB(45, 20, 20),
-		ToggleToggled = Color3.fromRGB(210, 30, 30),
-		SliderRail = Color3.fromRGB(45, 20, 20),
-		DropdownFrame = Color3.fromRGB(45, 20, 20),
-		DropdownHolder = Color3.fromRGB(14, 7, 7),
-		DropdownBorder = Color3.fromRGB(20, 9, 9),
-		DropdownOption = Color3.fromRGB(36, 16, 16),
-		Keybind = Color3.fromRGB(45, 20, 20),
-		Input = Color3.fromRGB(36, 16, 16),
-		InputFocused = Color3.fromRGB(10, 5, 5),
-		InputIndicator = Color3.fromRGB(210, 30, 30),
-		Dialog = Color3.fromRGB(14, 7, 7),
-		DialogHolder = Color3.fromRGB(20, 10, 10),
-		DialogHolderLine = Color3.fromRGB(30, 14, 14),
-		DialogButton = Color3.fromRGB(32, 15, 15),
-		DialogButtonBorder = Color3.fromRGB(32, 15, 15),
-		DialogBorder = Color3.fromRGB(14, 7, 7),
-		DialogInput = Color3.fromRGB(14, 7, 7),
-		DialogInputLine = Color3.fromRGB(100, 32, 32),
-		Text = Color3.fromRGB(255, 230, 230),
-		SubText = Color3.fromRGB(165, 95, 95),
-		Hover = Color3.fromRGB(44, 20, 20),
+		ToggleSlider = Color3.fromRGB(60, 30, 45),
+		ToggleToggled = Color3.fromRGB(255, 140, 180),
+		SliderRail = Color3.fromRGB(60, 30, 45),
+		DropdownFrame = Color3.fromRGB(60, 30, 45),
+		DropdownHolder = Color3.fromRGB(20, 10, 15),
+		DropdownBorder = Color3.fromRGB(30, 15, 22),
+		DropdownOption = Color3.fromRGB(45, 25, 35),
+		Keybind = Color3.fromRGB(60, 30, 45),
+		Input = Color3.fromRGB(45, 25, 35),
+		InputFocused = Color3.fromRGB(20, 10, 15),
+		InputIndicator = Color3.fromRGB(255, 140, 180),
+		Dialog = Color3.fromRGB(20, 10, 15),
+		DialogHolder = Color3.fromRGB(30, 15, 20),
+		DialogHolderLine = Color3.fromRGB(40, 20, 30),
+		DialogButton = Color3.fromRGB(45, 25, 35),
+		DialogButtonBorder = Color3.fromRGB(50, 30, 40),
+		DialogBorder = Color3.fromRGB(25, 12, 18),
+		DialogInput = Color3.fromRGB(20, 10, 15),
+		DialogInputLine = Color3.fromRGB(150, 80, 110),
+		Text = Color3.fromRGB(255, 220, 235),
+		SubText = Color3.fromRGB(200, 140, 170),
+		Hover = Color3.fromRGB(55, 28, 40),
 		HoverChange = 0.03,
 	},
 	Gray = {
@@ -10295,10 +10295,10 @@ Library.CreateWindow = function(self, Config)
             local snowfallEnabled = configAllowsSnow and userWantsSnow
             
             
-            if false and snowfallEnabled then
-                 Library:AddSnowfallToWindow({
-                    Count = 38,
-                    Speed = 9.5
+            if true then
+                 Library:AddPetalsToWindow({
+                    Count = 30,
+                    Speed = 15
                 })
             else
                 
@@ -11596,158 +11596,152 @@ function Library:AddSnowfallToWindow(Config)
         innerContainer.ClipsDescendants = true
         innerContainer.Parent = Parent
         
-        local snowflakeCount = Config.Count or 50
-        local fallSpeed = Config.Speed or 60
-
-        local snowflakeColor = Color3.fromRGB(255, 255, 255)
-        
-        local snowflakes = {}
-        local connections = {}
-
-        for i = 1, snowflakeCount do
-            local snowflake = Instance.new("ImageLabel")
-            snowflake.Name = "Part"..i
-            snowflake.BackgroundTransparency = 1
-            snowflake.BorderSizePixel = 0
-            snowflake.Image = "rbxassetid://124338537670236"
-            snowflake.ImageColor3 = snowflakeColor
-            snowflake.ImageTransparency = 0.1
-            snowflake.ScaleType = Enum.ScaleType.Fit
+            local snowflakeCount = Config.Count or 30
+            local fallSpeed = Config.Speed or 40
             
-            local size = math.random(9, 15)
-            snowflake.Size = UDim2.new(0, size, 0, size)
-            
-            snowflake.Position = UDim2.new(
-                math.random() * 0.95, 
-                0, 
-				math.random() * 1.5 - 0.5,
-                0
-            )
-            snowflake.Parent = innerContainer
-            
-            local speed = math.random(fallSpeed * 0.5, fallSpeed * 1.5)
-            
-            snowflakes[i] = {
-                frame = snowflake,
-                speed = speed,
-                size = size
-            }
-        end
-        
-        local containerBounds = {
-            left = 0,
-            right = 1,
-            top = 0,
-            bottom = 1
-        }
-        
-        local lastUpdate = tick()
-        local connection = game:GetService("RunService").Heartbeat:Connect(function()
-            local currentTime = tick()
-            local deltaTime = currentTime - lastUpdate
-            lastUpdate = currentTime
-            
-            for _, snowflake in ipairs(snowflakes) do
-                local frame = snowflake.frame
-                local currentPos = frame.Position
-
-                local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 100)
-                local newX = currentPos.X.Scale
+            local snowflakes = {}
+            local connections = {}
+    
+            for i = 1, snowflakeCount do
+                local petal = Instance.new("Frame")
+                petal.Name = "Petal"..i
+                petal.BackgroundColor3 = Color3.fromRGB(255, 180, 200)
+                local baseTransparency = math.random(10, 50) / 100
+                petal.BackgroundTransparency = baseTransparency
+                petal.BorderSizePixel = 0
                 
-                if newX < containerBounds.left then
-                    newX = containerBounds.right
-                elseif newX > containerBounds.right then
-                    newX = containerBounds.left
-                end
+                local corner = Instance.new("UICorner")
+                corner.CornerRadius = UDim.new(0.5, 0)
+                corner.Parent = petal
                 
-                if newY > containerBounds.bottom then
-                    newY = containerBounds.top - 0.1
-                    newX = math.random() * 0.95
-                    
-                    local newSize = math.random(8, 14)
-                    frame.Size = UDim2.new(0, newSize, 0, newSize)
-                    snowflake.size = newSize
-                end
+                local width = math.random(4, 8)
+                local height = width * 1.5
+                petal.Size = UDim2.new(0, width, 0, height)
                 
-                frame.Position = UDim2.new(
-                    newX,
-                    0,
-                    newY,
+                petal.Position = UDim2.new(
+                    math.random() * 0.95, 
+                    0, 
+                    math.random() * 1.5 - 0.5,
                     0
                 )
+                petal.Rotation = math.random(-30, 30) -- Static slight tilt, no spinning
+                petal.Parent = innerContainer
+                
+                local speed = math.random(fallSpeed * 0.5, fallSpeed * 1.5)
+                local swaySpeed = math.random(1, 3)
+                local swayOffset = math.random(0, 100)
+                
+                snowflakes[i] = {
+                    frame = petal,
+                    speed = speed,
+                    width = width,
+                    height = height,
+                    swaySpeed = swaySpeed,
+                    swayOffset = swayOffset,
+                    baseX = petal.Position.X.Scale,
+                    baseTransparency = baseTransparency
+                }
             end
-        end)
-        
-        table.insert(connections, connection)
-        
-        local SnowInstance = {}
-        
-        function SnowInstance:SetIntensity(intensity)
-
-            intensity = math.clamp(intensity, 0, 1)
-
-        end
-        
-        function SnowInstance:SetSpeed(speed)
-            for _, snowflake in ipairs(snowflakes) do
-                snowflake.speed = speed * math.random(0.5, 1.5)
+            
+            local containerBounds = {
+                left = -0.1,
+                right = 1.1,
+                top = -0.2,
+                bottom = 1.1
+            }
+            
+            local lastUpdate = tick()
+            local connection = game:GetService("RunService").Heartbeat:Connect(function()
+                local currentTime = tick()
+                local deltaTime = currentTime - lastUpdate
+                lastUpdate = currentTime
+                
+                for _, snowflake in ipairs(snowflakes) do
+                    local frame = snowflake.frame
+                    local currentPos = frame.Position
+    
+                    local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 100)
+                    local newX = snowflake.baseX + math.sin(currentTime * snowflake.swaySpeed + snowflake.swayOffset) * 0.05
+                    
+                    if newY > 1 then
+                        newY = containerBounds.top
+                        snowflake.baseX = math.random() * 0.95
+                        newX = snowflake.baseX
+                        
+                        local newWidth = math.random(4, 8)
+                        local newHeight = newWidth * 1.5
+                        frame.Size = UDim2.new(0, newWidth, 0, newHeight)
+                        snowflake.width = newWidth
+                        snowflake.height = newHeight
+                    end
+                    
+                    frame.Position = UDim2.new(
+                        newX,
+                        0,
+                        newY,
+                        0
+                    )
+                    
+                    if newY > 0.8 then
+                        local fadeProgress = (newY - 0.8) / 0.2
+                        fadeProgress = math.clamp(fadeProgress, 0, 1)
+                        frame.BackgroundTransparency = snowflake.baseTransparency + (1 - snowflake.baseTransparency) * fadeProgress
+                    else
+                        frame.BackgroundTransparency = snowflake.baseTransparency
+                    end
+                end
+            end)
+            
+            table.insert(connections, connection)
+            
+            local SnowInstance = {}
+            
+            function SnowInstance:SetIntensity(intensity)
+                intensity = math.clamp(intensity, 0, 1)
             end
-        end
-        
-        function SnowInstance:Destroy()
-            for _, conn in ipairs(connections) do
-                conn:Disconnect()
+            
+            function SnowInstance:SetSpeed(speed)
+                for _, snowflake in ipairs(snowflakes) do
+                    snowflake.speed = speed * math.random(0.5, 1.5)
+                end
             end
-            innerContainer:Destroy()
-        end
-        
-        return SnowInstance
-    end
-    
-    local snowContainer = Instance.new("Frame")
-    snowContainer.Name = "Container"
-    snowContainer.Size = UDim2.new(1, 0, 1, 0)
-    snowContainer.BackgroundTransparency = 1
-    snowContainer.ZIndex = 1
-    snowContainer.ClipsDescendants = true
-    snowContainer.Parent = Library.Window.Root
-    
-    snowfall.instance = SnowModule:Init(snowContainer, {
-        Count = Config.Count or 38,
-        Speed = Config.Speed or 9.5
-    })
-
-    function snowfall:SetVisible(visible)
-        snowContainer.Visible = visible
-    end
-    
-     function snowfall:SetIntensity(intensity)
-
-        intensity = math.clamp(intensity, 0, 1)
-        local targetTransparency = 1 - intensity
-        
-        for i, child in ipairs(snowContainer:GetChildren()) do
-            if child:IsA("Frame") then
-                child.BackgroundTransparency = targetTransparency
+            
+            function SnowInstance:Destroy()
+                for _, conn in ipairs(connections) do
+                    conn:Disconnect()
+                end
+                innerContainer:Destroy()
             end
+            
+            return SnowInstance
         end
-    end
+        
+        local snowContainer = Instance.new("Frame")
+        snowContainer.Name = "Container"
+        snowContainer.Size = UDim2.new(1, 0, 1, 0)
+        snowContainer.BackgroundTransparency = 1
+        snowContainer.ZIndex = 1
+        snowContainer.ClipsDescendants = true
+        snowContainer.Parent = Library.Window.Root
+        
+        snowfall.instance = SnowModule:Init(snowContainer, {
+            Count = Config.Count or 38,
+            Speed = Config.Speed or 9.5
+        })
     
-    function snowfall:SetSpeed(speed)
-        if snowfall.instance and snowfall.instance.SetSpeed then
-            snowfall.instance:SetSpeed(speed)
+        function snowfall:SetVisible(visible)
+            snowContainer.Visible = visible
         end
-    end
-    
-    function snowfall:Destroy()
-        if snowfall.instance and snowfall.instance.Destroy then
-            snowfall.instance:Destroy()
-        end
-        snowContainer:Destroy()
+        
+         function snowfall:SetIntensity(intensity)
     end
     
     Library.Snowfall = snowfall
     return snowfall
+end
+
+function Library:AddPetalsToWindow(Config)
+    return self:AddSnowfallToWindow(Config)
 end
 
 if RunService:IsStudio() then task.wait(0.01) end
