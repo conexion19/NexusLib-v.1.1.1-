@@ -5137,10 +5137,10 @@ Window.Root = New("Frame", {
 			local StatsLabel = Instance.new("TextLabel")
 			StatsLabel.Name = "StatsLabel"
 			StatsLabel.Text = "FPS: 0 | Ping: 0ms | 00:00:00"
-			StatsLabel.Font = Enum.Font.GothamBold
+			StatsLabel.Font = Enum.Font.GothamMedium
 			StatsLabel.TextSize = 11
-			StatsLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-			StatsLabel.TextTransparency = 0.2
+			StatsLabel.TextColor3 = Color3.fromRGB(230, 230, 230)
+			StatsLabel.TextTransparency = 0.3
 			StatsLabel.TextXAlignment = Enum.TextXAlignment.Left
 			StatsLabel.BackgroundTransparency = 1
 			StatsLabel.Size = UDim2.new(0, 200, 0, 18)
@@ -11605,8 +11605,8 @@ function Library:AddSnowfallToWindow(Config)
             for i = 1, snowflakeCount do
                 local petal = Instance.new("Frame")
                 petal.Name = "Petal"..i
-                petal.BackgroundColor3 = Color3.fromRGB(255, 180, 200)
-                local baseTransparency = math.random(10, 50) / 100
+                petal.BackgroundColor3 = Color3.fromRGB(255, 192, 203) -- softer sakura color
+                local baseTransparency = math.random(30, 70) / 100 -- more transparent
                 petal.BackgroundTransparency = baseTransparency
                 petal.BorderSizePixel = 0
                 
@@ -11614,8 +11614,8 @@ function Library:AddSnowfallToWindow(Config)
                 corner.CornerRadius = UDim.new(0.5, 0)
                 corner.Parent = petal
                 
-                local width = math.random(4, 8)
-                local height = width * 1.5
+                local width = math.random(2, 5) -- smaller
+                local height = width * 1.3 -- slightly less elongated
                 petal.Size = UDim2.new(0, width, 0, height)
                 
                 petal.Position = UDim2.new(
@@ -11624,11 +11624,11 @@ function Library:AddSnowfallToWindow(Config)
                     math.random() * 1.5 - 0.5,
                     0
                 )
-                petal.Rotation = math.random(-30, 30) -- Static slight tilt, no spinning
+                petal.Rotation = math.random(-15, 15) -- Very subtle tilt, looks nice
                 petal.Parent = innerContainer
                 
-                local speed = math.random(fallSpeed * 0.5, fallSpeed * 1.5)
-                local swaySpeed = math.random(1, 3)
+                local speed = math.random(fallSpeed * 0.5, fallSpeed * 1.2) -- slightly more uniform falling
+                local swaySpeed = math.random(1, 3) / 10 -- very, very slow swaying (0.1 - 0.3 instead of 1 - 3)
                 local swayOffset = math.random(0, 100)
                 
                 snowflakes[i] = {
@@ -11661,15 +11661,15 @@ function Library:AddSnowfallToWindow(Config)
                     local currentPos = frame.Position
     
                     local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 100)
-                    local newX = snowflake.baseX + math.sin(currentTime * snowflake.swaySpeed + snowflake.swayOffset) * 0.05
+                    local newX = snowflake.baseX + math.sin(currentTime * snowflake.swaySpeed + snowflake.swayOffset) * 0.012 -- extremely tiny horizontal sway
                     
                     if newY > 1 then
                         newY = containerBounds.top
                         snowflake.baseX = math.random() * 0.95
                         newX = snowflake.baseX
                         
-                        local newWidth = math.random(4, 8)
-                        local newHeight = newWidth * 1.5
+                        local newWidth = math.random(2, 5)
+                        local newHeight = newWidth * 1.3
                         frame.Size = UDim2.new(0, newWidth, 0, newHeight)
                         snowflake.width = newWidth
                         snowflake.height = newHeight
