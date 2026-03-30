@@ -21,16 +21,6 @@ if game.GameId == 5750914919 then
 	fischbypass = true
 end
 
--- Attach font enforcement now that `Creator` and `GUI` are defined
-Creator.AddSignal(GUI.DescendantAdded, function(obj)
-	if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
-		pcall(function() obj.Font = Enum.Font.SourceSansSemibold; obj.FontFace = nil end)
-	end
-end)
-
-enforceFont(GUI)
-
--- Enforce preferred font on existing and future text instances inside the GUI
 local function enforceFont(root)
 	if not root then return end
 	for _, obj in ipairs(root:GetDescendants()) do
@@ -44,8 +34,6 @@ end
 local RenderStepped = RunService.RenderStepped
 
 local ProtectGui = function(obj) return obj end
-
-local Executor = ""
 
 local Themes = {
 	Names = {
@@ -2048,6 +2036,15 @@ local GUI = Creator.New("ScreenGui", {
 })
 
 Library.GUI = GUI
+
+-- Enforce preferred font on existing and newly added text instances now that `Creator` and `GUI` exist
+Creator.AddSignal(GUI.DescendantAdded, function(obj)
+	if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
+		pcall(function() obj.Font = Enum.Font.SourceSansSemibold; obj.FontFace = nil end)
+	end
+end)
+
+enforceFont(GUI)
 
 local parent = get_hui()
 if parent then
