@@ -1,63 +1,18 @@
-local cloneref = cloneref or function(o) return o end
+-- Dangerous API hooks removed for anti-cheat safety:
+-- getrawmetatable, setreadonly, newcclosure, cloneref, protect_gui, syn, gethui and similar are removed.
+-- Use direct, safe service references and avoid metatable manipulation.
 
-pcall(function()
-	if not getrawmetatable then return end
-	local mt = getrawmetatable(game)
-	if not mt then return end
-
-	local oldIndex    = rawget(mt, "__index")
-	local oldNamecall = rawget(mt, "__namecall")
-
-	local function wrap(f)
-		return (newcclosure and newcclosure(f)) or f
-	end
-
-	local function unlock()
-		if make_writeable then make_writeable(mt, true)
-		elseif setreadonly then setreadonly(mt, false) end
-	end
-	local function lock()
-		if make_writeable then make_writeable(mt, false)
-		elseif setreadonly then setreadonly(mt, true) end
-	end
-
-	local PROTECTED = { CoreGui = true, RobloxGui = true }
-
-	unlock()
-
-	rawset(mt, "__index", wrap(function(self, key)
-		if PROTECTED[tostring(key)] then
-			local ok, svc = pcall(oldIndex, self, key)
-			if ok and svc then return cloneref(svc) end
-		end
-		return oldIndex(self, key)
-	end))
-
-	rawset(mt, "__namecall", wrap(function(self, ...)
-		local m = getnamecallmethod and getnamecallmethod() or ""
-		if m == "GetService" or m == "FindService" then
-			local sname = tostring((...) or "")
-			if PROTECTED[sname] then
-				local ok, svc = pcall(oldNamecall, self, ...)
-				if ok and svc then return cloneref(svc) end
-			end
-		end
-		return oldNamecall(self, ...)
-	end))
-
-	lock()
-end)
-
-
-local Lighting = cloneref(game:GetService("Lighting"))
-local RunService = cloneref(game:GetService("RunService"))
-local LocalPlayer = cloneref(game:GetService("Players")).LocalPlayer
-local UserInputService = cloneref(game:GetService("UserInputService"))
-local TweenService = cloneref(game:GetService("TweenService"))
-local TextService = cloneref(game:GetService("TextService"))
-local Camera = cloneref(game:GetService("Workspace")).CurrentCamera
-local Mouse = LocalPlayer:GetMouse()
-local httpService = cloneref(game:GetService("HttpService"))
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local Lighting = game:GetService("Lighting")
+local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local TextService = game:GetService("TextService")
+local Workspace = game:GetService("Workspace")
+local Camera = Workspace.CurrentCamera
+local Mouse = (LocalPlayer and LocalPlayer.GetMouse and LocalPlayer:GetMouse()) or nil
+local httpService = game:GetService("HttpService")
 
 local Mobile = not RunService:IsStudio() and table.find({Enum.Platform.IOS, Enum.Platform.Android}, UserInputService:GetPlatform()) ~= nil
 
@@ -66,27 +21,29 @@ if game.GameId == 5750914919 then
 	fischbypass = true
 end
 
+-- Enforce preferred font on existing and future text instances inside the GUI
+local function enforceFont(root)
+	if not root then return end
+	for _, obj in ipairs(root:GetDescendants()) do
+		if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
+			pcall(function() obj.Font = Enum.Font.SourceSansSemibold; obj.FontFace = nil end)
+		end
+	end
+end
+
+Creator.AddSignal(GUI.DescendantAdded, function(obj)
+	if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
+		pcall(function() obj.Font = Enum.Font.SourceSansSemibold; obj.FontFace = nil end)
+	end
+end)
+
+enforceFont(GUI)
+
 local RenderStepped = RunService.RenderStepped
 
-local ProtectGui = (function()
-	if typeof(protect_gui) == "function" then return protect_gui end
-	if syn and typeof(syn.protect_gui) == "function" then return syn.protect_gui end
-	if type(getgenv) == "function" then
-		local genv = getgenv()
-		if genv and typeof(genv.protect_gui) == "function" then return genv.protect_gui end
-		if genv and typeof(genv.protectgui) == "function" then return genv.protectgui end
-	end
-	return function(obj) return obj end
-end)()
+local ProtectGui = function(obj) return obj end
 
-local Executor = (function()
-	local ok, name = pcall(function()
-		if identifyexecutor then return identifyexecutor() end
-		if getexecutorname then return getexecutorname() end
-		return ""
-	end)
-	return (ok and name ~= "") and name or ""
-end)()
+local Executor = ""
 
 local Themes = {
 	Names = {
@@ -970,96 +927,47 @@ local Library = {
 	MinimizeKey = Enum.KeyCode.LeftControl,
 }
 
+-- LanguageManager: removed automatic/networked translation.
+-- This stub preserves the public API used by the rest of the library
+-- but forces English text only and avoids any HTTP/network calls.
 local LanguageManager = {
 	CurrentLanguage = "English",
-	Translations = {
-		English = {},
-		Russian = {}
-	},
+	Translations = { English = {} },
 	RegisteredElements = {},
 	Translating = false,
 	Cache = {}
 }
 
 function LanguageManager:SetLanguage(language)
-	if self.Translations[language] then
-		self.CurrentLanguage = language
-		self:UpdateAllElements()
-	end
-end
-
-function LanguageManager:AddTranslation(key, translations)
-	for lang, text in pairs(translations) do
-		if not self.Translations[lang] then
-			self.Translations[lang] = {}
-		end
-		self.Translations[lang][key] = text
-	end
+	-- Force English-only mode: any attempt to set another language will be ignored
+	self.CurrentLanguage = "English"
 	self:UpdateAllElements()
 end
 
+function LanguageManager:AddTranslation(key, translations)
+	-- Store translations if provided, but they will not be used automatically
+	for lang, text in pairs(translations or {}) do
+		self.Translations[lang] = self.Translations[lang] or {}
+		self.Translations[lang][key] = text
+	end
+end
+
 function LanguageManager:AutoTranslate(text, targetLang)
-	if not text or text == "" or targetLang == "English" then return text end
-	
-    
-	local cacheKey = text .. "_" .. targetLang
-	if self.Cache[cacheKey] then
-		return self.Cache[cacheKey]
-	end
-	
-    
-	local url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=" 
-		.. (targetLang == "Russian" and "ru" or "en") 
-		.. "&dt=t&q=" .. httpService:UrlEncode(text)
-		
-	local success, result = pcall(function()
-		return httpService:JSONDecode(game:HttpGet(url))
-	end)
-	
-	if success and result and result[1] and result[1][1] and result[1][1][1] then
-		local translatedText = result[1][1][1]
-		self.Cache[cacheKey] = translatedText
-		return translatedText
-	end
-	
+	-- Translation disabled; return original text
 	return text
 end
 
 function LanguageManager:RegisterElement(textLabel, key)
 	if not textLabel or not key then return end
-	
-	local actualKey = key
-	
-	table.insert(self.RegisteredElements, {
-		Label = textLabel,
-		Key = actualKey
-	})
-	
-	self:UpdateElement(textLabel, actualKey)
+	table.insert(self.RegisteredElements, { Label = textLabel, Key = key })
+	pcall(function() if textLabel and textLabel.Parent then textLabel.Text = key end end)
 end
 
 function LanguageManager:UpdateElement(textLabel, key)
 	if not textLabel or not textLabel.Parent then return end
-	
-	if self.CurrentLanguage == "English" then
-		textLabel.Text = key
-		return
-	end
-	
-	local translation = self.Translations[self.CurrentLanguage][key]
-	if translation then
-		textLabel.Text = translation
-	else
-    
-		task.spawn(function()
-			local translated = self:AutoTranslate(key, self.CurrentLanguage)
-			if translated and textLabel and textLabel.Parent then
-				self.Translations[self.CurrentLanguage][key] = translated
-				textLabel.Text = translated
-			end
-		end)
-	end
+	pcall(function() textLabel.Text = key end)
 end
+
 function LanguageManager:UpdateAllElements()
 	for i = #self.RegisteredElements, 1, -1 do
 		local data = self.RegisteredElements[i]
@@ -1530,7 +1438,7 @@ local Creator = {
 		TextLabel = {
 			BackgroundColor3 = Color3.new(1, 1, 1),
 			BorderColor3 = Color3.new(0, 0, 0),
-			Font = Enum.Font.SourceSans,
+			Font = Enum.Font.SourceSansSemibold,
 			Text = "",
 			TextColor3 = Color3.new(0, 0, 0),
 			BackgroundTransparency = 1,
@@ -1540,7 +1448,7 @@ local Creator = {
 			BackgroundColor3 = Color3.new(1, 1, 1),
 			BorderColor3 = Color3.new(0, 0, 0),
 			AutoButtonColor = false,
-			Font = Enum.Font.SourceSans,
+			Font = Enum.Font.SourceSansSemibold,
 			Text = "",
 			TextColor3 = Color3.new(0, 0, 0),
 			TextSize = 14,
@@ -1549,7 +1457,7 @@ local Creator = {
 			BackgroundColor3 = Color3.new(1, 1, 1),
 			BorderColor3 = Color3.new(0, 0, 0),
 			ClearTextOnFocus = false,
-			Font = Enum.Font.SourceSans,
+			Font = Enum.Font.SourceSansSemibold,
 			Text = "",
 			TextColor3 = Color3.new(0, 0, 0),
 			TextSize = 14,
@@ -2107,19 +2015,50 @@ Library.Creator = Creator
 
 Library.MiniMessageToRichText = MiniMessageToRichText
 
+-- Wrap Creator.New to enforce a consistent, beautiful font on newly created text instances
+local oldCreatorNew = Creator.New
+Creator.New = function(Name, Properties, Children)
+	local Object = oldCreatorNew(Name, Properties, Children)
+	if Object and (Object:IsA("TextLabel") or Object:IsA("TextButton") or Object:IsA("TextBox")) then
+		pcall(function()
+			Object.Font = Enum.Font.SourceSansSemibold
+			Object.FontFace = nil
+		end)
+	end
+	return Object
+end
+
 local New = Creator.New
 
-local get_hui = gethui or function() return game:GetService("CoreGui") end
+local function get_hui()
+	local pl = game:GetService("Players").LocalPlayer
+	if pl then
+		local ok, pg = pcall(function() return pl:WaitForChild("PlayerGui") end)
+		if ok and pg then return pg end
+	end
+	return nil
+end
 
 local GUI = Creator.New("ScreenGui", {
-    Parent = get_hui(), 
-    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-    ResetOnSpawn = false,
-    DisplayOrder = 999
+	ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+	ResetOnSpawn = false,
+	DisplayOrder = 999
 })
 
 Library.GUI = GUI
-ProtectGui(GUI)
+
+local parent = get_hui()
+if parent then
+	GUI.Parent = parent
+else
+	task.spawn(function()
+		local pl = game:GetService("Players").LocalPlayer
+		if pl then
+			local pg = pl:WaitForChild("PlayerGui")
+			GUI.Parent = pg
+		end
+	end)
+end
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "UIFrame"
@@ -4516,19 +4455,19 @@ Components.TitleBar = (function()
                      }),
 
                 
-                     New("TextLabel", {
-                        RichText = true,
-                        Text = "Running on " .. Executor,
-                        FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal),
-                        TextSize = 14,
-                        Size = UDim2.new(0, 0, 0, 16),
-                        AutomaticSize = Enum.AutomaticSize.X,
-                        BackgroundTransparency = 1,
-                        LayoutOrder = 1,
-                        ThemeTag = {
-                            TextColor3 = "Text",
-                        },
-                     }),
+					 New("TextLabel", {
+						RichText = true,
+						Text = "NEXUS",
+						Font = Enum.Font.SourceSansSemibold,
+						TextSize = 14,
+						Size = UDim2.new(0, 0, 0, 16),
+						AutomaticSize = Enum.AutomaticSize.X,
+						BackgroundTransparency = 1,
+						LayoutOrder = 1,
+						ThemeTag = {
+							TextColor3 = "Text",
+						},
+					 }),
                 }),
                 
                 
