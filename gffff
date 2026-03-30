@@ -1,4 +1,42 @@
 task.wait(5)
+
+-- Compatibility shim: provide safe in-memory fallbacks for exploit-only file APIs
+do
+	local __FS = {}
+	if not writefile then
+		writefile = function(path, content) __FS[path] = tostring(content) end
+	end
+	if not readfile then
+		readfile = function(path) return __FS[path] end
+	end
+	if not isfile then
+		isfile = function(path) return __FS[path] ~= nil end
+	end
+	if not isfolder then
+		isfolder = function(path)
+			path = path:gsub("\\", "/")
+			for k, _ in pairs(__FS) do
+				local k2 = k:gsub("\\", "/")
+				if k2:sub(1, #path) == path then return true end
+			end
+			return false
+		end
+	end
+	if not makefolder then
+		makefolder = function(path) __FS[path] = __FS[path] or "__folder" end
+	end
+	if not listfiles then
+		listfiles = function(path)
+			local out = {}
+			path = path:gsub("\\", "/")
+			for k, _ in pairs(__FS) do
+				local k2 = k:gsub("\\", "/")
+				if k2:sub(1, #path) == path then table.insert(out, k) end
+			end
+			return out
+		end
+	end
+end
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -9,70 +47,29 @@ local TextService = game:GetService("TextService")
 local Workspace = game:GetService("Workspace")
 local SaveManager = {} do
 	SaveManager.Folder = "FluentSettings"
-	SaveManager.Ignore = {}
-	SaveManager.Memory = {}
-
-	SaveManager.Parser = {
-		Toggle = {
-			Save = function(idx, object) return { type = "Toggle", idx = idx, value = object.Value } end,
-			Load = function(idx, data) if SaveManager.Options[idx] then SaveManager.Options[idx]:SetValue(data.value) end end,
-		},
-		Slider = {
-			Save = function(idx, object) return { type = "Slider", idx = idx, value = tostring(object.Value) } end,
-			Load = function(idx, data) if SaveManager.Options[idx] then SaveManager.Options[idx]:SetValue(data.value) end end,
-		},
-		Dropdown = {
-			Save = function(idx, object) return { type = "Dropdown", idx = idx, value = object.Value, multi = object.Multi } end,
-			Load = function(idx, data) if SaveManager.Options[idx] then SaveManager.Options[idx]:SetValue(data.value) end end,
-		},
-		Colorpicker = {
-			Save = function(idx, object) return { type = "Colorpicker", idx = idx, value = object.Value:ToHex(), transparency = object.Transparency } end,
-			Load = function(idx, data) if SaveManager.Options[idx] then SaveManager.Options[idx]:SetValueRGB(Color3.fromHex(data.value), data.transparency) end end,
-		},
-		Keybind = {
-			Save = function(idx, object) return { type = "Keybind", idx = idx, mode = object.Mode, key = object.Value, toggled = object.Toggled } end,
-			Load = function(idx, data)
-				if SaveManager.Options[idx] then
-					if data.toggled ~= nil then SaveManager.Options[idx].Toggled = data.toggled end
-					SaveManager.Options[idx]:SetValue(data.key, data.mode)
-				end
-			end,
-		},
-		Input = {
-			Save = function(idx, object) return { type = "Input", idx = idx, text = object.Value } end,
-			Load = function(idx, data) if SaveManager.Options[idx] and type(data.text) == "string" then SaveManager.Options[idx]:SetValue(data.text) end end,
-		},
-	}
-
-	function SaveManager:SetIgnoreIndexes(list)
-		for _, key in next, list do self.Ignore[key] = true end
-	end
-
-	function SaveManager:SetFolder(folder)
-		self.Folder = folder
-		self.Memory = self.Memory or {}
-	end
-
 	function SaveManager:Save(name)
-		if not name then return false, "no config file is selected" end
+
+		if (not name) then
+			return false, "no config file is selected"
+		end
+
 		local data = { objects = {} }
 		for idx, option in next, (SaveManager.Options or {}) do
 			if self.Parser[option.Type] and not self.Ignore[idx] then
 				table.insert(data.objects, self.Parser[option.Type].Save(idx, option))
 			end
 		end
+
 		local success, encoded = pcall(httpService.JSONEncode, httpService, data)
-		if not success then return false, "failed to encode data" end
+		if not success then
+			return false, "failed to encode data"
+		end
+
 		self.Memory = self.Memory or {}
 		self.Memory[name] = encoded
 		return true
-	end
 
-	function SaveManager:Load(name)
-		if not name then return false, "no config file is selected" end
-		self.Memory = self.Memory or {}
-		local raw = self.Memory[name]
-		if not raw then return false, "Create Config Save File" end
+	end
 		local success, decoded = pcall(httpService.JSONDecode, httpService, raw)
 		if not success then return false, "decode error" end
 		for _, option in next, (decoded.objects or {}) do
@@ -104,56 +101,18 @@ local SaveManager = {} do
 		return out
 	end
 
-	function SaveManager:SetLibrary(library)
-		self.Library = library
-		self.Options = library.Options
-	end
+	function SaveManager:RefreshConfigList()
 
-	function SaveManager:LoadAutoloadConfig()
 		self.Memory = self.Memory or {}
-		local name = self.Memory.__autoload
-		if name and type(name) == "string" then
-			local success, err = self:Load(name)
-			if not success and self.Library and type(self.Library.Notify) == "function" then
-				self.Library:Notify({ Title = "Interface", Content = "Config loader", SubContent = "Failed to load autoload config: " .. err, Duration = 7 })
-			end
-			if self.Library and type(self.Library.Notify) == "function" then
-				self.Library:Notify({ Title = "Interface", Content = "Config loader", SubContent = string.format("Auto loaded config %q", name), Duration = 7 })
+		local out = {}
+		for name, _ in pairs(self.Memory) do
+			if type(name) == "string" and name ~= "options" and name ~= "__autoload" then
+				table.insert(out, name)
 			end
 		end
+		return out
+
 	end
-
-	function SaveManager:BuildConfigSection(tab)
-		assert(self.Library, "Must set SaveManager.Library")
-		local section = tab:AddSection("Configuration", "settings")
-		section:AddInput("SaveManager_ConfigName", { Title = "Config name" })
-		section:AddDropdown("SaveManager_ConfigList", { Title = "Config list", Values = self:RefreshConfigList(), AllowNull = true })
-
-		section:AddButton({ Title = "Create config", Callback = function()
-			local name = SaveManager.Options.SaveManager_ConfigName.Value
-			if name:gsub(" ", "") == "" then
-				return self.Library:Notify({ Title = "Interface", Content = "Config loader", SubContent = "Invalid config name (empty)", Duration = 7 })
-			end
-			local success, err = self:Save(name)
-			if not success then
-				return self.Library:Notify({ Title = "Interface", Content = "Config loader", SubContent = "Failed to save config: " .. err, Duration = 7 })
-			end
-			self.Library:Notify({ Title = "Interface", Content = "Config loader", SubContent = string.format("Created config %q", name), Duration = 7 })
-			SaveManager.Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
-			SaveManager.Options.SaveManager_ConfigList:SetValue(nil)
-		end })
-
-		section:AddButton({ Title = "Load config", Callback = function()
-			local name = SaveManager.Options.SaveManager_ConfigList.Value
-			local success, err = self:Load(name)
-			if not success then
-				return self.Library:Notify({ Title = "Interface", Content = "Config loader", SubContent = "Failed to load config: " .. err, Duration = 7 })
-			end
-			self.Library:Notify({ Title = "Interface", Content = "Config loader", SubContent = string.format("Loaded config %q", name), Duration = 7 })
-		end })
-
-		section:AddButton({ Title = "Save config", Callback = function()
-			local name = SaveManager.Options.SaveManager_ConfigList.Value
 			local success, err = self:Save(name)
 			if not success then
 				return self.Library:Notify({ Title = "Interface", Content = "Config loader", SubContent = "Failed to overwrite config: " .. err, Duration = 7 })
@@ -781,70 +740,21 @@ local DropdownHolderCanvas = New("Frame", {
 				
 				if Dropdown.OpenToRight then
 					targetX = windowRight + 5
-					if Dropdown.SavedY == nil then
-						Dropdown.SavedY = dropdownY
-					end
-					useFixedY = true
-				else
-					local canvasRight = dropdownX + canvasWidth - 1
-					if canvasRight > windowRight then
-						targetX = math.max(windowX + 5, windowRight - canvasWidth - 5)
-					end
-					Dropdown.SavedY = nil
-				end
-			else
-				local canvasRight = dropdownX + canvasWidth - 1
-				if canvasRight > viewportWidth then
-					if Dropdown.OpenToRight then
-						targetX = viewportWidth + 5
-						if Dropdown.SavedY == nil then
-							Dropdown.SavedY = dropdownY
+					if not RunService:IsStudio() then
+						function SaveManager:LoadAutoloadConfig()
+							self.Memory = self.Memory or {}
+							local name = self.Memory.__autoload
+							if name and type(name) == "string" then
+								local success, err = self:Load(name)
+								if not success and self.Library and type(self.Library.Notify) == "function" then
+									self.Library:Notify({ Title = "Interface", Content = "Config loader", SubContent = "Failed to load autoload config: " .. err, Duration = 7 })
+								end
+								if self.Library and type(self.Library.Notify) == "function" then
+									self.Library:Notify({ Title = "Interface", Content = "Config loader", SubContent = string.format("Auto loaded config %q", name), Duration = 7 })
+								end
+							end
 						end
-						useFixedY = true
-					else
-						targetX = math.max(5, viewportWidth - canvasWidth - 5)
 					end
-					Dropdown.SavedY = nil
-				end
-			end
-			
-			local targetY
-			if useFixedY and windowRoot then
-				local windowY = windowRoot.AbsolutePosition.Y
-				local windowHeight = windowRoot.AbsoluteSize.Y
-				local windowCenterY = windowY + windowHeight / 2
-				targetY = windowCenterY - canvasHeight / 2
-				
-				local windowTop = windowY
-				local windowBottom = windowY + windowHeight
-				local viewportTop = 0
-				local viewportBottom = viewportHeight
-				
-				if targetY + canvasHeight > viewportBottom then
-					targetY = viewportBottom - canvasHeight - 5
-				end
-				if targetY < viewportTop then
-					targetY = viewportTop + 5
-				end
-				
-				if targetY + canvasHeight > windowBottom then
-					targetY = windowBottom - canvasHeight - 5
-				end
-				if targetY < windowTop then
-					targetY = windowTop + 5
-				end
-			elseif useFixedY and Dropdown.SavedY then
-				targetY = Dropdown.SavedY
-				
-				local spaceBelow = viewportHeight - (Dropdown.SavedY + dropdownHeight)
-				local spaceAbove = Dropdown.SavedY
-				
-				if canvasHeight > spaceBelow and canvasHeight <= spaceAbove then
-					targetY = Dropdown.SavedY - canvasHeight - 5
-				elseif canvasHeight > spaceBelow and canvasHeight > spaceAbove then
-					if spaceBelow > spaceAbove then
-						targetY = Dropdown.SavedY + dropdownHeight + 5
-					else
 						targetY = math.max(5, Dropdown.SavedY - canvasHeight - 5)
 					end
 				else
@@ -1552,60 +1462,21 @@ ElementsTable.Slider = (function()
 				updateInputWidth(tostring(Slider.Value), true)
 			end
 
-			if not isHovering then
-				local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
-
-				TweenService:Create(SliderInput, tweenInfo, {
-					TextTransparency = 1,
-					BackgroundTransparency = 1
-				}):Play()
-
-				TweenService:Create(SliderInput.UIStroke, tweenInfo, {
-					Transparency = 1
-				}):Play()
-
-				task.wait(0.2)
-				SliderDisplay.Visible = true
-				inputVisible = false
-			end
-		end)
-
-		Creator.AddSignal(SliderInput.Focused, function()
-			if isDisabled then SliderInput:ReleaseFocus() return end
-			SliderInput.Text = tostring(Slider.Value)
-			updateInputWidth(tostring(Slider.Value), false)
-		end)
-
-		Creator.AddSignal(SliderInput.InputBegan, function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-				Dragging = false
-			end
-		end)
-
-		Creator.AddSignal(SliderDot.InputBegan, function(Input)
-			if isDisabled then return end
-			if
-				Input.UserInputType == Enum.UserInputType.MouseButton1
-				or Input.UserInputType == Enum.UserInputType.Touch
-			then
-				Dragging = true
-			end
-		end)
-
-		Creator.AddSignal(SliderDot.InputEnded, function(Input)
-			if
-				Input.UserInputType == Enum.UserInputType.MouseButton1
-				or Input.UserInputType == Enum.UserInputType.Touch
-			then
-				Dragging = false
-			end
-		end)
-
-		Creator.AddSignal(UserInputService.InputChanged, function(Input)
-			if Dragging then
-				local position = nil
-				if Input.UserInputType == Enum.UserInputType.MouseMovement then
-					position = Input.Position
+				if not RunService:IsStudio() then
+					function SaveManager:LoadAutoloadConfig()
+						self.Memory = self.Memory or {}
+						local name = self.Memory.__autoload
+						if name and type(name) == "string" then
+							local success, err = self:Load(name)
+							if not success and self.Library and type(self.Library.Notify) == "function" then
+								self.Library:Notify({ Title = "Interface", Content = "Config loader", SubContent = "Failed to load autoload config: " .. err, Duration = 7 })
+							end
+							if self.Library and type(self.Library.Notify) == "function" then
+								self.Library:Notify({ Title = "Interface", Content = "Config loader", SubContent = string.format("Auto loaded config %q", name), Duration = 7 })
+							end
+						end
+					end
+				end
 				elseif Input.UserInputType == Enum.UserInputType.Touch then
 					position = Input.Position
 				end
@@ -3588,39 +3459,11 @@ local SaveManager = {} do
 	end
 
 
-	function SaveManager:SetFolder(folder)
-
-
-		self.Folder = folder;
-
-
-		self:BuildFolderTree()
-
+	function SaveManager:BuildFolderTree()
 
 		self.Memory = self.Memory or {}
 
 	end
-
-
-
-
-
-	function SaveManager:Save(name)
-
-
-		if (not name) then
-
-
-			return false, "no config file is selected"
-
-
-		end
-
-
-
-
-
-		local fullPath = self.Folder .. "/" .. name .. ".json"
 
 
 
@@ -3674,7 +3517,8 @@ local SaveManager = {} do
 
 
 
-		writefile(fullPath, encoded)
+		self.Memory = self.Memory or {}
+		self.Memory[name] = encoded
 
 
 		return true
@@ -3689,114 +3533,16 @@ local SaveManager = {} do
 	if not RunService:IsStudio() then
 
 
-		function SaveManager:Load(name)
-
+		function SaveManager:RefreshConfigList()
 			self.Memory = self.Memory or {}
-			local name = self.Memory.__autoload
-			if name and type(name) == "string" then
-				local success, err = self:Load(name)
-				if not success then
-					return self.Library:Notify({ Title = "Interface", Content = "Config loader", SubContent = "Failed to load autoload config: " .. err, Duration = 7 })
+			local out = {}
+			for name, _ in pairs(self.Memory) do
+				if type(name) == "string" and name ~= "options" and name ~= "__autoload" then
+					table.insert(out, name)
 				end
-				self.Library:Notify({ Title = "Interface", Content = "Config loader", SubContent = string.format("Auto loaded config %q", name), Duration = 7 })
 			end
-
-
-			end
-
-
-
-
-
-			Fluent.SettingLoaded = true
-
-
-
-			return true, decoded
+			return out
 		end
-
-
-	end
-
-
-
-
-
-	SaveManager.IgnoreThemeSettings = function(self)
-
-
-		self:SetIgnoreIndexes({ 
-
-
-			"InterfaceTheme", "AcrylicToggle", "TransparentToggle", "MenuKeybind"
-
-
-		})
-
-
-	end
-
-
-
-
-
-	function SaveManager:BuildFolderTree()
-
-
-		local paths = {
-
-
-			self.Folder,
-
-
-			self.Folder .. "/"
-
-
-		}
-
-
-
-
-
-		for i = 1, #paths do
-
-
-			local str = paths[i]
-
-
-			if not isfolder(str) then
-
-
-				makefolder(str)
-
-
-			end
-
-
-		end
-
-
-	end
-
-
-
-
-
-	function SaveManager:RefreshConfigList()
-
-
-		local list = listfiles(self.Folder .. "/")
-
-
-
-
-
-		local out = {}
-
-
-		for i = 1, #list do
-
-
 			local file = list[i]
 
 
@@ -3887,10 +3633,9 @@ local SaveManager = {} do
 		function SaveManager:LoadAutoloadConfig()
 
 
-			if isfile(self.Folder .. "/autoload.txt") then
-
-
-				local name = readfile(self.Folder .. "/autoload.txt")
+			self.Memory = self.Memory or {}
+			local name = self.Memory.__autoload
+			if name and type(name) == "string" then
 
 
 
@@ -4373,15 +4118,7 @@ local InterfaceManager = {} do
 
 
 			local str = paths[i]
-
-
-			if not isfolder(str) then
-
-
-				makefolder(str)
-
-
-			end
+			self.Memory = self.Memory or {}
 
 
 		end
@@ -4393,51 +4130,11 @@ local InterfaceManager = {} do
 
 
 
-function InterfaceManager:SaveSettings()
+	function InterfaceManager:BuildFolderTree()
 
+		self.Memory = self.Memory or {}
 
-	-- persist settings in-memory (no local file I/O)
-	self.Memory = self.Memory or {}
-	self.Memory.options = {}
-	for k, v in pairs(InterfaceManager.Settings) do
-		self.Memory.options[k] = v
 	end
-end
-
-
-end
-
-
-function InterfaceManager:LoadSettings()
-	-- load settings from in-memory storage
-	self.Memory = self.Memory or {}
-	if self.Memory.options then
-		for i, v in next, self.Memory.options do
-			InterfaceManager.Settings[i] = v
-		end
-	end
-	InterfaceManager.Settings.Theme = "Slate"
-end
-end
-
-
-	function InterfaceManager:BuildInterfaceSection(tab)
-
-
-
-		assert(self.Library, "Must set InterfaceManager.Library")
-
-
-		local Library = self.Library
-
-
-		local Settings = InterfaceManager.Settings
-
-
-
-
-
-		InterfaceManager:LoadSettings()
 
 
 
