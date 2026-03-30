@@ -25,7 +25,7 @@ local function enforceFont(root)
 	if not root then return end
 	for _, obj in ipairs(root:GetDescendants()) do
 		if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
-			pcall(function() obj.Font = Enum.Font.SourceSansSemibold; obj.FontFace = nil end)
+			pcall(function() obj.Font = Enum.Font.Gotham; obj.FontFace = nil end)
 		end
 	end
 end
@@ -1428,7 +1428,7 @@ local Creator = {
 		TextLabel = {
 			BackgroundColor3 = Color3.new(1, 1, 1),
 			BorderColor3 = Color3.new(0, 0, 0),
-			Font = Enum.Font.SourceSansSemibold,
+			Font = Enum.Font.Gotham,
 			Text = "",
 			TextColor3 = Color3.new(0, 0, 0),
 			BackgroundTransparency = 1,
@@ -1438,7 +1438,7 @@ local Creator = {
 			BackgroundColor3 = Color3.new(1, 1, 1),
 			BorderColor3 = Color3.new(0, 0, 0),
 			AutoButtonColor = false,
-			Font = Enum.Font.SourceSansSemibold,
+			Font = Enum.Font.Gotham,
 			Text = "",
 			TextColor3 = Color3.new(0, 0, 0),
 			TextSize = 14,
@@ -1447,7 +1447,7 @@ local Creator = {
 			BackgroundColor3 = Color3.new(1, 1, 1),
 			BorderColor3 = Color3.new(0, 0, 0),
 			ClearTextOnFocus = false,
-			Font = Enum.Font.SourceSansSemibold,
+			Font = Enum.Font.Gotham,
 			Text = "",
 			TextColor3 = Color3.new(0, 0, 0),
 			TextSize = 14,
@@ -2011,7 +2011,7 @@ Creator.New = function(Name, Properties, Children)
 	local Object = oldCreatorNew(Name, Properties, Children)
 	if Object and (Object:IsA("TextLabel") or Object:IsA("TextButton") or Object:IsA("TextBox")) then
 		pcall(function()
-			Object.Font = Enum.Font.SourceSansSemibold
+			Object.Font = Enum.Font.Gotham
 			Object.FontFace = nil
 		end)
 	end
@@ -2040,7 +2040,7 @@ Library.GUI = GUI
 -- Enforce preferred font on existing and newly added text instances now that `Creator` and `GUI` exist
 Creator.AddSignal(GUI.DescendantAdded, function(obj)
 	if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
-		pcall(function() obj.Font = Enum.Font.SourceSansSemibold; obj.FontFace = nil end)
+		pcall(function() obj.Font = Enum.Font.Gotham; obj.FontFace = nil end)
 	end
 end)
 
@@ -4457,7 +4457,7 @@ Components.TitleBar = (function()
 					 New("TextLabel", {
 						RichText = true,
 						Text = "NEXUS",
-						Font = Enum.Font.SourceSansSemibold,
+						Font = Enum.Font.Gotham,
 						TextSize = 14,
 						Size = UDim2.new(0, 0, 0, 16),
 						AutomaticSize = Enum.AutomaticSize.X,
@@ -10758,26 +10758,25 @@ function Library:Destroy()
 
 
 	if Library.Window then
-
-
 		Library.Unloaded = true
 
-
 		if Library.UseAcrylic then
-
-
-			Library.Window.AcrylicPaint.Model:Destroy()
-
-
+			pcall(function()
+				if Library.Window and Library.Window.AcrylicPaint and Library.Window.AcrylicPaint.Model then
+					Library.Window.AcrylicPaint.Model:Destroy()
+				end
+			end)
 		end
 
+		pcall(function()
+			Creator.Disconnect()
+		end)
 
-		Creator.Disconnect()
-
-
-		Library.GUI:Destroy()
-
-
+		pcall(function()
+			if Library.GUI and Library.GUI.Destroy then
+				Library.GUI:Destroy()
+			end
+		end)
 	end
 
 
