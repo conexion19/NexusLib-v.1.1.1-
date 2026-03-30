@@ -9998,6 +9998,7 @@ end
 
 		InterfaceTheme:SetValue(Settings.Theme)
 
+
 		if Library.UseAcrylic and not Mobile then
 
 
@@ -10997,6 +10998,7 @@ function Library:SetWindowTransparency(Value)
 
 
 	end
+
 
 end
 
