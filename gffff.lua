@@ -1,63 +1,18 @@
-local cloneref = cloneref or function(o) return o end
+-- Dangerous API hooks removed for anti-cheat safety:
+-- getrawmetatable, setreadonly, newcclosure, cloneref, protect_gui, syn, gethui and similar are removed.
+-- Use direct, safe service references and avoid metatable manipulation.
 
-pcall(function()
-	if not getrawmetatable then return end
-	local mt = getrawmetatable(game)
-	if not mt then return end
-
-	local oldIndex    = rawget(mt, "__index")
-	local oldNamecall = rawget(mt, "__namecall")
-
-	local function wrap(f)
-		return (newcclosure and newcclosure(f)) or f
-	end
-
-	local function unlock()
-		if make_writeable then make_writeable(mt, true)
-		elseif setreadonly then setreadonly(mt, false) end
-	end
-	local function lock()
-		if make_writeable then make_writeable(mt, false)
-		elseif setreadonly then setreadonly(mt, true) end
-	end
-
-	local PROTECTED = { CoreGui = true, RobloxGui = true }
-
-	unlock()
-
-	rawset(mt, "__index", wrap(function(self, key)
-		if PROTECTED[tostring(key)] then
-			local ok, svc = pcall(oldIndex, self, key)
-			if ok and svc then return cloneref(svc) end
-		end
-		return oldIndex(self, key)
-	end))
-
-	rawset(mt, "__namecall", wrap(function(self, ...)
-		local m = getnamecallmethod and getnamecallmethod() or ""
-		if m == "GetService" or m == "FindService" then
-			local sname = tostring((...) or "")
-			if PROTECTED[sname] then
-				local ok, svc = pcall(oldNamecall, self, ...)
-				if ok and svc then return cloneref(svc) end
-			end
-		end
-		return oldNamecall(self, ...)
-	end))
-
-	lock()
-end)
-
-
-local Lighting = cloneref(game:GetService("Lighting"))
-local RunService = cloneref(game:GetService("RunService"))
-local LocalPlayer = cloneref(game:GetService("Players")).LocalPlayer
-local UserInputService = cloneref(game:GetService("UserInputService"))
-local TweenService = cloneref(game:GetService("TweenService"))
-local TextService = cloneref(game:GetService("TextService"))
-local Camera = cloneref(game:GetService("Workspace")).CurrentCamera
-local Mouse = LocalPlayer:GetMouse()
-local httpService = cloneref(game:GetService("HttpService"))
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local Lighting = game:GetService("Lighting")
+local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local TextService = game:GetService("TextService")
+local Workspace = game:GetService("Workspace")
+local Camera = Workspace.CurrentCamera
+local Mouse = (LocalPlayer and LocalPlayer.GetMouse and LocalPlayer:GetMouse()) or nil
+local httpService = game:GetService("HttpService")
 
 local Mobile = not RunService:IsStudio() and table.find({Enum.Platform.IOS, Enum.Platform.Android}, UserInputService:GetPlatform()) ~= nil
 
