@@ -19,7 +19,6 @@ end
 
 local RenderStepped = RunService.RenderStepped
 
--- Replace external/executor detection and GUI protection hooks with safe no-ops
 local ProtectGui = function(obj) return obj end
 
 local Executor = ""
