@@ -2164,6 +2164,32 @@ function Library:SafeCallback(Function, ...)
 		return
 	end
 
+	local function isCallable(v)
+		local t = type(v)
+		if t == "function" then return true end
+		if (t == "table" or t == "userdata") then
+			local ok, mt = pcall(getmetatable, v)
+			if ok and mt and mt.__call then
+				return true
+			end
+		end
+		return false
+	end
+
+	if not isCallable(Function) then
+		local info = ("Callback is not callable (type=%s)"):format(type(Function))
+		pcall(function()
+			warn("Library SafeCallback: ", info, " value=", tostring(Function))
+			Library:Notify({
+				Title = "Interface",
+				Content = "Callback error",
+				SubContent = info,
+				Duration = 5,
+			})
+		end)
+		return
+	end
+
 	local ok, err = xpcall(function()
 		return Function(...)
 	end, function(e)
