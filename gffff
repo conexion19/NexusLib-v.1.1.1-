@@ -910,96 +910,47 @@ local Library = {
 	MinimizeKey = Enum.KeyCode.LeftControl,
 }
 
+-- LanguageManager: removed automatic/networked translation.
+-- This stub preserves the public API used by the rest of the library
+-- but forces English text only and avoids any HTTP/network calls.
 local LanguageManager = {
 	CurrentLanguage = "English",
-	Translations = {
-		English = {},
-		Russian = {}
-	},
+	Translations = { English = {} },
 	RegisteredElements = {},
 	Translating = false,
 	Cache = {}
 }
 
 function LanguageManager:SetLanguage(language)
-	if self.Translations[language] then
-		self.CurrentLanguage = language
-		self:UpdateAllElements()
-	end
-end
-
-function LanguageManager:AddTranslation(key, translations)
-	for lang, text in pairs(translations) do
-		if not self.Translations[lang] then
-			self.Translations[lang] = {}
-		end
-		self.Translations[lang][key] = text
-	end
+	-- Force English-only mode: any attempt to set another language will be ignored
+	self.CurrentLanguage = "English"
 	self:UpdateAllElements()
 end
 
+function LanguageManager:AddTranslation(key, translations)
+	-- Store translations if provided, but they will not be used automatically
+	for lang, text in pairs(translations or {}) do
+		self.Translations[lang] = self.Translations[lang] or {}
+		self.Translations[lang][key] = text
+	end
+end
+
 function LanguageManager:AutoTranslate(text, targetLang)
-	if not text or text == "" or targetLang == "English" then return text end
-	
-    
-	local cacheKey = text .. "_" .. targetLang
-	if self.Cache[cacheKey] then
-		return self.Cache[cacheKey]
-	end
-	
-    
-	local url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=" 
-		.. (targetLang == "Russian" and "ru" or "en") 
-		.. "&dt=t&q=" .. httpService:UrlEncode(text)
-		
-	local success, result = pcall(function()
-		return httpService:JSONDecode(game:HttpGet(url))
-	end)
-	
-	if success and result and result[1] and result[1][1] and result[1][1][1] then
-		local translatedText = result[1][1][1]
-		self.Cache[cacheKey] = translatedText
-		return translatedText
-	end
-	
+	-- Translation disabled; return original text
 	return text
 end
 
 function LanguageManager:RegisterElement(textLabel, key)
 	if not textLabel or not key then return end
-	
-	local actualKey = key
-	
-	table.insert(self.RegisteredElements, {
-		Label = textLabel,
-		Key = actualKey
-	})
-	
-	self:UpdateElement(textLabel, actualKey)
+	table.insert(self.RegisteredElements, { Label = textLabel, Key = key })
+	pcall(function() if textLabel and textLabel.Parent then textLabel.Text = key end end)
 end
 
 function LanguageManager:UpdateElement(textLabel, key)
 	if not textLabel or not textLabel.Parent then return end
-	
-	if self.CurrentLanguage == "English" then
-		textLabel.Text = key
-		return
-	end
-	
-	local translation = self.Translations[self.CurrentLanguage][key]
-	if translation then
-		textLabel.Text = translation
-	else
-    
-		task.spawn(function()
-			local translated = self:AutoTranslate(key, self.CurrentLanguage)
-			if translated and textLabel and textLabel.Parent then
-				self.Translations[self.CurrentLanguage][key] = translated
-				textLabel.Text = translated
-			end
-		end)
-	end
+	pcall(function() textLabel.Text = key end)
 end
+
 function LanguageManager:UpdateAllElements()
 	for i = #self.RegisteredElements, 1, -1 do
 		local data = self.RegisteredElements[i]
