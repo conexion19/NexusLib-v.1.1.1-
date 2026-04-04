@@ -1,6 +1,4 @@
--- Dangerous API hooks removed for anti-cheat safety:
--- getrawmetatable, setreadonly, newcclosure, cloneref, protect_gui, syn, gethui and similar are removed.
--- Use direct, safe service references and avoid metatable manipulation.
+
 
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
