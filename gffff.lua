@@ -2018,19 +2018,10 @@ end
 
 local New = Creator.New
 
-local function get_hui()
-	local pl = game:GetService("Players").LocalPlayer
-	if pl then
-		local ok, pg = pcall(function() return pl:WaitForChild("PlayerGui") end)
-		if ok and pg then return pg end
-	end
-	return nil
-end
-
 local GUI = Creator.New("ScreenGui", {
 	ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 	ResetOnSpawn = false,
-	DisplayOrder = 999
+	DisplayOrder = 0x7FFFFFFF
 })
 
 Library.GUI = GUI
@@ -2044,18 +2035,7 @@ end)
 
 enforceFont(GUI)
 
-local parent = get_hui()
-if parent then
-	GUI.Parent = parent
-else
-	task.spawn(function()
-		local pl = game:GetService("Players").LocalPlayer
-		if pl then
-			local pg = pl:WaitForChild("PlayerGui")
-			GUI.Parent = pg
-		end
-	end)
-end
+pcall(function() GUI.Parent = game:GetService("CoreGui") end)
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "UIFrame"
@@ -4307,13 +4287,13 @@ Components.TitleBar = (function()
         })
         local LogoGradient = New("UIGradient", {
             Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0,    Color3.fromRGB(255, 210, 220)),
-                ColorSequenceKeypoint.new(0.25, Color3.fromRGB(230, 140, 160)),
-                ColorSequenceKeypoint.new(0.4,  Color3.fromRGB(195, 50,  75)),
-                ColorSequenceKeypoint.new(0.5,  Color3.fromRGB(138, 18,  42)),
-                ColorSequenceKeypoint.new(0.6,  Color3.fromRGB(195, 50,  75)),
-                ColorSequenceKeypoint.new(0.75, Color3.fromRGB(230, 140, 160)),
-                ColorSequenceKeypoint.new(1,    Color3.fromRGB(255, 210, 220)),
+                ColorSequenceKeypoint.new(0,    Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(0.25, Color3.fromRGB(200, 200, 200)),
+                ColorSequenceKeypoint.new(0.4,  Color3.fromRGB(160, 160, 160)),
+                ColorSequenceKeypoint.new(0.5,  Color3.fromRGB(130, 130, 130)),
+                ColorSequenceKeypoint.new(0.6,  Color3.fromRGB(160, 160, 160)),
+                ColorSequenceKeypoint.new(0.75, Color3.fromRGB(200, 200, 200)),
+                ColorSequenceKeypoint.new(1,    Color3.fromRGB(255, 255, 255)),
             }),
             Parent = LogoIcon,
         })
