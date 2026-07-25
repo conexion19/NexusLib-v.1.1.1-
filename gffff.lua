@@ -23,7 +23,10 @@ local function enforceFont(root)
 	end
 end
 
+
 local RenderStepped = RunService.RenderStepped
+
+local ProtectGui = function(obj) return obj end
 
 local Themes = {
 	Names = {
@@ -2897,12 +2900,14 @@ Components.Tab = (function()
 			Type = "Tab",
 		}
 
-		if Library:GetIcon(Icon) then
-			Icon = Library:GetIcon(Icon)
-		end
+		if not fischbypass then 
+			if Library:GetIcon(Icon) then
+				Icon = Library:GetIcon(Icon)
+			end
 
-		if Icon == "" or Icon == nil then
-			Icon = nil
+			if Icon == "" or nil then
+				Icon = nil
+			end
 		end
 		Tab.Frame = New("TextButton", {
 			Size = UDim2.new(1, 0, 0, 34),
@@ -2918,7 +2923,7 @@ Components.Tab = (function()
 			}),
 			New("TextLabel", {
 				AnchorPoint = Vector2.new(0, 0.5),
-				Position = Icon and UDim2.new(0, 30, 0.5, 0) or UDim2.new(0, 12, 0.5, 0),
+				Position = not fischbypass and Icon and UDim2.new(0, 30, 0.5, 0) or UDim2.new(0, 12, 0.5, 0),
 				Text = Title,
 				RichText = true,
 				TextColor3 = Color3.fromRGB(255, 255, 255),
@@ -3094,12 +3099,14 @@ Components.Tab = (function()
 			end
 
 			local SubTabIcon = Icon
-			if Library:GetIcon(Icon) then
-				SubTabIcon = Library:GetIcon(Icon)
-			end
+			if not fischbypass then 
+				if Library:GetIcon(Icon) then
+					SubTabIcon = Library:GetIcon(Icon)
+				end
 
-			if SubTabIcon == "" or SubTabIcon == nil then
-				SubTabIcon = nil
+				if SubTabIcon == "" or nil then
+					SubTabIcon = nil
+				end
 			end
 
 			local SubTabButton = New("TextButton", {
@@ -3290,12 +3297,14 @@ Components.Tab = (function()
 				local Section = { Type = "Section" }
 
 				local Icon = SectionIcon
-				if Library:GetIcon(Icon) then
-					Icon = Library:GetIcon(Icon)
-				end
+				if not fischbypass then 
+					if Library:GetIcon(Icon) then
+						Icon = Library:GetIcon(Icon)
+					end
 
-				if Icon == "" or Icon == nil then
-					Icon = nil
+					if Icon == "" or nil then
+						Icon = nil
+					end
 				end
 
 				local SectionFrame = Components.Section(SectionTitle, SubTab.Container, Icon)
@@ -3432,12 +3441,14 @@ Components.Tab = (function()
 			local Section = { Type = "Section" }
 
 			local Icon = SectionIcon
-			if Library:GetIcon(Icon) then
-				Icon = Library:GetIcon(Icon)
-			end
+			if not fischbypass then 
+				if Library:GetIcon(Icon) then
+					Icon = Library:GetIcon(Icon)
+				end
 
-			if Icon == "" or Icon == nil then
-				Icon = nil
+				if Icon == "" or nil then
+					Icon = nil
+				end
 			end
 
 			local SectionFrame = Components.Section(SectionTitle, Tab.Container, Icon)
@@ -5386,6 +5397,18 @@ Window.Root = New("Frame", {
 		function Window:Minimize()
 			Window.Minimized = not Window.Minimized
 			Window.Root.Visible = not Window.Minimized
+
+			if game.GameId == 93978595733734 and InterfaceManager.Settings.AutoCursorUnlock then
+				pcall(function()
+					if Window.Minimized then
+						UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+						UserInputService.MouseIconEnabled = false
+					else
+						UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+						UserInputService.MouseIconEnabled = true
+					end
+				end)
+			end
 
 			for _, Option in next, Library.Options do
 				if Option and Option.Type == "Dropdown" and Option.Opened then
@@ -9696,6 +9719,9 @@ local InterfaceManager = {} do
 		MenuKeybind = "M",
 
 
+		AutoCursorUnlock = false,
+
+
 	}
 
 
@@ -9969,6 +9995,34 @@ end
 			end
 		})
 
+		if game.GameId == 93978595733734 then
+			section:AddToggle("AutoCursorUnlock", {
+				Title = "Auto Cursor Unlock",
+				Description = "Automatically show cursor when UI opens and hide when closed.",
+				Default = Settings.AutoCursorUnlock or false,
+				Callback = function(Value)
+					Settings.AutoCursorUnlock = Value
+					InterfaceManager:SaveSettings()
+					
+					if Library.Window then
+						if Value and not Library.Window.Minimized then
+							pcall(function()
+								UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+								UserInputService.MouseIconEnabled = true
+							end)
+						elseif not Value then
+							pcall(function()
+								UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+								UserInputService.MouseIconEnabled = false
+							end)
+						end
+					end
+				end
+			})
+		end
+
+
+
 		local MenuKeybind = section:AddKeybind("MenuKeybind", { Title = "Minimize Bind", Default = Library.MinimizeKey.Name or Settings.MenuKeybind, NoDisplay = true })
 
 
@@ -10046,12 +10100,27 @@ Library.CreateWindow = function(self, Config)
 	local Icon = Config.Icon
 
 
-	if Library:GetIcon(Icon) then
-		Icon = Library:GetIcon(Icon)
-	end
+	if not fischbypass then 
 
-	if Icon == "" or Icon == nil then
-		Icon = nil
+
+		if Library:GetIcon(Icon) then
+
+
+			Icon = Library:GetIcon(Icon)
+
+
+		end
+
+
+
+		if Icon == "" or Icon == nil then
+
+			Icon = nil
+
+
+		end
+
+
 	end
 
 
@@ -10857,6 +10926,12 @@ end
 
 
 
+-- _G.Fluent removed for AC bypass
+
+
+
+
+
 local MinimizeButton = New("TextButton", {
 
 
@@ -11581,7 +11656,7 @@ task.spawn(function()
 	RunService.Heartbeat:Connect(function(dt)
 		if Library.Theme == "RGB" then
 			hue = hue + dt * 0.1
-			if hue > 1 then hue = 0 endы
+			if hue > 1 then hue = 0 end
 			local rgbColor = Color3.fromHSV(hue, 0.8, 1)
 			local rgbColor2 = Color3.fromHSV((hue + 0.5) % 1, 0.8, 1)
 			local theme = Themes["RGB"]
