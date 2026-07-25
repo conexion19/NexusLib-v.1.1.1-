@@ -14,6 +14,11 @@ local httpService = game:GetService("HttpService")
 
 local Mobile = not RunService:IsStudio() and table.find({Enum.Platform.IOS, Enum.Platform.Android}, UserInputService:GetPlatform()) ~= nil
 
+local fischbypass
+if game.GameId == 5750914919 then
+	fischbypass = true
+end
+
 local function enforceFont(root)
 	if not root then return end
 	for _, obj in ipairs(root:GetDescendants()) do
