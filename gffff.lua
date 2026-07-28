@@ -5681,6 +5681,23 @@ ElementsTable.Toggle = (function()
 		Toggle.Visible = ToggleFrame.Visible
 		Toggle.Elements = ToggleFrame
 
+		local DisabledOverlay = New("Frame", {
+			Size = UDim2.new(1, 0, 1, 0),
+			BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+			BackgroundTransparency = 1,
+			ZIndex = 80,
+			Active = true,
+			Visible = false,
+			Parent = ToggleFrame.Frame,
+		}, {
+			New("UICorner", {
+				CornerRadius = UDim.new(0, 4),
+			}),
+		})
+
+		local originalTitleColor = ToggleFrame.TitleLabel.TextColor3
+		local originalDescColor = ToggleFrame.DescLabel.TextColor3
+
 		local ToggleTrack = New("Frame", {
 			Size = UDim2.fromOffset(44, 13),
 			AnchorPoint = Vector2.new(1, 0.5),
@@ -5727,6 +5744,29 @@ ElementsTable.Toggle = (function()
 			}),
 		})
 
+		function Toggle:SetDisabled(disabled)
+			Toggle.Disabled = not not disabled
+			ToggleFrame.Frame.Active = not Toggle.Disabled
+			ToggleFrame.Frame.AutoButtonColor = not Toggle.Disabled
+			if ToggleFrame.Frame:IsA("TextButton") then
+				ToggleFrame.Frame.Selectable = not Toggle.Disabled
+			end
+
+			DisabledOverlay.Visible = Toggle.Disabled
+			local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+			TweenService:Create(DisabledOverlay, tweenInfo, {
+				BackgroundTransparency = Toggle.Disabled and 0.55 or 1,
+			}):Play()
+			ToggleFrame.TitleLabel.TextColor3 = Toggle.Disabled and Color3.fromRGB(140, 140, 140) or originalTitleColor
+			ToggleFrame.DescLabel.TextColor3 = Toggle.Disabled and Color3.fromRGB(115, 115, 115) or originalDescColor
+			TweenService:Create(ToggleTrack, tweenInfo, {
+				BackgroundTransparency = Toggle.Disabled and 0.55 or 0.3,
+			}):Play()
+			TweenService:Create(ToggleThumb, tweenInfo, {
+				BackgroundTransparency = Toggle.Disabled and 0.65 or 0.1,
+			}):Play()
+		end
+
 		function Toggle:OnChanged(Func)
 			Toggle.Changed = Func
 			Func(Toggle.Value)
@@ -5766,9 +5806,11 @@ ElementsTable.Toggle = (function()
 		end
 
 		Creator.AddSignal(ToggleFrame.Frame.MouseButton1Click, function()
+			if Toggle.Disabled then return end
 			Toggle:SetValue(not Toggle.Value)
 		end)
 
+		Toggle:SetDisabled(false)
 		Toggle:SetValue(Toggle.Value)
 
 		Library.Options[Idx] = Toggle
