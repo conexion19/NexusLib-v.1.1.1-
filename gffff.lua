@@ -5774,6 +5774,9 @@ ElementsTable.Toggle = (function()
 
 		function Toggle:SetValue(Value)
 			Value = not not Value
+			if Value == Toggle.Value then
+				return
+			end
 			Toggle.Value = Value
 
 			local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
