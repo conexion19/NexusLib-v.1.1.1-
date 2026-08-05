@@ -915,16 +915,31 @@ local Library = {
 	MinimizeKey = Enum.KeyCode.LeftControl,
 }
 
-local MAIN_GUI_CORNER_RADIUS = 6
+local MAIN_GUI_CORNER_RADIUS = 8
 
 local function ApplyMainGuiCornerRadius(acrylicPaint)
 	if not acrylicPaint or not acrylicPaint.Frame then
 		return
 	end
 
-	for _, descendant in ipairs(acrylicPaint.Frame:GetDescendants()) do
-		if descendant:IsA("UICorner") then
-			descendant.CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS)
+	local function ApplyTo(guiObject)
+		local corner = guiObject:FindFirstChildOfClass("UICorner")
+		if not corner then
+			corner = Instance.new("UICorner")
+			corner.Parent = guiObject
+		end
+		corner.CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS)
+	end
+
+	ApplyTo(acrylicPaint.Frame)
+
+	for _, child in ipairs(acrylicPaint.Frame:GetChildren()) do
+		if child:IsA("GuiObject")
+			and child.Size.X.Scale == 1
+			and child.Size.X.Offset == 0
+			and child.Size.Y.Scale == 1
+			and child.Size.Y.Offset == 0 then
+			ApplyTo(child)
 		end
 	end
 end
