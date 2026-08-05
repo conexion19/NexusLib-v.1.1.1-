@@ -5740,7 +5740,7 @@ ElementsTable.Toggle = (function()
 		}
 
 		local ToggleFrame = Components.Element(Config.Title, Config.Description, self.Container, true, Config)
-		ToggleFrame.DescLabel.Size = UDim2.new(1, -61, 0, 14)
+		ToggleFrame.DescLabel.Size = UDim2.new(1, -45, 0, 14)
 
 		Toggle.SetTitle = ToggleFrame.SetTitle
 		Toggle.SetDesc = ToggleFrame.SetDesc
@@ -5765,50 +5765,60 @@ ElementsTable.Toggle = (function()
 		local originalDescColor = ToggleFrame.DescLabel.TextColor3
 
 		local ToggleTrack = New("Frame", {
-			Size = UDim2.fromOffset(44, 13),
+			Size = UDim2.fromOffset(20, 20),
 			AnchorPoint = Vector2.new(1, 0.5),
-			Position = UDim2.new(1, -10, 0.5, 0),
+			Position = UDim2.new(1, -12, 0.5, 0),
 			Parent = ToggleFrame.Frame,
 			BorderSizePixel = 0,
-			BackgroundTransparency = 0.3,
-			ThemeTag = {
-				BackgroundColor3 = "ToggleSlider",
-			},
+			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+			BackgroundTransparency = 1,
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(1, 0),
-			}),
-			New("UIStroke", {
-				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-				Transparency = 0.7,
-				Thickness = 1,
-				ThemeTag = {
-					Color = "Text",
-				},
+				CornerRadius = UDim.new(0, 4),
 			}),
 		})
 
-		local ToggleThumb = New("Frame", {
-			Size = UDim2.fromOffset(7, 7),
-			Position = UDim2.fromOffset(3, 3),
-			BorderSizePixel = 0,
-			BackgroundTransparency = 0.1,
-			Parent = ToggleTrack,
-			ThemeTag = {
-				BackgroundColor3 = "Text",
-			},
-		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(1, 0),
-			}),
-			New("UIGradient", {
-				Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 200, 200)),
-				}),
-				Rotation = 90,
-			}),
+		local ToggleStroke = New("UIStroke", {
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+				Color = Color3.fromRGB(255, 255, 255),
+				Transparency = 0.55,
+				Thickness = 1.2,
+				Parent = ToggleTrack,
 		})
+
+		local function UpdateToggleVisual(animated)
+			local disabled = Toggle.Disabled == true
+			local fillTransparency
+			local strokeTransparency
+
+			if Toggle.Value then
+				fillTransparency = disabled and 0.55 or 0
+				strokeTransparency = disabled and 0.65 or 0.05
+			else
+				fillTransparency = 1
+				strokeTransparency = disabled and 0.82 or 0.55
+			end
+
+			local trackProperties = {
+				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+				BackgroundTransparency = fillTransparency,
+			}
+			local strokeProperties = {
+				Color = Color3.fromRGB(255, 255, 255),
+				Transparency = strokeTransparency,
+			}
+
+			if animated then
+				local tweenInfo = TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+				TweenService:Create(ToggleTrack, tweenInfo, trackProperties):Play()
+				TweenService:Create(ToggleStroke, tweenInfo, strokeProperties):Play()
+			else
+				ToggleTrack.BackgroundColor3 = trackProperties.BackgroundColor3
+				ToggleTrack.BackgroundTransparency = trackProperties.BackgroundTransparency
+				ToggleStroke.Color = strokeProperties.Color
+				ToggleStroke.Transparency = strokeProperties.Transparency
+			end
+		end
 
 		function Toggle:SetDisabled(disabled)
 			Toggle.Disabled = not not disabled
@@ -5825,12 +5835,7 @@ ElementsTable.Toggle = (function()
 			}):Play()
 			ToggleFrame.TitleLabel.TextColor3 = Toggle.Disabled and Color3.fromRGB(140, 140, 140) or originalTitleColor
 			ToggleFrame.DescLabel.TextColor3 = Toggle.Disabled and Color3.fromRGB(115, 115, 115) or originalDescColor
-			TweenService:Create(ToggleTrack, tweenInfo, {
-				BackgroundTransparency = Toggle.Disabled and 0.55 or 0.3,
-			}):Play()
-			TweenService:Create(ToggleThumb, tweenInfo, {
-				BackgroundTransparency = Toggle.Disabled and 0.65 or 0.1,
-			}):Play()
+			UpdateToggleVisual(true)
 		end
 
 		function Toggle:OnChanged(Func)
@@ -5845,20 +5850,7 @@ ElementsTable.Toggle = (function()
 			end
 			Toggle.Value = Value
 
-			local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-			local accentColor = Creator.GetThemeProperty("Accent")
-			local trackOffColor = Creator.GetThemeProperty("ToggleSlider")
-
-			Creator.OverrideTag(ToggleTrack, { BackgroundColor3 = Toggle.Value and "Accent" or "ToggleSlider" })
-			TweenService:Create(ToggleTrack, tweenInfo, {
-				BackgroundColor3 = Toggle.Value and accentColor or trackOffColor,
-				BackgroundTransparency = Toggle.Value and 0.15 or 0.3,
-			}):Play()
-
-			TweenService:Create(ToggleThumb, tweenInfo, {
-				Position = Toggle.Value and UDim2.fromOffset(34, 3) or UDim2.fromOffset(3, 3),
-				BackgroundTransparency = Toggle.Value and 0 or 0.1,
-			}):Play()
+			UpdateToggleVisual(true)
 
 			Library:SafeCallback(Toggle.Callback, Toggle.Value)
 			Library:SafeCallback(Toggle.Changed, Toggle.Value)
@@ -5874,13 +5866,13 @@ ElementsTable.Toggle = (function()
 			Library.Options[Idx] = nil
 		end
 
-		Creator.AddSignal(ToggleFrame.Frame.MouseButton1Click, function()
+		Creator.AddSignal(ToggleFrame.Frame.Activated, function()
 			if Toggle.Disabled then return end
 			Toggle:SetValue(not Toggle.Value)
 		end)
 
 		Toggle:SetDisabled(false)
-		Toggle:SetValue(Toggle.Value)
+		UpdateToggleVisual(false)
 
 		Library.Options[Idx] = Toggle
 		return Toggle
