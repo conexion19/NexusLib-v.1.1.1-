@@ -915,6 +915,20 @@ local Library = {
 	MinimizeKey = Enum.KeyCode.LeftControl,
 }
 
+local MAIN_GUI_CORNER_RADIUS = 6
+
+local function ApplyMainGuiCornerRadius(acrylicPaint)
+	if not acrylicPaint or not acrylicPaint.Frame then
+		return
+	end
+
+	for _, descendant in ipairs(acrylicPaint.Frame:GetDescendants()) do
+		if descendant:IsA("UICorner") then
+			descendant.CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS)
+		end
+	end
+end
+
 -- LanguageManager: removed automatic/networked translation.
 -- This stub preserves the public API used by the rest of the library
 -- but forces English text only and avoids any HTTP/network calls.
@@ -3883,6 +3897,7 @@ Components.Notification = (function()
 		}
 
 		NewNotification.AcrylicPaint = Acrylic.AcrylicPaint()
+		ApplyMainGuiCornerRadius(NewNotification.AcrylicPaint)
 
 		NewNotification.Title = New("TextLabel", {
 			Position = UDim2.new(0, 14, 0, 17),
@@ -3973,11 +3988,15 @@ Components.Notification = (function()
 			BackgroundTransparency = 1,
 			Size = UDim2.new(1, 0, 1, 0),
 			Position = UDim2.fromScale(1, 0),
+			ClipsDescendants = true,
 		}, {
 			NewNotification.AcrylicPaint.Frame,
 			NewNotification.Title,
 			NewNotification.CloseButton,
 			NewNotification.LabelHolder,
+			New("UICorner", {
+				CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS),
+			}),
 		})
 
 		if Config.Content == "" then
@@ -4520,6 +4539,7 @@ Components.Window = (function()
 		local MinimizeNotif = false
 
 		Window.AcrylicPaint = Acrylic.AcrylicPaint()
+		ApplyMainGuiCornerRadius(Window.AcrylicPaint)
 
 		local function CenterWindow()
 			local vp = Camera.ViewportSize
@@ -4994,7 +5014,7 @@ Window.ContainerCanvas = New("Frame", {
 				ZIndex = 0,
 				ScaleType = Enum.ScaleType.Stretch,
 			}, {
-				New("UICorner", { CornerRadius = UDim.new(0, 12) }),
+				New("UICorner", { CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS) }),
 			})
 			Window.BackgroundImage = BackgroundImageFrame
 			table.insert(rootChildren, BackgroundImageFrame)
@@ -5037,7 +5057,7 @@ Window.ContainerCanvas = New("Frame", {
 		table.insert(rootChildren, Window.ContainerCanvas)
 		table.insert(rootChildren, TabFrame)
 		table.insert(rootChildren, ResizeStartFrame)
-		table.insert(rootChildren, New("UICorner", {CornerRadius = UDim.new(0, 12)}))
+		table.insert(rootChildren, New("UICorner", {CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS)}))
 
 Window.Root = New("Frame", {
     BackgroundTransparency = 1,
@@ -5484,7 +5504,7 @@ Window.Root = New("Frame", {
 					Parent = Window.Root,
 				}, {
 					New("UICorner", {
-						CornerRadius = UDim.new(0, 8),
+						CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS),
 					}),
 				})
 				Window.BackgroundImage = BackgroundImageFrame
