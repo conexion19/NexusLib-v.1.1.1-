@@ -915,7 +915,7 @@ local Library = {
 	MinimizeKey = Enum.KeyCode.LeftControl,
 }
 
-local MAIN_GUI_CORNER_RADIUS = 8
+local MAIN_GUI_CORNER_RADIUS = 10
 
 local function ApplyMainGuiCornerRadius(acrylicPaint)
 	if not acrylicPaint or not acrylicPaint.Frame then
@@ -2358,15 +2358,17 @@ function AcrylicPaint()
 
 	return function(props)
 		local AcrylicPaint = {}
+		local cornerRadius = props and props.CornerRadius or 12
+		local suppressSquareBlur = props and props.SuppressSquareBlur == true
 
-		AcrylicPaint.Frame = New("Frame", {
+		AcrylicPaint.Frame = New("CanvasGroup", {
 			Size = UDim2.fromScale(1, 1),
 			BackgroundTransparency = 0.9,
 			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
 			BorderSizePixel = 0,
 			ClipsDescendants = true,
 		}, {
-			New("UICorner", { CornerRadius = UDim.new(0, 12) }),
+			New("UICorner", { CornerRadius = UDim.new(0, cornerRadius) }),
 			New("ImageLabel", {
 				Image = "rbxassetid://8992230677",
 				ScaleType = "Slice",
@@ -2386,6 +2388,8 @@ function AcrylicPaint()
 				ThemeTag = {
 					BackgroundColor3 = "AcrylicMain",
 				},
+			}, {
+				New("UICorner", { CornerRadius = UDim.new(0, cornerRadius) }),
 			}),
 
 			New("Frame", {
@@ -2393,6 +2397,7 @@ function AcrylicPaint()
 				BackgroundTransparency = 0.4,
 				Size = UDim2.fromScale(1, 1),
 			}, {
+				New("UICorner", { CornerRadius = UDim.new(0, cornerRadius) }),
 				New("UIGradient", {
 					Rotation = 90,
 					ThemeTag = {
@@ -2408,6 +2413,8 @@ function AcrylicPaint()
 				TileSize = UDim2.new(0, 128, 0, 128),
 				Size = UDim2.fromScale(1, 1),
 				BackgroundTransparency = 1,
+			}, {
+				New("UICorner", { CornerRadius = UDim.new(0, cornerRadius) }),
 			}),
 
 			New("ImageLabel", {
@@ -2420,6 +2427,8 @@ function AcrylicPaint()
 				ThemeTag = {
 					ImageTransparency = "AcrylicNoise",
 				},
+			}, {
+				New("UICorner", { CornerRadius = UDim.new(0, cornerRadius) }),
 			}),
 
 			New("Frame", {
@@ -2427,7 +2436,7 @@ function AcrylicPaint()
 				Size = UDim2.fromScale(1, 1),
 				ZIndex = 2,
 			}, {
-				New("UICorner", { CornerRadius = UDim.new(0, 12) }),
+				New("UICorner", { CornerRadius = UDim.new(0, cornerRadius) }),
 				New("UIStroke", {
 					Transparency = 0.5,
 					Thickness = 1,
@@ -2439,13 +2448,29 @@ function AcrylicPaint()
 		})
 
 		local Blur
+		AcrylicPaint.SuppressSquareBlur = suppressSquareBlur
+		AcrylicPaint.SetModelTransparency = function(_, transparency)
+			if AcrylicPaint.Model then
+				AcrylicPaint.Model.Transparency = suppressSquareBlur and 1 or transparency
+			end
+		end
 
 		if Library.UseAcrylic then
 			Blur = AcrylicBlur()
 			Blur.Frame.Parent = AcrylicPaint.Frame
 			AcrylicPaint.Model = Blur.Model
-			AcrylicPaint.AddParent = Blur.AddParent
-			AcrylicPaint.SetVisibility = Blur.SetVisibility
+			if suppressSquareBlur then
+				AcrylicPaint.Model.Transparency = 1
+				AcrylicPaint.AddParent = function()
+					AcrylicPaint.Model.Transparency = 1
+				end
+				AcrylicPaint.SetVisibility = function()
+					AcrylicPaint.Model.Transparency = 1
+				end
+			else
+				AcrylicPaint.AddParent = Blur.AddParent
+				AcrylicPaint.SetVisibility = Blur.SetVisibility
+			end
 		end
 
 		return AcrylicPaint
@@ -3911,7 +3936,10 @@ Components.Notification = (function()
 			Closed = false,
 		}
 
-		NewNotification.AcrylicPaint = Acrylic.AcrylicPaint()
+		NewNotification.AcrylicPaint = Acrylic.AcrylicPaint({
+			CornerRadius = MAIN_GUI_CORNER_RADIUS,
+			SuppressSquareBlur = true,
+		})
 		ApplyMainGuiCornerRadius(NewNotification.AcrylicPaint)
 
 		NewNotification.Title = New("TextLabel", {
@@ -4057,7 +4085,7 @@ Components.Notification = (function()
 				end
 
 				if NewNotification.AcrylicPaint and NewNotification.AcrylicPaint.Model then
-					NewNotification.AcrylicPaint.Model.Transparency = math.min(notifTransparency, 0.97)
+					NewNotification.AcrylicPaint:SetModelTransparency(math.min(notifTransparency, 0.97))
 				end
 				if NewNotification.AcrylicPaint and NewNotification.AcrylicPaint.Frame and NewNotification.AcrylicPaint.Frame.Background then
 					NewNotification.AcrylicPaint.Frame.Background.BackgroundTransparency = math.min(notifBackgroundTransparency, 0.95)
@@ -4553,7 +4581,10 @@ Components.Window = (function()
 		local Resizing, ResizePos = false
 		local MinimizeNotif = false
 
-		Window.AcrylicPaint = Acrylic.AcrylicPaint()
+		Window.AcrylicPaint = Acrylic.AcrylicPaint({
+			CornerRadius = MAIN_GUI_CORNER_RADIUS,
+			SuppressSquareBlur = true,
+		})
 		ApplyMainGuiCornerRadius(Window.AcrylicPaint)
 
 		local function CenterWindow()
@@ -5038,7 +5069,7 @@ Window.ContainerCanvas = New("Frame", {
 				if backgroundImageTransparency <= 0.1 then
 					Window.AcrylicPaint.Frame.BackgroundTransparency = 1
 					if Window.AcrylicPaint.Model then
-						Window.AcrylicPaint.Model.Transparency = 1
+						Window.AcrylicPaint:SetModelTransparency(1)
 					end
 					local function makeTransparent(obj)
 						if obj:IsA("Frame") then
@@ -5056,12 +5087,12 @@ Window.ContainerCanvas = New("Frame", {
 				elseif backgroundImageTransparency < 0.3 then
 					Window.AcrylicPaint.Frame.BackgroundTransparency = 0.99
 					if Window.AcrylicPaint.Model then
-						Window.AcrylicPaint.Model.Transparency = 0.99
+						Window.AcrylicPaint:SetModelTransparency(0.99)
 					end
 				else
 					Window.AcrylicPaint.Frame.BackgroundTransparency = 0.98
 					if Window.AcrylicPaint.Model then
-						Window.AcrylicPaint.Model.Transparency = 0.98
+						Window.AcrylicPaint:SetModelTransparency(0.98)
 					end
 				end
 			end
@@ -5551,7 +5582,7 @@ Window.Root = New("Frame", {
 				if transparency <= 0.1 then
 					Window.AcrylicPaint.Frame.BackgroundTransparency = 1
 					if Window.AcrylicPaint.Model then
-						Window.AcrylicPaint.Model.Transparency = 1
+						Window.AcrylicPaint:SetModelTransparency(1)
 					end
 					local function makeTransparent(obj)
 						if obj:IsA("Frame") then
@@ -5569,12 +5600,12 @@ Window.Root = New("Frame", {
 				elseif transparency < 0.3 then
 					Window.AcrylicPaint.Frame.BackgroundTransparency = 0.99
 					if Window.AcrylicPaint.Model then
-						Window.AcrylicPaint.Model.Transparency = 0.99
+						Window.AcrylicPaint:SetModelTransparency(0.99)
 					end
 				else
 					Window.AcrylicPaint.Frame.BackgroundTransparency = 0.98
 					if Window.AcrylicPaint.Model then
-						Window.AcrylicPaint.Model.Transparency = 0.98
+						Window.AcrylicPaint:SetModelTransparency(0.98)
 					end
 				end
 			end
@@ -10857,7 +10888,7 @@ function Library:ToggleAcrylic(Value)
 			if Library.Window.AcrylicPaint and Library.Window.AcrylicPaint.Model then
 
 
-				Library.Window.AcrylicPaint.Model.Transparency = Value and 0.95 or 1
+				Library.Window.AcrylicPaint:SetModelTransparency(Value and 0.95 or 1)
 
 
 			end
@@ -10926,7 +10957,7 @@ function Library:SetWindowTransparency(Value)
 			end
 
 
-			Library.Window.AcrylicPaint.Model.Transparency = math.min(glassTransparency, 0.99)
+			Library.Window.AcrylicPaint:SetModelTransparency(math.min(glassTransparency, 0.99))
 
 
 
@@ -10983,7 +11014,7 @@ function Library:SetWindowTransparency(Value)
 		else
 
 
-			Library.Window.AcrylicPaint.Model.Transparency = 0.98
+			Library.Window.AcrylicPaint:SetModelTransparency(0.98)
 
 
 			Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = Value * 0.3
