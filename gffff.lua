@@ -5469,17 +5469,7 @@ Window.Root = New("Frame", {
 			Window.Minimized = not Window.Minimized
 			Window.Root.Visible = not Window.Minimized
 
-			if game.GameId == 93978595733734 and InterfaceManager.Settings.AutoCursorUnlock then
-				pcall(function()
-					if Window.Minimized then
-						UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
-						UserInputService.MouseIconEnabled = false
-					else
-						UserInputService.MouseBehavior = Enum.MouseBehavior.Default
-						UserInputService.MouseIconEnabled = true
-					end
-				end)
-			end
+			InterfaceManager:UpdateCursorUnlock()
 
 			for _, Option in next, Library.Options do
 				if Option and Option.Type == "Dropdown" and Option.Opened then
@@ -5507,15 +5497,7 @@ Window.Root = New("Frame", {
 
 			if not RunService:IsStudio() and Library.Minimizer then
 				pcall(function()
-					if Mobile then
-						local mobileButton = Library.Minimizer:FindFirstChild("TextButton")
-						if mobileButton then
-							local imageLabel = mobileButton:FindFirstChild("ImageLabel")
-							if imageLabel then
-								imageLabel.Image = Window.Minimized and "rbxassetid://10734896384" or "rbxassetid://10734897102"
-							end
-						end
-					else
+					if not Mobile then
 						local desktopButton = Library.Minimizer:FindFirstChild("TextButton")
 						if desktopButton then
 							local imageLabel = desktopButton:FindFirstChild("ImageLabel")
@@ -5529,6 +5511,7 @@ Window.Root = New("Frame", {
 		end
 
 		function Window:Destroy()
+			InterfaceManager:DisableCursorUnlock()
 			if Library.UseAcrylic then
 				Window.AcrylicPaint.Model:Destroy()
 			end
@@ -5790,21 +5773,27 @@ ElementsTable.Toggle = (function()
 			local disabled = Toggle.Disabled == true
 			local fillTransparency
 			local strokeTransparency
+			local fillColor
+			local strokeColor
 
 			if Toggle.Value then
+				fillColor = Color3.fromRGB(255, 255, 255)
+				strokeColor = Color3.fromRGB(255, 255, 255)
 				fillTransparency = disabled and 0.55 or 0
 				strokeTransparency = disabled and 0.65 or 0.05
 			else
-				fillTransparency = 1
-				strokeTransparency = disabled and 0.82 or 0.55
+				fillColor = Color3.fromRGB(72, 72, 76)
+				strokeColor = Color3.fromRGB(120, 120, 126)
+				fillTransparency = disabled and 0.45 or 0
+				strokeTransparency = disabled and 0.72 or 0.35
 			end
 
 			local trackProperties = {
-				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+				BackgroundColor3 = fillColor,
 				BackgroundTransparency = fillTransparency,
 			}
 			local strokeProperties = {
-				Color = Color3.fromRGB(255, 255, 255),
+				Color = strokeColor,
 				Transparency = strokeTransparency,
 			}
 
@@ -9830,7 +9819,86 @@ local InterfaceManager = {} do
 		AutoCursorUnlock = false,
 
 
+		Snowfall = true,
+
+
 	}
+
+
+	InterfaceManager.CursorConnection = nil
+	InterfaceManager.CursorState = nil
+
+
+	function InterfaceManager:CaptureCursorState()
+		if self.CursorState then
+			return
+		end
+
+		self.CursorState = {
+			MouseBehavior = UserInputService.MouseBehavior,
+			MouseIconEnabled = UserInputService.MouseIconEnabled,
+		}
+	end
+
+
+	function InterfaceManager:RestoreCursorState()
+		local state = self.CursorState
+		self.CursorState = nil
+		if not state then
+			return
+		end
+
+		pcall(function()
+			UserInputService.MouseBehavior = state.MouseBehavior
+			UserInputService.MouseIconEnabled = state.MouseIconEnabled
+		end)
+	end
+
+
+	function InterfaceManager:UpdateCursorUnlock()
+		local window = self.Library and self.Library.Window
+		local root = window and window.Root
+		local shouldUnlock = self.Settings.AutoCursorUnlock == true
+			and root ~= nil
+			and root.Visible == true
+			and window.Minimized ~= true
+
+		if shouldUnlock then
+			self:CaptureCursorState()
+			pcall(function()
+				UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+				UserInputService.MouseIconEnabled = true
+			end)
+		else
+			self:RestoreCursorState()
+		end
+	end
+
+
+	function InterfaceManager:BindCursorVisibility()
+		if self.CursorConnection then
+			self.CursorConnection:Disconnect()
+			self.CursorConnection = nil
+		end
+
+		local window = self.Library and self.Library.Window
+		if window and window.Root then
+			self.CursorConnection = window.Root:GetPropertyChangedSignal("Visible"):Connect(function()
+				self:UpdateCursorUnlock()
+			end)
+		end
+
+		self:UpdateCursorUnlock()
+	end
+
+
+	function InterfaceManager:DisableCursorUnlock()
+		if self.CursorConnection then
+			self.CursorConnection:Disconnect()
+			self.CursorConnection = nil
+		end
+		self:RestoreCursorState()
+	end
 
 
 
@@ -10091,12 +10159,15 @@ end
 		})
 
 		section:AddToggle("SnowfallToggle", {
-			Title = "Snowfall Effect",
-			Description = "Enable or disable the snowfall effect.",
+			Title = "Falling Petals",
+			Description = "Enable or disable falling petals in the GUI.",
 			Default = Settings.Snowfall == nil and true or Settings.Snowfall,
 			Callback = function(Value)
 				Settings.Snowfall = Value
 				InterfaceManager:SaveSettings()
+				if Value and not Library.Snowfall and type(Library.AddPetalsToWindow) == "function" then
+					Library:AddPetalsToWindow({ Count = 30, Speed = 15 })
+				end
 				if Library.Snowfall then
 					Library.Snowfall:SetVisible(Value)
 				end
@@ -10111,23 +10182,12 @@ end
 				Callback = function(Value)
 					Settings.AutoCursorUnlock = Value
 					InterfaceManager:SaveSettings()
-					
-					if Library.Window then
-						if Value and not Library.Window.Minimized then
-							pcall(function()
-								UserInputService.MouseBehavior = Enum.MouseBehavior.Default
-								UserInputService.MouseIconEnabled = true
-							end)
-						elseif not Value then
-							pcall(function()
-								UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
-								UserInputService.MouseIconEnabled = false
-							end)
-						end
-					end
+					InterfaceManager:UpdateCursorUnlock()
 				end
 			})
 		end
+
+		InterfaceManager:BindCursorVisibility()
 
 
 
@@ -10311,11 +10371,14 @@ Library.CreateWindow = function(self, Config)
             local snowfallEnabled = configAllowsSnow and userWantsSnow
             
             
-            if true then
-                 Library:AddPetalsToWindow({
+            if configAllowsSnow then
+                 local petals = Library:AddPetalsToWindow({
                     Count = 30,
                     Speed = 15
                 })
+                 if petals then
+                     petals:SetVisible(snowfallEnabled)
+                 end
             else
                 
                 if Library.Snowfall then
@@ -10416,6 +10479,51 @@ function Library:CreateMinimizer(Config)
 
 
 	local function createButton(isDesktop)
+		if not isDesktop then
+			return New("TextButton", {
+				Name = "MinimizeButton",
+				Size = UDim2.new(1, 0, 1, 0),
+				BorderSizePixel = 0,
+				BackgroundColor3 = Color3.fromRGB(145, 18, 24),
+				BackgroundTransparency = 0,
+				AutoButtonColor = true,
+				Text = "",
+			}, {
+				New("UICorner", { CornerRadius = UDim.new(0, cornerRadius or 10) }),
+				New("UIGradient", {
+					Color = ColorSequence.new({
+						ColorSequenceKeypoint.new(0, Color3.fromRGB(215, 38, 48)),
+						ColorSequenceKeypoint.new(1, Color3.fromRGB(82, 4, 10)),
+					}),
+					Rotation = 90,
+				}),
+				New("UIStroke", {
+					Name = "DarkRedGlow",
+					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+					Color = Color3.fromRGB(95, 0, 8),
+					Transparency = 0.35,
+					Thickness = 4,
+				}),
+				New("UIStroke", {
+					Name = "Border",
+					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+					Color = Color3.fromRGB(232, 72, 78),
+					Transparency = 0.2,
+					Thickness = 1,
+				}),
+				New("TextLabel", {
+					Name = "MobileLabel",
+					Size = UDim2.fromScale(1, 1),
+					BackgroundTransparency = 1,
+					Text = "N",
+					Font = Enum.Font.ArialBold,
+					TextSize = 20,
+					TextColor3 = Color3.fromRGB(255, 255, 255),
+					TextStrokeColor3 = Color3.fromRGB(70, 0, 5),
+					TextStrokeTransparency = 0.35,
+				}),
+			})
+		end
 
 
 		return New("TextButton", {
@@ -10587,7 +10695,7 @@ function Library:CreateMinimizer(Config)
 
 
 
-	if useAcrylic then
+	if useAcrylic and not isMobile then
 
 		local miniAcrylic = Acrylic.AcrylicPaint()
 
@@ -10834,6 +10942,7 @@ end
 
 
 function Library:Destroy()
+	InterfaceManager:DisableCursorUnlock()
 
 
 	if Library.Window then
