@@ -5769,6 +5769,16 @@ ElementsTable.Toggle = (function()
 				Parent = ToggleTrack,
 		})
 
+		local ToggleGlassGradient = New("UIGradient", {
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 180, 188)),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(62, 62, 68)),
+			}),
+			Rotation = 90,
+			Enabled = true,
+			Parent = ToggleTrack,
+		})
+
 		local function UpdateToggleVisual(animated)
 			local disabled = Toggle.Disabled == true
 			local fillTransparency
@@ -5782,11 +5792,13 @@ ElementsTable.Toggle = (function()
 				fillTransparency = disabled and 0.55 or 0
 				strokeTransparency = disabled and 0.65 or 0.05
 			else
-				fillColor = Color3.fromRGB(72, 72, 76)
-				strokeColor = Color3.fromRGB(120, 120, 126)
-				fillTransparency = disabled and 0.45 or 0
-				strokeTransparency = disabled and 0.72 or 0.35
+				fillColor = Color3.fromRGB(96, 96, 104)
+				strokeColor = Color3.fromRGB(180, 180, 188)
+				fillTransparency = disabled and 0.68 or 0.42
+				strokeTransparency = disabled and 0.78 or 0.48
 			end
+
+			ToggleGlassGradient.Enabled = not Toggle.Value
 
 			local trackProperties = {
 				BackgroundColor3 = fillColor,
@@ -9858,7 +9870,8 @@ local InterfaceManager = {} do
 	function InterfaceManager:UpdateCursorUnlock()
 		local window = self.Library and self.Library.Window
 		local root = window and window.Root
-		local shouldUnlock = self.Settings.AutoCursorUnlock == true
+		local cursorUnlockEnabled = self.Settings.AutoCursorUnlock == true
+		local shouldUnlock = cursorUnlockEnabled
 			and root ~= nil
 			and root.Visible == true
 			and window.Minimized ~= true
@@ -9868,6 +9881,15 @@ local InterfaceManager = {} do
 			pcall(function()
 				UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 				UserInputService.MouseIconEnabled = true
+			end)
+		elseif cursorUnlockEnabled then
+			local state = self.CursorState
+			self.CursorState = nil
+			pcall(function()
+				if state then
+					UserInputService.MouseBehavior = state.MouseBehavior
+				end
+				UserInputService.MouseIconEnabled = false
 			end)
 		else
 			self:RestoreCursorState()
@@ -10224,6 +10246,10 @@ Library.CreateWindow = function(self, Config)
 		return
 	end
 
+	pcall(function()
+		InterfaceManager:LoadSettings()
+	end)
+
 	Library.MinimizeKey = Config.MinimizeKey or Enum.KeyCode.LeftControl
 
 
@@ -10371,13 +10397,13 @@ Library.CreateWindow = function(self, Config)
             local snowfallEnabled = configAllowsSnow and userWantsSnow
             
             
-            if configAllowsSnow then
+            if configAllowsSnow and snowfallEnabled then
                  local petals = Library:AddPetalsToWindow({
                     Count = 30,
                     Speed = 15
                 })
                  if petals then
-                     petals:SetVisible(snowfallEnabled)
+                     petals:SetVisible(true)
                  end
             else
                 
