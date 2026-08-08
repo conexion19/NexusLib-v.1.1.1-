@@ -5788,22 +5788,22 @@ ElementsTable.Toggle = (function()
 			local strokeColor
 
 			if Toggle.Value then
-				fillColor = Color3.fromRGB(32, 255, 88)
-				strokeColor = Color3.fromRGB(150, 255, 180)
+				fillColor = Color3.fromRGB(255, 255, 255)
+				strokeColor = Color3.fromRGB(255, 255, 255)
 				fillTransparency = disabled and 0.5 or 0
 				strokeTransparency = disabled and 0.65 or 0.05
 				ToggleGlassGradient.Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(75, 255, 120)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 185, 50)),
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(205, 205, 210)),
 				})
 			else
-				fillColor = Color3.fromRGB(255, 30, 42)
-				strokeColor = Color3.fromRGB(255, 145, 150)
-				fillTransparency = disabled and 0.5 or 0
-				strokeTransparency = disabled and 0.65 or 0.05
+				fillColor = Color3.fromRGB(42, 42, 46)
+				strokeColor = Color3.fromRGB(115, 115, 122)
+				fillTransparency = disabled and 0.65 or 0.18
+				strokeTransparency = disabled and 0.75 or 0.35
 				ToggleGlassGradient.Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 75, 82)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(190, 0, 20)),
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(72, 72, 78)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(24, 24, 27)),
 				})
 			end
 
