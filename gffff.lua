@@ -5787,18 +5787,26 @@ ElementsTable.Toggle = (function()
 			local strokeColor
 
 			if Toggle.Value then
-				fillColor = Color3.fromRGB(255, 255, 255)
-				strokeColor = Color3.fromRGB(255, 255, 255)
-				fillTransparency = disabled and 0.55 or 0
+				fillColor = Color3.fromRGB(32, 255, 88)
+				strokeColor = Color3.fromRGB(150, 255, 180)
+				fillTransparency = disabled and 0.5 or 0
 				strokeTransparency = disabled and 0.65 or 0.05
+				ToggleGlassGradient.Color = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(75, 255, 120)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 185, 50)),
+				})
 			else
-				fillColor = Color3.fromRGB(96, 96, 104)
-				strokeColor = Color3.fromRGB(180, 180, 188)
-				fillTransparency = disabled and 0.68 or 0.42
-				strokeTransparency = disabled and 0.78 or 0.48
+				fillColor = Color3.fromRGB(255, 30, 42)
+				strokeColor = Color3.fromRGB(255, 145, 150)
+				fillTransparency = disabled and 0.5 or 0
+				strokeTransparency = disabled and 0.65 or 0.05
+				ToggleGlassGradient.Color = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 75, 82)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(190, 0, 20)),
+				})
 			end
 
-			ToggleGlassGradient.Enabled = not Toggle.Value
+			ToggleGlassGradient.Enabled = true
 
 			local trackProperties = {
 				BackgroundColor3 = fillColor,
@@ -9838,7 +9846,14 @@ local InterfaceManager = {} do
 
 
 	InterfaceManager.CursorConnection = nil
+	InterfaceManager.TeamConnection = nil
 	InterfaceManager.CursorState = nil
+
+
+	function InterfaceManager:IsSurvivor()
+		local team = LocalPlayer and LocalPlayer.Team
+		return team ~= nil and string.lower(team.Name) == "survivor"
+	end
 
 
 	function InterfaceManager:CaptureCursorState()
@@ -9871,7 +9886,9 @@ local InterfaceManager = {} do
 		local window = self.Library and self.Library.Window
 		local root = window and window.Root
 		local cursorUnlockEnabled = self.Settings.AutoCursorUnlock == true
+		local isSurvivor = self:IsSurvivor()
 		local shouldUnlock = cursorUnlockEnabled
+			and isSurvivor
 			and root ~= nil
 			and root.Visible == true
 			and window.Minimized ~= true
@@ -9882,7 +9899,7 @@ local InterfaceManager = {} do
 				UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 				UserInputService.MouseIconEnabled = true
 			end)
-		elseif cursorUnlockEnabled then
+		elseif cursorUnlockEnabled and isSurvivor then
 			local state = self.CursorState
 			self.CursorState = nil
 			pcall(function()
@@ -9902,10 +9919,19 @@ local InterfaceManager = {} do
 			self.CursorConnection:Disconnect()
 			self.CursorConnection = nil
 		end
+		if self.TeamConnection then
+			self.TeamConnection:Disconnect()
+			self.TeamConnection = nil
+		end
 
 		local window = self.Library and self.Library.Window
 		if window and window.Root then
 			self.CursorConnection = window.Root:GetPropertyChangedSignal("Visible"):Connect(function()
+				self:UpdateCursorUnlock()
+			end)
+		end
+		if LocalPlayer then
+			self.TeamConnection = LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
 				self:UpdateCursorUnlock()
 			end)
 		end
@@ -9918,6 +9944,10 @@ local InterfaceManager = {} do
 		if self.CursorConnection then
 			self.CursorConnection:Disconnect()
 			self.CursorConnection = nil
+		end
+		if self.TeamConnection then
+			self.TeamConnection:Disconnect()
+			self.TeamConnection = nil
 		end
 		self:RestoreCursorState()
 	end
