@@ -743,40 +743,41 @@ local Themes = {
 	},
 	Slate = {
 		Name = "Slate",
-		Accent = Color3.fromRGB(255, 140, 180),
-		AcrylicMain = Color3.fromRGB(20, 10, 15),
-		AcrylicBorder = Color3.fromRGB(25, 12, 18),
-		AcrylicGradient = ColorSequence.new(Color3.fromRGB(15, 8, 12), Color3.fromRGB(22, 10, 16)),
-		AcrylicNoise = 0.95,
-		TitleBarLine = Color3.fromRGB(30, 15, 20),
-		Tab = Color3.fromRGB(60, 30, 45),
-		Element = Color3.fromRGB(35, 18, 25),
-		ElementBorder = Color3.fromRGB(45, 25, 35),
-		InElementBorder = Color3.fromRGB(40, 22, 30),
-		ElementTransparency = 0.96,
-		ToggleSlider = Color3.fromRGB(60, 30, 45),
-		ToggleToggled = Color3.fromRGB(255, 140, 180),
-		SliderRail = Color3.fromRGB(60, 30, 45),
-		DropdownFrame = Color3.fromRGB(60, 30, 45),
-		DropdownHolder = Color3.fromRGB(20, 10, 15),
-		DropdownBorder = Color3.fromRGB(30, 15, 22),
-		DropdownOption = Color3.fromRGB(45, 25, 35),
-		Keybind = Color3.fromRGB(60, 30, 45),
-		Input = Color3.fromRGB(45, 25, 35),
-		InputFocused = Color3.fromRGB(20, 10, 15),
-		InputIndicator = Color3.fromRGB(255, 140, 180),
-		Dialog = Color3.fromRGB(20, 10, 15),
-		DialogHolder = Color3.fromRGB(30, 15, 20),
-		DialogHolderLine = Color3.fromRGB(40, 20, 30),
-		DialogButton = Color3.fromRGB(45, 25, 35),
-		DialogButtonBorder = Color3.fromRGB(50, 30, 40),
-		DialogBorder = Color3.fromRGB(25, 12, 18),
-		DialogInput = Color3.fromRGB(20, 10, 15),
-		DialogInputLine = Color3.fromRGB(150, 80, 110),
-		Text = Color3.fromRGB(255, 220, 235),
-		SubText = Color3.fromRGB(200, 140, 170),
-		Hover = Color3.fromRGB(55, 28, 40),
-		HoverChange = 0.03,
+		Accent = Color3.fromRGB(255, 255, 255),
+		AcrylicMain = Color3.fromRGB(22, 22, 24),
+		AcrylicBorder = Color3.fromRGB(58, 58, 62),
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(12, 12, 14), Color3.fromRGB(30, 30, 33)),
+		AcrylicNoise = 0.97,
+		TitleBarLine = Color3.fromRGB(60, 60, 64),
+		Tab = Color3.fromRGB(42, 42, 46),
+		Element = Color3.fromRGB(31, 31, 34),
+		ElementBorder = Color3.fromRGB(55, 55, 60),
+		InElementBorder = Color3.fromRGB(74, 74, 80),
+		ElementTransparency = 0.18,
+		ToggleSlider = Color3.fromRGB(52, 52, 57),
+		ToggleToggled = Color3.fromRGB(255, 255, 255),
+		SliderRail = Color3.fromRGB(78, 78, 84),
+		DropdownFrame = Color3.fromRGB(40, 40, 44),
+		DropdownHolder = Color3.fromRGB(17, 17, 19),
+		DropdownBorder = Color3.fromRGB(65, 65, 70),
+		DropdownOption = Color3.fromRGB(36, 36, 40),
+		Keybind = Color3.fromRGB(45, 45, 49),
+		Input = Color3.fromRGB(38, 38, 42),
+		InputFocused = Color3.fromRGB(16, 16, 18),
+		InputIndicator = Color3.fromRGB(255, 255, 255),
+		InputIndicatorFocus = Color3.fromRGB(255, 255, 255),
+		Dialog = Color3.fromRGB(22, 22, 24),
+		DialogHolder = Color3.fromRGB(15, 15, 17),
+		DialogHolderLine = Color3.fromRGB(55, 55, 60),
+		DialogButton = Color3.fromRGB(36, 36, 40),
+		DialogButtonBorder = Color3.fromRGB(76, 76, 82),
+		DialogBorder = Color3.fromRGB(64, 64, 70),
+		DialogInput = Color3.fromRGB(30, 30, 34),
+		DialogInputLine = Color3.fromRGB(215, 215, 220),
+		Text = Color3.fromRGB(255, 255, 255),
+		SubText = Color3.fromRGB(205, 205, 210),
+		Hover = Color3.fromRGB(72, 72, 78),
+		HoverChange = 0.06,
 	},
 	Gray = {
 		Name = "Gray",
@@ -2143,9 +2144,9 @@ function Library:UpdateKeybindDisplayColor(idx)
 	end
 
 	if isActive then
-		data.Label.TextColor3 = Color3.fromRGB(85, 255, 85)
-	else
 		data.Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+	else
+		data.Label.TextColor3 = Color3.fromRGB(170, 170, 175)
 	end
 end
 
@@ -4600,7 +4601,7 @@ Components.Window = (function()
 
 		local Selector = New("Frame", {
 			Size = UDim2.fromOffset(4, 0),
-			BackgroundColor3 = Color3.fromRGB(76, 194, 255),
+			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
 			Position = UDim2.fromOffset(0, (Window.TabHolderTop or 45) + 0),
 			AnchorPoint = Vector2.new(0, 0.5),
 			ZIndex = 1,
@@ -6537,7 +6538,7 @@ local DropdownHolderCanvas = New("Frame", {
 
 				local ButtonSelector = New("Frame", {
 					Size = UDim2.fromOffset(4, 14),
-					BackgroundColor3 = Color3.fromRGB(76, 194, 255),
+					BackgroundColor3 = Color3.fromRGB(255, 255, 255),
 					Position = UDim2.fromOffset(-1, 16),
 					AnchorPoint = Vector2.new(0, 0.5),
 					ThemeTag = {
@@ -10296,7 +10297,7 @@ Library.CreateWindow = function(self, Config)
 	end
 
 	if Config.BackgroundTransparency == nil then
-		Config.BackgroundTransparency = 0.2
+		Config.BackgroundTransparency = 0.08
 	end
 
     if Config.Snowfall ~= false then
@@ -10540,7 +10541,7 @@ function Library:CreateMinimizer(Config)
 				Name = "MinimizeButton",
 				Size = UDim2.new(1, 0, 1, 0),
 				BorderSizePixel = 0,
-				BackgroundColor3 = Color3.fromRGB(145, 18, 24),
+				BackgroundColor3 = Color3.fromRGB(24, 24, 27),
 				BackgroundTransparency = 0,
 				AutoButtonColor = true,
 				Text = "",
@@ -10548,22 +10549,22 @@ function Library:CreateMinimizer(Config)
 				New("UICorner", { CornerRadius = UDim.new(0, cornerRadius or 10) }),
 				New("UIGradient", {
 					Color = ColorSequence.new({
-						ColorSequenceKeypoint.new(0, Color3.fromRGB(215, 38, 48)),
-						ColorSequenceKeypoint.new(1, Color3.fromRGB(82, 4, 10)),
+						ColorSequenceKeypoint.new(0, Color3.fromRGB(62, 62, 68)),
+						ColorSequenceKeypoint.new(1, Color3.fromRGB(12, 12, 14)),
 					}),
 					Rotation = 90,
 				}),
 				New("UIStroke", {
-					Name = "DarkRedGlow",
+					Name = "MonochromeGlow",
 					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-					Color = Color3.fromRGB(95, 0, 8),
+					Color = Color3.fromRGB(185, 185, 192),
 					Transparency = 0.35,
 					Thickness = 4,
 				}),
 				New("UIStroke", {
 					Name = "Border",
 					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-					Color = Color3.fromRGB(232, 72, 78),
+					Color = Color3.fromRGB(255, 255, 255),
 					Transparency = 0.2,
 					Thickness = 1,
 				}),
@@ -10575,7 +10576,7 @@ function Library:CreateMinimizer(Config)
 					Font = Enum.Font.ArialBold,
 					TextSize = 20,
 					TextColor3 = Color3.fromRGB(255, 255, 255),
-					TextStrokeColor3 = Color3.fromRGB(70, 0, 5),
+					TextStrokeColor3 = Color3.fromRGB(0, 0, 0),
 					TextStrokeTransparency = 0.35,
 				}),
 			})
@@ -11258,7 +11259,7 @@ local MinimizeButton = New("TextButton", {
 		ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
 
 
-		Color = Color3.fromRGB(100, 150, 255),
+		Color = Color3.fromRGB(190, 190, 198),
 
 
 		Transparency = 0.6,
@@ -11273,7 +11274,7 @@ local MinimizeButton = New("TextButton", {
 	New("Frame", {
 
 
-		BackgroundColor3 = Color3.fromRGB(100, 150, 255),
+		BackgroundColor3 = Color3.fromRGB(235, 235, 240),
 
 
 		BackgroundTransparency = 0.9,
@@ -11434,7 +11435,7 @@ local MobileMinimizeButton = New("TextButton", {
 		ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
 
 
-		Color = Color3.fromRGB(100, 150, 255),
+		Color = Color3.fromRGB(190, 190, 198),
 
 
 		Transparency = 0.7,
@@ -11449,7 +11450,7 @@ local MobileMinimizeButton = New("TextButton", {
 	New("Frame", {
 
 
-		BackgroundColor3 = Color3.fromRGB(100, 150, 255),
+		BackgroundColor3 = Color3.fromRGB(235, 235, 240),
 
 
 		BackgroundTransparency = 0.92,
@@ -11784,7 +11785,7 @@ function Library:AddSnowfallToWindow(Config)
             for i = 1, snowflakeCount do
                 local petal = Instance.new("Frame")
                 petal.Name = "Petal"..i
-                petal.BackgroundColor3 = Color3.fromRGB(255, 192, 203) -- softer sakura color
+                petal.BackgroundColor3 = Color3.fromRGB(235, 235, 240)
                 local baseTransparency = math.random(30, 70) / 100 -- more transparent
                 petal.BackgroundTransparency = baseTransparency
                 petal.BorderSizePixel = 0
