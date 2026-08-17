@@ -4588,6 +4588,14 @@ Components.Window = (function()
 		})
 		ApplyMainGuiCornerRadius(Window.AcrylicPaint)
 
+		-- Main GUI window background transparency.
+		local mainBackground = Window.AcrylicPaint
+			and Window.AcrylicPaint.Frame
+			and Window.AcrylicPaint.Frame:FindFirstChild("Background")
+		if mainBackground then
+			mainBackground.BackgroundTransparency = 0.2
+		end
+
 		local function CenterWindow()
 			local vp = Camera.ViewportSize
 			local x = math.max(0, (vp.X - Window.Size.X.Offset) / 2)
@@ -5749,35 +5757,56 @@ ElementsTable.Toggle = (function()
 		local originalDescColor = ToggleFrame.DescLabel.TextColor3
 
 		local ToggleTrack = New("Frame", {
-			Size = UDim2.fromOffset(20, 20),
+			Size = UDim2.fromOffset(44, 13),
 			AnchorPoint = Vector2.new(1, 0.5),
-			Position = UDim2.new(1, -12, 0.5, 0),
+			Position = UDim2.new(1, -10, 0.5, 0),
 			Parent = ToggleFrame.Frame,
 			BorderSizePixel = 0,
-			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-			BackgroundTransparency = 1,
+			BackgroundColor3 = Color3.fromRGB(34, 34, 38),
+			BackgroundTransparency = 0.12,
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
+				CornerRadius = UDim.new(1, 0),
 			}),
 		})
 
 		local ToggleStroke = New("UIStroke", {
-				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-				Color = Color3.fromRGB(255, 255, 255),
-				Transparency = 0.55,
-				Thickness = 1.2,
-				Parent = ToggleTrack,
+			ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+			Color = Color3.fromRGB(110, 110, 116),
+			Transparency = 0.55,
+			Thickness = 1,
+			Parent = ToggleTrack,
 		})
 
 		local ToggleGlassGradient = New("UIGradient", {
 			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 180, 188)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(62, 62, 68)),
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(54, 54, 60)),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 24)),
 			}),
 			Rotation = 90,
 			Enabled = true,
 			Parent = ToggleTrack,
+		})
+
+		local ToggleThumb = New("Frame", {
+			Size = UDim2.fromOffset(7, 7),
+			Position = UDim2.fromOffset(3, 3),
+			BackgroundColor3 = Color3.fromRGB(235, 235, 240),
+			BackgroundTransparency = 0.1,
+			BorderSizePixel = 0,
+			ZIndex = ToggleTrack.ZIndex + 1,
+			Parent = ToggleTrack,
+		}, {
+			New("UICorner", {
+				CornerRadius = UDim.new(1, 0),
+			}),
+			New("UIGradient", {
+				Color = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(205, 205, 210)),
+				}),
+				Rotation = 90,
+			}),
 		})
 
 		local function UpdateToggleVisual(animated)
@@ -5786,24 +5815,33 @@ ElementsTable.Toggle = (function()
 			local strokeTransparency
 			local fillColor
 			local strokeColor
+			local thumbColor
+			local thumbTransparency
+			local thumbPosition
 
 			if Toggle.Value then
-				fillColor = Color3.fromRGB(255, 255, 255)
+				fillColor = Color3.fromRGB(235, 235, 240)
 				strokeColor = Color3.fromRGB(255, 255, 255)
-				fillTransparency = disabled and 0.5 or 0
-				strokeTransparency = disabled and 0.65 or 0.05
+				thumbColor = Color3.fromRGB(20, 20, 24)
+				fillTransparency = disabled and 0.5 or 0.15
+				strokeTransparency = disabled and 0.7 or 0.35
+				thumbTransparency = disabled and 0.55 or 0
+				thumbPosition = UDim2.fromOffset(34, 3)
 				ToggleGlassGradient.Color = ColorSequence.new({
 					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(205, 205, 210)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(185, 185, 190)),
 				})
 			else
-				fillColor = Color3.fromRGB(42, 42, 46)
-				strokeColor = Color3.fromRGB(115, 115, 122)
-				fillTransparency = disabled and 0.65 or 0.18
-				strokeTransparency = disabled and 0.75 or 0.35
+				fillColor = Color3.fromRGB(34, 34, 38)
+				strokeColor = Color3.fromRGB(110, 110, 116)
+				thumbColor = Color3.fromRGB(230, 230, 235)
+				fillTransparency = disabled and 0.68 or 0.30
+				strokeTransparency = disabled and 0.82 or 0.55
+				thumbTransparency = disabled and 0.65 or 0.1
+				thumbPosition = UDim2.fromOffset(3, 3)
 				ToggleGlassGradient.Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(72, 72, 78)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(24, 24, 27)),
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(54, 54, 60)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 24)),
 				})
 			end
 
@@ -5817,16 +5855,25 @@ ElementsTable.Toggle = (function()
 				Color = strokeColor,
 				Transparency = strokeTransparency,
 			}
+			local thumbProperties = {
+				Position = thumbPosition,
+				BackgroundColor3 = thumbColor,
+				BackgroundTransparency = thumbTransparency,
+			}
 
 			if animated then
-				local tweenInfo = TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+				local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 				TweenService:Create(ToggleTrack, tweenInfo, trackProperties):Play()
 				TweenService:Create(ToggleStroke, tweenInfo, strokeProperties):Play()
+				TweenService:Create(ToggleThumb, tweenInfo, thumbProperties):Play()
 			else
 				ToggleTrack.BackgroundColor3 = trackProperties.BackgroundColor3
 				ToggleTrack.BackgroundTransparency = trackProperties.BackgroundTransparency
 				ToggleStroke.Color = strokeProperties.Color
 				ToggleStroke.Transparency = strokeProperties.Transparency
+				ToggleThumb.Position = thumbProperties.Position
+				ToggleThumb.BackgroundColor3 = thumbProperties.BackgroundColor3
+				ToggleThumb.BackgroundTransparency = thumbProperties.BackgroundTransparency
 			end
 		end
 
