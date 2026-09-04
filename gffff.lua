@@ -916,7 +916,7 @@ local Library = {
 	MinimizeKey = Enum.KeyCode.LeftControl,
 }
 
-local MAIN_GUI_CORNER_RADIUS = 3
+local MAIN_GUI_CORNER_RADIUS = 7
 
 local function ApplyMainGuiCornerRadius(acrylicPaint)
 	if not acrylicPaint or not acrylicPaint.Frame then
@@ -2637,7 +2637,7 @@ Components.Element = (function()
 			LayoutOrder = 7,
 			ThemeTag = { BackgroundColor3 = "Element" },
 		}, {
-			New("UICorner", { CornerRadius = UDim.new(0, 2) }),
+			New("UICorner", { CornerRadius = UDim.new(0, 5) }),
 			Element.Border,
 			Element.LabelHolder,
 		})
@@ -2681,11 +2681,14 @@ Components.Element = (function()
 		end
 
 		if Hover then
+			local hoverInfo = TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 			Creator.AddSignal(Element.Frame.MouseEnter, function()
-				TweenService:Create(Element.Frame, TweenInfo.new(0.12), { BackgroundTransparency = 0.92 }):Play()
+				TweenService:Create(Element.Frame, hoverInfo, { BackgroundTransparency = 0.86 }):Play()
+				TweenService:Create(Element.Border, hoverInfo, { Transparency = 0.55 }):Play()
 			end)
 			Creator.AddSignal(Element.Frame.MouseLeave, function()
-				TweenService:Create(Element.Frame, TweenInfo.new(0.12), { BackgroundTransparency = 1 }):Play()
+				TweenService:Create(Element.Frame, hoverInfo, { BackgroundTransparency = 1 }):Play()
+				TweenService:Create(Element.Border, hoverInfo, { Transparency = 1 }):Play()
 			end)
 		end
 
@@ -2711,7 +2714,7 @@ Components.Section = (function()
 		Section.Container = New("Frame", {
 			Name = "Container",
 			Size = UDim2.new(1, 0, 0, 8),
-			Position = UDim2.fromOffset(0, 27),
+			Position = UDim2.fromOffset(0, 29),
 			BackgroundTransparency = 1,
 		}, {
 			Section.Layout,
@@ -2719,66 +2722,73 @@ Components.Section = (function()
 				PaddingLeft = UDim.new(0, 5),
 				PaddingRight = UDim.new(0, 5),
 				PaddingTop = UDim.new(0, 4),
-				PaddingBottom = UDim.new(0, 5),
+				PaddingBottom = UDim.new(0, 6),
 			}),
 		})
 
 		local Chevron = New("ImageLabel", {
+			Name = "Chevron",
 			Image = Library:GetIcon("chevron-right") or "rbxassetid://10709791437",
-			Size = UDim2.fromOffset(13, 13),
+			Size = UDim2.fromOffset(14, 14),
 			AnchorPoint = Vector2.new(1, 0.5),
-			Position = UDim2.new(1, -7, 0.5, 0),
+			Position = UDim2.new(1, -8, 0.5, 0),
 			BackgroundTransparency = 1,
-			ImageTransparency = 0.05,
+			ImageTransparency = 0.08,
+			Rotation = 90,
 			ThemeTag = { ImageColor3 = "Text" },
+		})
+
+		local HeaderLabel = New("TextLabel", {
+			Name = "SectionTitle",
+			RichText = true,
+			Text = Title or "",
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+			TextSize = 12,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			TextYAlignment = Enum.TextYAlignment.Center,
+			Position = UDim2.fromOffset(resolvedIcon and 26 or 8, 0),
+			Size = UDim2.new(1, resolvedIcon and -55 or -37, 1, 0),
+			BackgroundTransparency = 1,
+			ThemeTag = { TextColor3 = "Text" },
 		})
 
 		Section.HeaderButton = New("TextButton", {
 			Name = "SectionHeader",
-			Size = UDim2.new(1, 0, 0, 27),
-			BackgroundTransparency = 0.3,
+			Size = UDim2.new(1, 0, 0, 29),
+			BackgroundTransparency = 0.34,
 			Text = "",
 			AutoButtonColor = false,
 			ThemeTag = { BackgroundColor3 = "Element" },
 		}, {
 			New("Frame", {
-				Size = UDim2.new(1, 0, 0, 1),
-				Position = UDim2.new(0, 0, 1, -1),
+				Size = UDim2.new(1, -12, 0, 1),
+				Position = UDim2.new(0, 6, 1, -1),
 				BorderSizePixel = 0,
+				BackgroundTransparency = 0.28,
 				ThemeTag = { BackgroundColor3 = "TitleBarLine" },
 			}),
 			resolvedIcon and New("ImageLabel", {
 				Image = resolvedIcon,
 				Size = UDim2.fromOffset(13, 13),
-				Position = UDim2.new(0, 7, 0.5, 0),
+				Position = UDim2.new(0, 8, 0.5, 0),
 				AnchorPoint = Vector2.new(0, 0.5),
 				BackgroundTransparency = 1,
 				ThemeTag = { ImageColor3 = "SubText" },
 			}) or nil,
-			New("TextLabel", {
-				RichText = true,
-				Text = Title or "",
-				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
-				TextSize = 12,
-				TextXAlignment = Enum.TextXAlignment.Left,
-				TextYAlignment = Enum.TextYAlignment.Center,
-				Position = UDim2.fromOffset(resolvedIcon and 25 or 7, 0),
-				Size = UDim2.new(1, resolvedIcon and -52 or -34, 1, 0),
-				BackgroundTransparency = 1,
-				ThemeTag = { TextColor3 = "Text" },
-			}),
+			HeaderLabel,
 			Chevron,
 		})
 
 		Section.Root = New("Frame", {
 			Name = "Section",
 			BackgroundTransparency = 0.08,
-			Size = UDim2.new(1, 0, 0, 36),
+			Size = UDim2.new(1, 0, 0, 38),
 			LayoutOrder = 7,
 			Parent = Parent,
+			ClipsDescendants = true,
 			ThemeTag = { BackgroundColor3 = "DialogHolder" },
 		}, {
-			New("UICorner", { CornerRadius = UDim.new(0, 2) }),
+			New("UICorner", { CornerRadius = UDim.new(0, 6) }),
 			New("UIStroke", {
 				Thickness = 1,
 				Transparency = 0.18,
@@ -2789,34 +2799,86 @@ Components.Section = (function()
 			Section.Container,
 		})
 
-		local function UpdateSize()
-			if Section.Collapsed then
-				Section.Container.Visible = false
-				Section.Root.Size = UDim2.new(1, 0, 0, 27)
-				return
-			end
-			Section.Container.Visible = true
-			local contentHeight = Section.Layout.AbsoluteContentSize.Y + 9
-			Section.Container.Size = UDim2.new(1, 0, 0, contentHeight)
-			Section.Root.Size = UDim2.new(1, 0, 0, 27 + contentHeight)
+		local activeTween = nil
+		local animationSerial = 0
+		local transitionInfo = TweenInfo.new(0.18, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+
+		local function ContentHeight()
+			return math.max(8, Section.Layout.AbsoluteContentSize.Y + 10)
 		end
 
-		function Section:SetCollapsed(Value)
-			Section.Collapsed = not not Value
-			UpdateSize()
+		local function ApplyState(Animated)
+			animationSerial = animationSerial + 1
+			local serial = animationSerial
+			if activeTween then
+				activeTween:Cancel()
+				activeTween = nil
+			end
+
+			local contentHeight = ContentHeight()
+			Section.Container.Size = UDim2.new(1, 0, 0, contentHeight)
+			local targetHeight = Section.Collapsed and 29 or (29 + contentHeight)
+			local targetRotation = Section.Collapsed and 0 or 90
+
+			if not Section.Collapsed then
+				Section.Container.Visible = true
+			end
+
+			if Animated then
+				Section.Container.Visible = true
+				activeTween = TweenService:Create(Section.Root, transitionInfo, {
+					Size = UDim2.new(1, 0, 0, targetHeight),
+				})
+				TweenService:Create(Chevron, transitionInfo, { Rotation = targetRotation }):Play()
+				activeTween:Play()
+				local thisTween = activeTween
+				task.spawn(function()
+					thisTween.Completed:Wait()
+					if serial ~= animationSerial then return end
+					if Section.Collapsed then Section.Container.Visible = false end
+					if activeTween == thisTween then activeTween = nil end
+				end)
+			else
+				Section.Root.Size = UDim2.new(1, 0, 0, targetHeight)
+				Chevron.Rotation = targetRotation
+				Section.Container.Visible = not Section.Collapsed
+			end
+		end
+
+		function Section:SetCollapsed(Value, Animated)
+			local nextState = not not Value
+			if nextState == Section.Collapsed then return end
+			Section.Collapsed = nextState
+			ApplyState(Animated ~= false)
+		end
+
+		function Section:Toggle()
+			Section:SetCollapsed(not Section.Collapsed, true)
 		end
 
 		Creator.AddSignal(Section.Layout:GetPropertyChangedSignal("AbsoluteContentSize"), function()
-			task.defer(UpdateSize)
+			if not Section.Collapsed and not activeTween then
+				task.defer(function() ApplyState(false) end)
+			end
 		end)
+
 		Creator.AddSignal(Section.HeaderButton.MouseButton1Click, function()
-			Section:SetCollapsed(not Section.Collapsed)
+			Section:Toggle()
 		end)
-		task.defer(UpdateSize)
+
+		Creator.AddSignal(Section.HeaderButton.MouseEnter, function()
+			TweenService:Create(Section.HeaderButton, TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { BackgroundTransparency = 0.16 }):Play()
+			TweenService:Create(Chevron, TweenInfo.new(0.14), { ImageTransparency = 0 }):Play()
+		end)
+		Creator.AddSignal(Section.HeaderButton.MouseLeave, function()
+			TweenService:Create(Section.HeaderButton, TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { BackgroundTransparency = 0.34 }):Play()
+			TweenService:Create(Chevron, TweenInfo.new(0.14), { ImageTransparency = 0.08 }):Play()
+		end)
+
+		task.defer(function() ApplyState(false) end)
 
 		if Library.LanguageManager then
-			local label = Section.HeaderButton:FindFirstChildOfClass("TextLabel")
-			if label then Library.LanguageManager:RegisterElement(label, Title) end
+			Library.LanguageManager:RegisterElement(HeaderLabel, Title)
 		end
 		if Library.Window and Library.Window.RegisterElement then
 			Library.Window.RegisterElement(Section.Root, Title, "Section")
@@ -2944,7 +3006,11 @@ Components.Tab = (function()
 		Section.Container = SectionFrame.Container
 		Section.ScrollFrame = owner.Scroll
 		Section.Root = SectionFrame.Root
-		Section.SetCollapsed = function(_, value) SectionFrame:SetCollapsed(value) end
+		Section.SetCollapsed = function(_, value, animated) SectionFrame:SetCollapsed(value, animated) end
+		Section.Toggle = function() SectionFrame:Toggle() end
+		Section.Collapse = function(_, animated) SectionFrame:SetCollapsed(true, animated) end
+		Section.Expand = function(_, animated) SectionFrame:SetCollapsed(false, animated) end
+		Section.IsCollapsed = function() return SectionFrame.Collapsed end
 		AttachSectionOwner(owner, SectionFrame)
 		setmetatable(Section, Library.Elements)
 		return Section
@@ -2978,6 +3044,15 @@ Components.Tab = (function()
 			BackgroundTransparency = 1,
 			ThemeTag = { BackgroundColor3 = "Accent" },
 		})
+		local TabIcon = resolvedIcon and New("ImageLabel", {
+			Image = resolvedIcon,
+			Size = UDim2.fromOffset(12, 12),
+			Position = UDim2.new(0, 6, 0.5, 0),
+			AnchorPoint = Vector2.new(0, 0.5),
+			BackgroundTransparency = 1,
+			ThemeTag = { ImageColor3 = "SubText" },
+		}) or nil
+
 		local TabFrame = New("TextButton", {
 			Name = "TabButton",
 			Size = UDim2.fromOffset(width, 28),
@@ -2985,15 +3060,10 @@ Components.Tab = (function()
 			Parent = Parent,
 			Text = "",
 			AutoButtonColor = false,
+			ThemeTag = { BackgroundColor3 = "Element" },
 		}, {
-			resolvedIcon and New("ImageLabel", {
-				Image = resolvedIcon,
-				Size = UDim2.fromOffset(12, 12),
-				Position = UDim2.new(0, 6, 0.5, 0),
-				AnchorPoint = Vector2.new(0, 0.5),
-				BackgroundTransparency = 1,
-				ThemeTag = { ImageColor3 = "SubText" },
-			}) or nil,
+			New("UICorner", { CornerRadius = UDim.new(0, 5) }),
+			TabIcon,
 			TextLabel,
 			Underline,
 		})
@@ -3018,6 +3088,7 @@ Components.Tab = (function()
 			Type = "Tab",
 			Frame = TabFrame,
 			Label = TextLabel,
+			Icon = TabIcon,
 			Underline = Underline,
 			ContainerAnim = ContainerAnim,
 			ContainerFrame = baseOwner.Scroll,
@@ -3063,7 +3134,7 @@ Components.Tab = (function()
 				AutoButtonColor = false,
 				ThemeTag = { BackgroundColor3 = "Element", TextColor3 = "SubText" },
 			}, {
-				New("UICorner", { CornerRadius = UDim.new(0, 2) }),
+				New("UICorner", { CornerRadius = UDim.new(0, 5) }),
 				New("UIStroke", { Transparency = 0.45, ThemeTag = { Color = "ElementBorder" } }),
 			})
 			SubButton.Parent = self.SubTabHolder
@@ -3083,6 +3154,22 @@ Components.Tab = (function()
 			setmetatable(SubTab, Library.Elements)
 			self.SubTabs[idx] = SubTab
 			Creator.AddSignal(SubButton.MouseButton1Click, function() self:SelectSubTab(idx) end)
+			Creator.AddSignal(SubButton.MouseEnter, function()
+				if self.SelectedSubTab ~= idx then
+					TweenService:Create(SubButton, TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+						BackgroundTransparency = 0.58,
+						TextColor3 = Creator.GetThemeProperty("Text"),
+					}):Play()
+				end
+			end)
+			Creator.AddSignal(SubButton.MouseLeave, function()
+				if self.SelectedSubTab ~= idx then
+					TweenService:Create(SubButton, TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+						BackgroundTransparency = 0.75,
+						TextColor3 = Creator.GetThemeProperty("SubText"),
+					}):Play()
+				end
+			end)
 			if idx == 1 then self:SelectSubTab(1) end
 			return SubTab
 		end
@@ -3092,8 +3179,10 @@ Components.Tab = (function()
 			for i, sub in ipairs(self.SubTabs) do
 				local selected = i == index
 				sub.Owner.Scroll.Visible = selected
-				sub.Button.TextColor3 = selected and Creator.GetThemeProperty("Text") or Creator.GetThemeProperty("SubText")
-				sub.Button.BackgroundTransparency = selected and 0.4 or 0.75
+				TweenService:Create(sub.Button, TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+					TextColor3 = selected and Creator.GetThemeProperty("Text") or Creator.GetThemeProperty("SubText"),
+					BackgroundTransparency = selected and 0.38 or 0.75,
+				}):Play()
 			end
 		end
 
@@ -3102,10 +3191,18 @@ Components.Tab = (function()
 		self.Containers[TabIndex] = ContainerAnim
 		Creator.AddSignal(TabFrame.MouseButton1Click, function() self:SelectTab(TabIndex) end)
 		Creator.AddSignal(TabFrame.MouseEnter, function()
-			if not Tab.Selected then TextLabel.TextColor3 = Creator.GetThemeProperty("Text") end
+			if not Tab.Selected then
+				TweenService:Create(TabFrame, TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { BackgroundTransparency = 0.78 }):Play()
+				TweenService:Create(TextLabel, TweenInfo.new(0.14), { TextColor3 = Creator.GetThemeProperty("Text") }):Play()
+				if TabIcon then TweenService:Create(TabIcon, TweenInfo.new(0.14), { ImageColor3 = Creator.GetThemeProperty("Text") }):Play() end
+			end
 		end)
 		Creator.AddSignal(TabFrame.MouseLeave, function()
-			if not Tab.Selected then TextLabel.TextColor3 = Creator.GetThemeProperty("SubText") end
+			if not Tab.Selected then
+				TweenService:Create(TabFrame, TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { BackgroundTransparency = 1 }):Play()
+				TweenService:Create(TextLabel, TweenInfo.new(0.14), { TextColor3 = Creator.GetThemeProperty("SubText") }):Play()
+				if TabIcon then TweenService:Create(TabIcon, TweenInfo.new(0.14), { ImageColor3 = Creator.GetThemeProperty("SubText") }):Play() end
+			end
 		end)
 		if self.TabCount == 1 then task.defer(function() self:SelectTab(1) end) end
 		return Tab
@@ -3119,8 +3216,13 @@ Components.Tab = (function()
 			local on = i == Index
 			Tab.Selected = on
 			Tab.ContainerAnim.Visible = on
-			Tab.Label.TextColor3 = on and Creator.GetThemeProperty("Text") or Creator.GetThemeProperty("SubText")
-			Tab.Underline.BackgroundTransparency = on and 0 or 1
+			local info = TweenInfo.new(0.16, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+			TweenService:Create(Tab.Frame, info, { BackgroundTransparency = on and 0.82 or 1 }):Play()
+			TweenService:Create(Tab.Label, info, { TextColor3 = on and Creator.GetThemeProperty("Text") or Creator.GetThemeProperty("SubText") }):Play()
+			TweenService:Create(Tab.Underline, info, { BackgroundTransparency = on and 0 or 1 }):Play()
+			if Tab.Icon then
+				TweenService:Create(Tab.Icon, info, { ImageColor3 = on and Creator.GetThemeProperty("Text") or Creator.GetThemeProperty("SubText") }):Play()
+			end
 		end
 		if self.Window.TabDisplay then self.Window.TabDisplay.Text = Selected.Name end
 	end
@@ -3664,7 +3766,7 @@ Components.Textbox = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 2),
+				CornerRadius = UDim.new(0, 5),
 			}),
 			New("UIStroke", {
 				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
@@ -3734,43 +3836,42 @@ Components.TitleBar = (function()
 	local New = Creator.New
 	return function(Config)
 		local TitleBar = {}
-		local NexusBadge = New("TextLabel", {
-			Name = "NexusLogo",
-			Text = "NEXUS",
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal),
-			TextSize = 8,
-			TextXAlignment = Enum.TextXAlignment.Center,
-			TextYAlignment = Enum.TextYAlignment.Center,
-			Position = UDim2.fromOffset(7, 6),
-			Size = UDim2.fromOffset(42, 16),
-			BackgroundTransparency = 0.65,
-			ThemeTag = { TextColor3 = "Text", BackgroundColor3 = "Element" },
-		}, {
-			New("UICorner", { CornerRadius = UDim.new(0, 2) }),
-			New("UIStroke", { Thickness = 1, Transparency = 0.35, ThemeTag = { Color = "ElementBorder" } }),
+
+		local PrimeGradient = New("UIGradient", {
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)),
+				ColorSequenceKeypoint.new(0.22, Color3.fromRGB(128, 128, 128)),
+				ColorSequenceKeypoint.new(0.46, Color3.fromRGB(255, 255, 255)),
+				ColorSequenceKeypoint.new(0.72, Color3.fromRGB(92, 92, 92)),
+				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255)),
+			}),
+			Offset = Vector2.new(-1, 0),
+			Rotation = 0,
 		})
 
 		local PrimeLabel = New("TextLabel", {
 			Name = "PrimeTitle",
 			Text = "PRIME",
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
-			TextSize = 11,
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
+			TextSize = 17,
 			TextXAlignment = Enum.TextXAlignment.Left,
-			Position = UDim2.fromOffset(56, 0),
-			Size = UDim2.fromOffset(52, 28),
+			TextYAlignment = Enum.TextYAlignment.Center,
+			Position = UDim2.fromOffset(6, 0),
+			Size = UDim2.fromOffset(82, 29),
 			BackgroundTransparency = 1,
-			ThemeTag = { TextColor3 = "Text" },
+			TextColor3 = Color3.fromRGB(255, 255, 255),
+		}, {
+			PrimeGradient,
 		})
 
 		TitleBar.Frame = New("Frame", {
 			Name = "TitleBar",
-			Size = UDim2.new(1, 0, 0, 28),
+			Size = UDim2.new(1, 0, 0, 29),
 			BackgroundTransparency = 0.15,
 			Parent = Config.Parent,
 			ZIndex = 110,
 			ThemeTag = { BackgroundColor3 = "AcrylicMain" },
 		}, {
-			NexusBadge,
 			PrimeLabel,
 			New("Frame", {
 				Size = UDim2.new(1, 0, 0, 1),
@@ -3779,6 +3880,17 @@ Components.TitleBar = (function()
 				ThemeTag = { BackgroundColor3 = "TitleBarLine" },
 			}),
 		})
+
+		local shimmer = TweenService:Create(
+			PrimeGradient,
+			TweenInfo.new(2.15, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, true),
+			{ Offset = Vector2.new(1, 0) }
+		)
+		shimmer:Play()
+
+		TitleBar.Label = PrimeLabel
+		TitleBar.Gradient = PrimeGradient
+		TitleBar.Shimmer = shimmer
 		return TitleBar
 	end
 end)()
@@ -3839,8 +3951,8 @@ Components.Window = (function()
 
 		Window.TabFrame = New("Frame", {
 			Name = "TabFrame",
-			Size = UDim2.new(1, -116, 0, 28),
-			Position = UDim2.fromOffset(112, 0),
+			Size = UDim2.new(1, -96, 0, 29),
+			Position = UDim2.fromOffset(92, 0),
 			BackgroundTransparency = 1,
 			Parent = Window.Root,
 			ZIndex = 120,
@@ -3903,9 +4015,19 @@ Components.Window = (function()
 		Window.Footer = Footer
 
 		local function FooterButton(name, iconName, xOffset, callback)
+			local IconLabel = New("ImageLabel", {
+				Name = "Icon",
+				Image = Library:GetIcon(iconName) or "",
+				Size = UDim2.fromOffset(13, 13),
+				Position = UDim2.fromScale(0.5, 0.5),
+				AnchorPoint = Vector2.new(0.5, 0.5),
+				BackgroundTransparency = 1,
+				ThemeTag = { ImageColor3 = "Text" },
+			})
+
 			local Button = New("TextButton", {
 				Name = name,
-				Size = UDim2.fromOffset(23, 20),
+				Size = UDim2.fromOffset(24, 20),
 				Position = UDim2.new(1, xOffset, 0.5, 0),
 				AnchorPoint = Vector2.new(1, 0.5),
 				BackgroundTransparency = 1,
@@ -3913,20 +4035,27 @@ Components.Window = (function()
 				AutoButtonColor = false,
 				Parent = Footer,
 				ZIndex = 145,
+				ThemeTag = { BackgroundColor3 = "Element" },
 			}, {
-				New("UICorner", { CornerRadius = UDim.new(0, 2) }),
-				New("ImageLabel", {
-					Name = "Icon",
-					Image = Library:GetIcon(iconName) or "",
-					Size = UDim2.fromOffset(13, 13),
-					Position = UDim2.fromScale(0.5, 0.5),
-					AnchorPoint = Vector2.new(0.5, 0.5),
-					BackgroundTransparency = 1,
-					ThemeTag = { ImageColor3 = "Text" },
-				}),
+				New("UICorner", { CornerRadius = UDim.new(0, 5) }),
+				IconLabel,
 			})
-			Creator.AddSignal(Button.MouseEnter, function() Button.BackgroundTransparency = 0.84 end)
-			Creator.AddSignal(Button.MouseLeave, function() Button.BackgroundTransparency = 1 end)
+
+			local hoverInfo = TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+			Creator.AddSignal(Button.MouseEnter, function()
+				TweenService:Create(Button, hoverInfo, { BackgroundTransparency = 0.7 }):Play()
+				TweenService:Create(IconLabel, hoverInfo, { Size = UDim2.fromOffset(14, 14) }):Play()
+			end)
+			Creator.AddSignal(Button.MouseLeave, function()
+				TweenService:Create(Button, hoverInfo, { BackgroundTransparency = 1 }):Play()
+				TweenService:Create(IconLabel, hoverInfo, { Size = UDim2.fromOffset(13, 13) }):Play()
+			end)
+			Creator.AddSignal(Button.MouseButton1Down, function()
+				TweenService:Create(IconLabel, TweenInfo.new(0.07), { Size = UDim2.fromOffset(11, 11) }):Play()
+			end)
+			Creator.AddSignal(Button.MouseButton1Up, function()
+				TweenService:Create(IconLabel, TweenInfo.new(0.09), { Size = UDim2.fromOffset(14, 14) }):Play()
+			end)
 			Creator.AddSignal(Button.MouseButton1Click, callback)
 			return Button
 		end
@@ -4138,11 +4267,24 @@ ElementsTable.Button = (function()
 			Position = UDim2.new(1, -8, 0.5, 0),
 			BackgroundTransparency = 1,
 			Parent = ButtonFrame.Frame,
+			ImageTransparency = 0.08,
 			ThemeTag = {
 				ImageColor3 = "Text",
 			},
 		})
 
+		Creator.AddSignal(ButtonFrame.Frame.MouseEnter, function()
+			TweenService:Create(ButtonIco, TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+				Position = UDim2.new(1, -5, 0.5, 0),
+				ImageTransparency = 0,
+			}):Play()
+		end)
+		Creator.AddSignal(ButtonFrame.Frame.MouseLeave, function()
+			TweenService:Create(ButtonIco, TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+				Position = UDim2.new(1, -8, 0.5, 0),
+				ImageTransparency = 0.08,
+			}):Play()
+		end)
 		Creator.AddSignal(ButtonFrame.Frame.MouseButton1Click, function()
 			Library:SafeCallback(Config.Callback)
 		end)
@@ -4166,45 +4308,79 @@ ElementsTable.Toggle = (function()
 			_dependents = {},
 			Disabled = false,
 		}
+
 		local ToggleFrame = Components.Element(Config.Title, Config.Description, self.Container, true, Config)
-		ToggleFrame.LabelHolder.Position = UDim2.fromOffset(25, 0)
-		ToggleFrame.LabelHolder.Size = UDim2.new(1, -31, 0, 0)
+		ToggleFrame.LabelHolder.Position = UDim2.fromOffset(27, 0)
+		ToggleFrame.LabelHolder.Size = UDim2.new(1, -33, 0, 0)
 		Toggle.SetTitle = ToggleFrame.SetTitle
 		Toggle.SetDesc = ToggleFrame.SetDesc
 		Toggle.Visible = ToggleFrame.Visible
 		Toggle.Elements = ToggleFrame
 
+		local Stroke = New("UIStroke", {
+			Name = "Stroke",
+			Thickness = 1,
+			Transparency = 0.08,
+			Color = Color3.fromRGB(92, 92, 92),
+		})
+
 		local Box = New("Frame", {
 			Name = "Checkbox",
-			Size = UDim2.fromOffset(12, 12),
+			Size = UDim2.fromOffset(14, 14),
 			Position = UDim2.new(0, 7, 0.5, 0),
 			AnchorPoint = Vector2.new(0, 0.5),
 			Parent = ToggleFrame.Frame,
-			BackgroundTransparency = 0.65,
-			ThemeTag = { BackgroundColor3 = "Element" },
+			BackgroundColor3 = Color3.fromRGB(18, 18, 18),
+			BackgroundTransparency = 0,
 		}, {
-			New("UICorner", { CornerRadius = UDim.new(0, 2) }),
-			New("UIStroke", { Name = "Stroke", Thickness = 1, Transparency = 0.15, ThemeTag = { Color = "InElementBorder" } }),
+			New("UICorner", { CornerRadius = UDim.new(0, 4) }),
+			Stroke,
 		})
+
 		local Check = New("ImageLabel", {
 			Name = "Check",
 			Image = Library:GetIcon("check") or "rbxassetid://10709790644",
-			Size = UDim2.fromOffset(9, 9),
+			Size = UDim2.fromOffset(5, 5),
 			Position = UDim2.fromScale(0.5, 0.5),
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			BackgroundTransparency = 1,
 			Parent = Box,
-			ImageColor3 = Color3.fromRGB(8, 8, 8),
-			Visible = false,
+			ImageColor3 = Color3.fromRGB(7, 7, 7),
+			ImageTransparency = 1,
+			Visible = true,
 		})
 
 		local function Update(animated)
-			local props = Toggle.Value and { BackgroundColor3 = Creator.GetThemeProperty("Accent"), BackgroundTransparency = Toggle.Disabled and 0.55 or 0 } or { BackgroundColor3 = Creator.GetThemeProperty("Element"), BackgroundTransparency = Toggle.Disabled and 0.82 or 0.65 }
-			Check.Visible = Toggle.Value
-			if animated then TweenService:Create(Box, TweenInfo.new(0.12), props):Play() else
-				Box.BackgroundColor3 = props.BackgroundColor3
-				Box.BackgroundTransparency = props.BackgroundTransparency
+			local enabled = Toggle.Value
+			local activeColor = Color3.fromRGB(246, 246, 246)
+			local inactiveColor = Color3.fromRGB(18, 18, 18)
+			local boxTransparency = Toggle.Disabled and (enabled and 0.32 or 0.2) or 0
+			local targetCheckSize = enabled and UDim2.fromOffset(10, 10) or UDim2.fromOffset(5, 5)
+			local targetCheckTransparency = enabled and (Toggle.Disabled and 0.35 or 0) or 1
+
+			if animated then
+				local info = TweenInfo.new(0.14, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+				TweenService:Create(Box, TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+					BackgroundColor3 = enabled and activeColor or inactiveColor,
+					BackgroundTransparency = boxTransparency,
+				}):Play()
+				TweenService:Create(Check, info, {
+					Size = targetCheckSize,
+					ImageTransparency = targetCheckTransparency,
+				}):Play()
+				TweenService:Create(Stroke, TweenInfo.new(0.14), {
+					Color = enabled and Color3.fromRGB(235, 235, 235) or Color3.fromRGB(92, 92, 92),
+					Transparency = Toggle.Disabled and 0.48 or 0.08,
+				}):Play()
+			else
+				Box.BackgroundColor3 = enabled and activeColor or inactiveColor
+				Box.BackgroundTransparency = boxTransparency
+				Check.Size = targetCheckSize
+				Check.ImageTransparency = targetCheckTransparency
+				Stroke.Color = enabled and Color3.fromRGB(235, 235, 235) or Color3.fromRGB(92, 92, 92)
+				Stroke.Transparency = Toggle.Disabled and 0.48 or 0.08
 			end
+
 			ToggleFrame.Frame.BackgroundTransparency = Toggle.Disabled and 0.96 or 1
 		end
 
@@ -4215,7 +4391,12 @@ ElementsTable.Toggle = (function()
 			ToggleFrame.DescLabel.TextTransparency = Toggle.Disabled and 0.55 or 0
 			Update(true)
 		end
-		function Toggle:OnChanged(Func) Toggle.Changed = Func; Func(Toggle.Value) end
+
+		function Toggle:OnChanged(Func)
+			Toggle.Changed = Func
+			Func(Toggle.Value)
+		end
+
 		function Toggle:SetValue(value)
 			value = not not value
 			if value == Toggle.Value then return end
@@ -4225,12 +4406,21 @@ ElementsTable.Toggle = (function()
 			Library:SafeCallback(Toggle.Changed, Toggle.Value)
 			for _, fn in ipairs(Toggle._dependents) do pcall(fn, Toggle.Value) end
 		end
-		function Toggle:Destroy() ToggleFrame:Destroy(); Library.Options[Idx] = nil end
-		Creator.AddSignal(ToggleFrame.Frame.Activated, function() if not Toggle.Disabled then Toggle:SetValue(not Toggle.Value) end end)
+
+		function Toggle:Destroy()
+			ToggleFrame:Destroy()
+			Library.Options[Idx] = nil
+		end
+
+		Creator.AddSignal(ToggleFrame.Frame.Activated, function()
+			if not Toggle.Disabled then Toggle:SetValue(not Toggle.Value) end
+		end)
+
 		Update(false)
 		Library.Options[Idx] = Toggle
 		return Toggle
 	end
+
 	return Element
 end)()
 ElementsTable.Dropdown = (function()
@@ -4326,7 +4516,7 @@ ElementsTable.Dropdown = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 2),
+				CornerRadius = UDim.new(0, 5),
 			}),
 			New("UIStroke", {
 				Transparency = 0.5,
@@ -5310,7 +5500,7 @@ ElementsTable.Keybind = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 2),
+				CornerRadius = UDim.new(0, 5),
 			}),
 			New("UIPadding", {
 				PaddingLeft = UDim.new(0, 6),
@@ -5511,7 +5701,7 @@ ElementsTable.Colorpicker = (function()
 			Parent = ColorpickerFrame.Frame,
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 2),
+				CornerRadius = UDim.new(0, 4),
 			}),
 		})
 
@@ -5526,7 +5716,7 @@ ElementsTable.Colorpicker = (function()
 			TileSize = UDim2.fromOffset(40, 40),
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 2),
+				CornerRadius = UDim.new(0, 4),
 			}),
 			DisplayFrameColor,
 		})
