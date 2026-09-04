@@ -3134,6 +3134,17 @@ Components.Tab = (function()
 					userInfoPanel = Window.UserInfo
 					userInfoPanel.Parent = ContainerAnim
 					userInfoPanel.Position = UDim2.fromOffset(0, panelY)
+
+					-- Do not duplicate Freemium/Premium inside the greeting panel.
+					for _, descendant in ipairs(userInfoPanel:GetDescendants()) do
+						if descendant:IsA("TextLabel") or descendant:IsA("TextButton") then
+							local tierText = string.lower(tostring(descendant.Text or ""))
+							if tierText == "freemium" or tierText == "premium" then
+								descendant.Visible = false
+							end
+						end
+					end
+
 					local panelHeight = userInfoPanel.Size.Y.Offset
 					if panelHeight <= 0 then panelHeight = 42 end
 					mainTopOffset = math.max(0, panelY + panelHeight + 9)
@@ -3158,6 +3169,12 @@ Components.Tab = (function()
 						subtitleText = infoData.Subtitle or infoData.Description
 					end
 					subtitleText = subtitleText ~= nil and tostring(subtitleText) or ""
+
+					-- Tier is displayed only next to PRIME in the title bar.
+					local normalizedSubtitle = string.lower(subtitleText)
+					if normalizedSubtitle == "freemium" or normalizedSubtitle == "premium" then
+						subtitleText = ""
+					end
 
 					local hasSubtitle = subtitleText ~= ""
 					local panelHeight = hasSubtitle and 46 or 38
@@ -3221,16 +3238,25 @@ Components.Tab = (function()
 			Container = baseOwner.Left,
 			ScrollFrame = baseOwner.Scroll,
 			Owner = baseOwner,
+			CurrentSection = nil,
 			SubTabs = {},
 			SubTabCount = 0,
 			SelectedSubTab = 0,
 		}
 
 		function Tab:AddSection(SectionTitle, SectionIcon)
+			local section
 			if self.SelectedSubTab > 0 and self.SubTabs[self.SelectedSubTab] then
-				return self.SubTabs[self.SelectedSubTab]:AddSection(SectionTitle, SectionIcon)
+				section = self.SubTabs[self.SelectedSubTab]:AddSection(SectionTitle, SectionIcon)
+			else
+				section = AddSectionToOwner(self.Owner, SectionTitle, SectionIcon)
 			end
-			return AddSectionToOwner(self.Owner, SectionTitle, SectionIcon)
+
+			-- Compatibility with UIs that use:
+			-- Tab:AddSection("Rage") followed by Tab:AddToggle/AddSlider/...
+			-- The following controls now belong to the last-created section.
+			self.CurrentSection = section
+			return section
 		end
 
 		function Tab:AddSubTab(SubTitle, SubIcon)
@@ -3274,9 +3300,12 @@ Components.Tab = (function()
 				Owner = owner,
 				Container = owner.Left,
 				ScrollFrame = owner.Scroll,
+				CurrentSection = nil,
 			}
 			function SubTab:AddSection(SectionTitle, SectionIcon)
-				return AddSectionToOwner(self.Owner, SectionTitle, SectionIcon)
+				local section = AddSectionToOwner(self.Owner, SectionTitle, SectionIcon)
+				self.CurrentSection = section
+				return section
 			end
 			setmetatable(SubTab, Library.Elements)
 			self.SubTabs[idx] = SubTab
@@ -3991,32 +4020,45 @@ Components.TitleBar = (function()
 			PrimeGradient,
 		})
 
-		local FreemiumGradient = New("UIGradient", {
-			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 95, 150)),
-				ColorSequenceKeypoint.new(0.20, Color3.fromRGB(255, 190, 95)),
-				ColorSequenceKeypoint.new(0.40, Color3.fromRGB(120, 235, 190)),
-				ColorSequenceKeypoint.new(0.60, Color3.fromRGB(90, 185, 255)),
-				ColorSequenceKeypoint.new(0.80, Color3.fromRGB(175, 120, 255)),
-				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 95, 150)),
+		local isPremiumUser = _G.PRIME_TIER == "Premium"
+			or _G.NEXUS_IS_PREMIUM == true
+			or (type(_G.NEXUS_SUBTITLE) == "string" and _G.NEXUS_SUBTITLE:lower() == "premium")
+
+		local TierGradient = New("UIGradient", {
+			Color = isPremiumUser and ColorSequence.new({
+				ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 215, 90)),
+				ColorSequenceKeypoint.new(0.35, Color3.fromRGB(190, 145, 40)),
+				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 240, 150)),
+				ColorSequenceKeypoint.new(0.65, Color3.fromRGB(190, 145, 40)),
+				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 215, 90)),
+			}) or ColorSequence.new({
+				ColorSequenceKeypoint.new(0.00, Color3.fromRGB(45, 150, 75)),
+				ColorSequenceKeypoint.new(0.35, Color3.fromRGB(8, 55, 22)),
+				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(45, 150, 75)),
+				ColorSequenceKeypoint.new(0.65, Color3.fromRGB(8, 55, 22)),
+				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(45, 150, 75)),
 			}),
 			Offset = Vector2.new(-1, 0),
 			Rotation = 0,
 		})
 
-		local FreemiumLabel = New("TextLabel", {
-			Name = "FreemiumTitle",
-			Text = "Freemium",
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
-			TextSize = 10,
+		local TierLabel = New("TextLabel", {
+			Name = "PrimeSubtitle",
+			Text = isPremiumUser and "Premium" or "Freemium",
+			FontFace = Font.new(
+				"rbxasset://fonts/families/Montserrat.json",
+				isPremiumUser and Enum.FontWeight.Bold or Enum.FontWeight.Medium,
+				Enum.FontStyle.Normal
+			),
+			TextSize = 15,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			TextYAlignment = Enum.TextYAlignment.Center,
-			Position = UDim2.fromOffset(60, 1),
-			Size = UDim2.fromOffset(58, 27),
+			Position = UDim2.fromOffset(63, 0),
+			Size = UDim2.fromOffset(isPremiumUser and 66 or 72, 29),
 			BackgroundTransparency = 1,
 			TextColor3 = Color3.fromRGB(255, 255, 255),
 		}, {
-			FreemiumGradient,
+			TierGradient,
 		})
 
 		TitleBar.Frame = New("Frame", {
@@ -4029,7 +4071,7 @@ Components.TitleBar = (function()
 		}, {
 			New("UICorner", { CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS) }),
 			PrimeLabel,
-			FreemiumLabel,
+			TierLabel,
 			New("Frame", {
 				Size = UDim2.new(1, 0, 0, 1),
 				Position = UDim2.new(0, 0, 1, -1),
@@ -4045,19 +4087,27 @@ Components.TitleBar = (function()
 		)
 		shimmer:Play()
 
-		local freemiumShimmer = TweenService:Create(
-			FreemiumGradient,
-			TweenInfo.new(3.2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, true),
-			{ Offset = Vector2.new(1, 0) }
-		)
-		freemiumShimmer:Play()
+		local tierSweepDuration = isPremiumUser and 2.2 or 3.8
+		local tierSweepStyle = isPremiumUser and Enum.EasingStyle.Linear or Enum.EasingStyle.Sine
+		task.spawn(function()
+			while TierGradient and TierGradient.Parent do
+				TierGradient.Offset = Vector2.new(-1, 0)
+				local tween = TweenService:Create(
+					TierGradient,
+					TweenInfo.new(tierSweepDuration, tierSweepStyle, Enum.EasingDirection.InOut),
+					{ Offset = Vector2.new(1, 0) }
+				)
+				tween:Play()
+				tween.Completed:Wait()
+			end
+		end)
 
 		TitleBar.Label = PrimeLabel
 		TitleBar.Gradient = PrimeGradient
 		TitleBar.Shimmer = shimmer
-		TitleBar.FreemiumLabel = FreemiumLabel
-		TitleBar.FreemiumGradient = FreemiumGradient
-		TitleBar.FreemiumShimmer = freemiumShimmer
+		TitleBar.TierLabel = TierLabel
+		TitleBar.TierGradient = TierGradient
+		TitleBar.IsPremium = isPremiumUser
 		return TitleBar
 	end
 end)()
@@ -4123,8 +4173,8 @@ Components.Window = (function()
 
 		Window.TabFrame = New("Frame", {
 			Name = "TabFrame",
-			Size = UDim2.new(1, -128, 0, 29),
-			Position = UDim2.fromOffset(124, 0),
+			Size = UDim2.new(1, -140, 0, 29),
+			Position = UDim2.fromOffset(136, 0),
 			BackgroundTransparency = 1,
 			Parent = Window.Root,
 			ZIndex = 120,
@@ -7269,11 +7319,36 @@ Elements.__namecall = function(Table, Key, ...)
 	return Elements[Key](...)
 end
 
+local function ResolveElementHost(self)
+	local host = self
+
+	-- If controls are added through a Tab while a SubTab is selected, route them
+	-- to that SubTab first. This mirrors the implicit current-section API used
+	-- by the reference UI.
+	if host.Type == "Tab" and host.SelectedSubTab and host.SelectedSubTab > 0 then
+		local selectedSubTab = host.SubTabs and host.SubTabs[host.SelectedSubTab]
+		if selectedSubTab then
+			host = selectedSubTab
+		end
+	end
+
+	-- Most scripts create a section and then keep calling Tab:AddToggle,
+	-- Tab:AddSlider, Tab:AddDropdown, etc. Put those controls inside the last
+	-- section so collapsing the section hides every nested control.
+	if (host.Type == "Tab" or host.Type == "SubTab") and host.CurrentSection then
+		host = host.CurrentSection
+	end
+
+	return host
+end
+
 for _, ElementComponent in pairs(ElementsTable) do
 	Elements["Add" .. ElementComponent.__type] = function(self, Idx, Config)
-		ElementComponent.Container = self.Container
-		ElementComponent.Type = self.Type
-		ElementComponent.ScrollFrame = self.ScrollFrame
+		local host = ResolveElementHost(self)
+
+		ElementComponent.Container = host.Container
+		ElementComponent.Type = host.Type
+		ElementComponent.ScrollFrame = host.ScrollFrame
 		ElementComponent.Library = Library
 
 		return ElementComponent:New(Idx, Config)
