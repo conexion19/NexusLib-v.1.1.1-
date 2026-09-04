@@ -2819,17 +2819,18 @@ Components.Section = (function()
 				activeTween = nil
 			end
 
+			-- Keep the content container alive even while collapsed. Root clips it,
+			-- but UIListLayout can still keep an accurate AbsoluteContentSize.
+			-- This prevents reopened sections (especially Main) from expanding to
+			-- only the header while Toggle/Slider/Button controls stay clipped.
+			Section.Container.Visible = true
+
 			local contentHeight = ContentHeight()
 			Section.Container.Size = UDim2.new(1, 0, 0, contentHeight)
 			local targetHeight = Section.Collapsed and 29 or (29 + contentHeight)
 			local targetRotation = Section.Collapsed and 0 or 90
 
-			if not Section.Collapsed then
-				Section.Container.Visible = true
-			end
-
 			if Animated then
-				Section.Container.Visible = true
 				activeTween = TweenService:Create(Section.Root, transitionInfo, {
 					Size = UDim2.new(1, 0, 0, targetHeight),
 				})
@@ -2839,13 +2840,11 @@ Components.Section = (function()
 				task.spawn(function()
 					thisTween.Completed:Wait()
 					if serial ~= animationSerial then return end
-					if Section.Collapsed then Section.Container.Visible = false end
 					if activeTween == thisTween then activeTween = nil end
 				end)
 			else
 				Section.Root.Size = UDim2.new(1, 0, 0, targetHeight)
 				Chevron.Rotation = targetRotation
-				Section.Container.Visible = not Section.Collapsed
 			end
 		end
 
@@ -3083,7 +3082,111 @@ Components.Tab = (function()
 			Parent = Window.ContainerHolder,
 			Visible = false,
 		})
-		local baseOwner = MakeScroll(ContainerAnim, 0)
+
+		local isMainTab = string.lower(tostring(Title or "")) == "main"
+		local mainTopOffset = 0
+		local userInfoPanel = nil
+
+		if isMainTab and Window.UserInfo ~= false then
+			local infoData = type(Window.UserInfo) == "table" and Window.UserInfo or nil
+			local shouldShowUserInfo = Window.UserInfo == true
+				or typeof(Window.UserInfo) == "Instance"
+				or type(Window.UserInfo) == "string"
+				or infoData ~= nil
+				or Window.UserInfoTitle ~= nil
+				or Window.UserInfoSubtitle ~= nil
+
+			if shouldShowUserInfo then
+				local panelY = 0
+				if type(Window.UserInfoTop) == "number" then
+					panelY = math.floor(Window.UserInfoTop)
+				elseif infoData and type(infoData.TopOffset) == "number" then
+					panelY = math.floor(infoData.TopOffset)
+				end
+
+				if typeof(Window.UserInfo) == "Instance" and Window.UserInfo:IsA("GuiObject") then
+					userInfoPanel = Window.UserInfo
+					userInfoPanel.Parent = ContainerAnim
+					userInfoPanel.Position = UDim2.fromOffset(0, panelY)
+					local panelHeight = userInfoPanel.Size.Y.Offset
+					if panelHeight <= 0 then panelHeight = 42 end
+					mainTopOffset = math.max(0, panelY + panelHeight + 9)
+				else
+					local titleText = Window.UserInfoTitle
+					if titleText == nil and infoData then
+						titleText = infoData.Title or infoData.Name
+					end
+					if titleText == nil and type(Window.UserInfo) == "string" then
+						titleText = Window.UserInfo
+					end
+					if titleText == nil or tostring(titleText) == "" then
+						local nickname = "User"
+						if LocalPlayer then
+							nickname = (LocalPlayer.DisplayName and LocalPlayer.DisplayName ~= "" and LocalPlayer.DisplayName) or LocalPlayer.Name or nickname
+						end
+						titleText = "Hello " .. tostring(nickname)
+					end
+
+					local subtitleText = Window.UserInfoSubtitle
+					if subtitleText == nil and infoData then
+						subtitleText = infoData.Subtitle or infoData.Description
+					end
+					subtitleText = subtitleText ~= nil and tostring(subtitleText) or ""
+
+					local hasSubtitle = subtitleText ~= ""
+					local panelHeight = hasSubtitle and 46 or 38
+					local subtitleProps = {
+						Name = "Subtitle",
+						Text = subtitleText,
+						TextSize = 10,
+						TextXAlignment = Enum.TextXAlignment.Left,
+						TextYAlignment = Enum.TextYAlignment.Center,
+						Position = UDim2.fromOffset(10, 25),
+						Size = UDim2.new(1, -20, 0, 14),
+						BackgroundTransparency = 1,
+						Visible = hasSubtitle,
+					}
+					if typeof(Window.UserInfoSubtitleColor) == "Color3" then
+						subtitleProps.TextColor3 = Window.UserInfoSubtitleColor
+					else
+						subtitleProps.ThemeTag = { TextColor3 = "SubText" }
+					end
+
+					userInfoPanel = New("Frame", {
+						Name = "UserInfoPanel",
+						Size = UDim2.new(1, 0, 0, panelHeight),
+						Position = UDim2.fromOffset(0, panelY),
+						BackgroundTransparency = 0.08,
+						Parent = ContainerAnim,
+						ZIndex = 2,
+						ThemeTag = { BackgroundColor3 = "DialogHolder" },
+					}, {
+						New("UICorner", { CornerRadius = UDim.new(0, 6) }),
+						New("UIStroke", {
+							Thickness = 1,
+							Transparency = 0.18,
+							ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+							ThemeTag = { Color = "ElementBorder" },
+						}),
+						New("TextLabel", {
+							Name = "Title",
+							Text = tostring(titleText),
+							TextSize = 12,
+							TextXAlignment = Enum.TextXAlignment.Left,
+							TextYAlignment = Enum.TextYAlignment.Center,
+							Position = UDim2.fromOffset(10, hasSubtitle and 5 or 0),
+							Size = UDim2.new(1, -20, 0, hasSubtitle and 20 or panelHeight),
+							BackgroundTransparency = 1,
+							ThemeTag = { TextColor3 = "Text" },
+						}),
+						New("TextLabel", subtitleProps),
+					})
+					mainTopOffset = math.max(0, panelY + panelHeight + 9)
+				end
+			end
+		end
+
+		local baseOwner = MakeScroll(ContainerAnim, mainTopOffset)
 
 		local Tab = {
 			Selected = false,
@@ -3094,6 +3197,8 @@ Components.Tab = (function()
 			Icon = TabIcon,
 			Underline = Underline,
 			ContainerAnim = ContainerAnim,
+			UserInfoPanel = userInfoPanel,
+			ContentTopOffset = mainTopOffset,
 			ContainerFrame = baseOwner.Scroll,
 			Container = baseOwner.Left,
 			ScrollFrame = baseOwner.Scroll,
@@ -3117,6 +3222,7 @@ Components.Tab = (function()
 				self.SubTabHolder = New("Frame", {
 					Name = "SubTabHolder",
 					Size = UDim2.new(1, 0, 0, 30),
+					Position = UDim2.fromOffset(0, self.ContentTopOffset or 0),
 					BackgroundTransparency = 1,
 					Parent = self.ContainerAnim,
 				}, {
@@ -3141,7 +3247,7 @@ Components.Tab = (function()
 				New("UIStroke", { Transparency = 0.45, ThemeTag = { Color = "ElementBorder" } }),
 			})
 			SubButton.Parent = self.SubTabHolder
-			local owner = MakeScroll(self.ContainerAnim, 32)
+			local owner = MakeScroll(self.ContainerAnim, (self.ContentTopOffset or 0) + 32)
 			owner.Scroll.Visible = false
 			local SubTab = {
 				Type = "SubTab",
@@ -3909,6 +4015,11 @@ Components.Window = (function()
 			Position = UDim2.fromOffset(0, 0),
 			TabWidth = Config.TabWidth or 0,
 			DropdownsOutsideWindow = Config.DropdownsOutsideWindow == true,
+			UserInfoTitle = Config.UserInfoTitle,
+			UserInfo = Config.UserInfo,
+			UserInfoTop = Config.UserInfoTop,
+			UserInfoSubtitle = Config.UserInfoSubtitle,
+			UserInfoSubtitleColor = Config.UserInfoSubtitleColor,
 			AllElements = {},
 		}
 		Library.Window = Window
