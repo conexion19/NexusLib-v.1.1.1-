@@ -4020,9 +4020,19 @@ Components.TitleBar = (function()
 			PrimeGradient,
 		})
 
-		local isPremiumUser = _G.PRIME_TIER == "Premium"
-			or _G.NEXUS_IS_PREMIUM == true
-			or (type(_G.NEXUS_SUBTITLE) == "string" and _G.NEXUS_SUBTITLE:lower() == "premium")
+		local explicitTier = type(Config.Tier) == "string" and Config.Tier:lower() or nil
+		local isPremiumUser
+
+		if type(Config.IsPremium) == "boolean" then
+			isPremiumUser = Config.IsPremium
+		elseif explicitTier == "premium" then
+			isPremiumUser = true
+		elseif explicitTier == "freemium" then
+			isPremiumUser = false
+		else
+			local globalTier = type(_G.PRIME_TIER) == "string" and _G.PRIME_TIER:lower() or nil
+			isPremiumUser = globalTier == "premium"
+		end
 
 		local TierGradient = New("UIGradient", {
 			Color = isPremiumUser and ColorSequence.new({
@@ -4127,6 +4137,8 @@ Components.Window = (function()
 			UserInfoTop = Config.UserInfoTop,
 			UserInfoSubtitle = Config.UserInfoSubtitle,
 			UserInfoSubtitleColor = Config.UserInfoSubtitleColor,
+			Tier = Config.Tier,
+			IsPremium = Config.IsPremium,
 			AllElements = {},
 		}
 		Library.Window = Window
@@ -4169,7 +4181,14 @@ Components.Window = (function()
 			ThemeTag = { BackgroundColor3 = "AcrylicMain" },
 		}, rootChildren)
 
-		Window.TitleBar = Components.TitleBar({ Parent = Window.Root, Title = "PRIME" })
+		Window.TitleBar = Components.TitleBar({
+			Parent = Window.Root,
+			Title = "PRIME",
+			Tier = Window.Tier,
+			IsPremium = Window.IsPremium,
+		})
+		Window.IsPremium = Window.TitleBar.IsPremium
+		Window.Tier = Window.IsPremium and "Premium" or "Freemium"
 
 		Window.TabFrame = New("Frame", {
 			Name = "TabFrame",
@@ -8872,6 +8891,8 @@ Library.CreateWindow = function(self, Config)
 
 		UserInfoSubtitle = Config.UserInfoSubtitle,
 		UserInfoSubtitleColor = Config.UserInfoSubtitleColor,
+		Tier = Config.Tier,
+		IsPremium = Config.IsPremium,
 		Resizable = Config.Resizable,
 	})
 
