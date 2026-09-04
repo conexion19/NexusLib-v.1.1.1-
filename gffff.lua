@@ -2806,45 +2806,69 @@ Components.Section = (function()
 		local activeTween = nil
 		local animationSerial = 0
 		local transitionInfo = TweenInfo.new(0.18, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+		local lastContentHeight = 8
 
 		local function ContentHeight()
-			return math.max(8, Section.Layout.AbsoluteContentSize.Y + 10)
+			local measured = Section.Layout.AbsoluteContentSize.Y
+			if measured > 0 then
+				lastContentHeight = math.max(8, measured + 10)
+			end
+			return lastContentHeight
 		end
 
 		local function ApplyState(Animated)
 			animationSerial = animationSerial + 1
 			local serial = animationSerial
+
 			if activeTween then
 				activeTween:Cancel()
 				activeTween = nil
 			end
 
-			-- Keep the content container alive even while collapsed. Root clips it,
-			-- but UIListLayout can still keep an accurate AbsoluteContentSize.
-			-- This prevents reopened sections (especially Main) from expanding to
-			-- only the header while Toggle/Slider/Button controls stay clipped.
-			Section.Container.Visible = true
+			-- Every section uses the same true hide/show behavior.
+			-- While collapsed, nested Toggle/Slider/Button/Dropdown/etc. objects
+			-- are not only clipped by the root; the content container is hidden.
+			-- The last measured content height is cached so reopening remains reliable.
+			if not Section.Collapsed then
+				Section.Container.Visible = true
+			end
 
 			local contentHeight = ContentHeight()
 			Section.Container.Size = UDim2.new(1, 0, 0, contentHeight)
 			local targetHeight = Section.Collapsed and 29 or (29 + contentHeight)
 			local targetRotation = Section.Collapsed and 0 or 90
 
+			local function FinishState()
+				if serial ~= animationSerial then return end
+				if Section.Collapsed then
+					Section.Container.Visible = false
+				else
+					Section.Container.Visible = true
+					local finalContentHeight = ContentHeight()
+					Section.Container.Size = UDim2.new(1, 0, 0, finalContentHeight)
+					Section.Root.Size = UDim2.new(1, 0, 0, 29 + finalContentHeight)
+				end
+			end
+
 			if Animated then
-				activeTween = TweenService:Create(Section.Root, transitionInfo, {
+				local rootTween = TweenService:Create(Section.Root, transitionInfo, {
 					Size = UDim2.new(1, 0, 0, targetHeight),
 				})
+				activeTween = rootTween
 				TweenService:Create(Chevron, transitionInfo, { Rotation = targetRotation }):Play()
-				activeTween:Play()
-				local thisTween = activeTween
+				rootTween:Play()
+
 				task.spawn(function()
-					thisTween.Completed:Wait()
-					if serial ~= animationSerial then return end
-					if activeTween == thisTween then activeTween = nil end
+					rootTween.Completed:Wait()
+					if activeTween == rootTween then
+						activeTween = nil
+					end
+					FinishState()
 				end)
 			else
 				Section.Root.Size = UDim2.new(1, 0, 0, targetHeight)
 				Chevron.Rotation = targetRotation
+				FinishState()
 			end
 		end
 
@@ -2860,12 +2884,14 @@ Components.Section = (function()
 		end
 
 		Creator.AddSignal(Section.Layout:GetPropertyChangedSignal("AbsoluteContentSize"), function()
+			ContentHeight()
 			if not Section.Collapsed and not activeTween then
 				task.defer(function() ApplyState(false) end)
 			end
 		end)
 
-		Creator.AddSignal(Section.HeaderButton.MouseButton1Click, function()
+		-- Activated works consistently for mouse, touch and gamepad.
+		Creator.AddSignal(Section.HeaderButton.Activated, function()
 			Section:Toggle()
 		end)
 
@@ -3156,18 +3182,10 @@ Components.Tab = (function()
 						Name = "UserInfoPanel",
 						Size = UDim2.new(1, 0, 0, panelHeight),
 						Position = UDim2.fromOffset(0, panelY),
-						BackgroundTransparency = 0.08,
+						BackgroundTransparency = 1,
 						Parent = ContainerAnim,
 						ZIndex = 2,
-						ThemeTag = { BackgroundColor3 = "DialogHolder" },
 					}, {
-						New("UICorner", { CornerRadius = UDim.new(0, 6) }),
-						New("UIStroke", {
-							Thickness = 1,
-							Transparency = 0.18,
-							ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-							ThemeTag = { Color = "ElementBorder" },
-						}),
 						New("TextLabel", {
 							Name = "Title",
 							Text = tostring(titleText),
@@ -3966,11 +3984,39 @@ Components.TitleBar = (function()
 			TextXAlignment = Enum.TextXAlignment.Left,
 			TextYAlignment = Enum.TextYAlignment.Center,
 			Position = UDim2.fromOffset(5, 0),
-			Size = UDim2.fromOffset(88, 29),
+			Size = UDim2.fromOffset(56, 29),
 			BackgroundTransparency = 1,
 			TextColor3 = Color3.fromRGB(255, 255, 255),
 		}, {
 			PrimeGradient,
+		})
+
+		local FreemiumGradient = New("UIGradient", {
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 95, 150)),
+				ColorSequenceKeypoint.new(0.20, Color3.fromRGB(255, 190, 95)),
+				ColorSequenceKeypoint.new(0.40, Color3.fromRGB(120, 235, 190)),
+				ColorSequenceKeypoint.new(0.60, Color3.fromRGB(90, 185, 255)),
+				ColorSequenceKeypoint.new(0.80, Color3.fromRGB(175, 120, 255)),
+				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 95, 150)),
+			}),
+			Offset = Vector2.new(-1, 0),
+			Rotation = 0,
+		})
+
+		local FreemiumLabel = New("TextLabel", {
+			Name = "FreemiumTitle",
+			Text = "Freemium",
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+			TextSize = 10,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			TextYAlignment = Enum.TextYAlignment.Center,
+			Position = UDim2.fromOffset(60, 1),
+			Size = UDim2.fromOffset(58, 27),
+			BackgroundTransparency = 1,
+			TextColor3 = Color3.fromRGB(255, 255, 255),
+		}, {
+			FreemiumGradient,
 		})
 
 		TitleBar.Frame = New("Frame", {
@@ -3983,6 +4029,7 @@ Components.TitleBar = (function()
 		}, {
 			New("UICorner", { CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS) }),
 			PrimeLabel,
+			FreemiumLabel,
 			New("Frame", {
 				Size = UDim2.new(1, 0, 0, 1),
 				Position = UDim2.new(0, 0, 1, -1),
@@ -3998,9 +4045,19 @@ Components.TitleBar = (function()
 		)
 		shimmer:Play()
 
+		local freemiumShimmer = TweenService:Create(
+			FreemiumGradient,
+			TweenInfo.new(3.2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, true),
+			{ Offset = Vector2.new(1, 0) }
+		)
+		freemiumShimmer:Play()
+
 		TitleBar.Label = PrimeLabel
 		TitleBar.Gradient = PrimeGradient
 		TitleBar.Shimmer = shimmer
+		TitleBar.FreemiumLabel = FreemiumLabel
+		TitleBar.FreemiumGradient = FreemiumGradient
+		TitleBar.FreemiumShimmer = freemiumShimmer
 		return TitleBar
 	end
 end)()
@@ -4066,8 +4123,8 @@ Components.Window = (function()
 
 		Window.TabFrame = New("Frame", {
 			Name = "TabFrame",
-			Size = UDim2.new(1, -104, 0, 29),
-			Position = UDim2.fromOffset(100, 0),
+			Size = UDim2.new(1, -128, 0, 29),
+			Position = UDim2.fromOffset(124, 0),
 			BackgroundTransparency = 1,
 			Parent = Window.Root,
 			ZIndex = 120,
