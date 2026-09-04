@@ -744,39 +744,39 @@ local Themes = {
 	Slate = {
 		Name = "Slate",
 		Accent = Color3.fromRGB(255, 255, 255),
-		AcrylicMain = Color3.fromRGB(22, 22, 24),
-		AcrylicBorder = Color3.fromRGB(58, 58, 62),
-		AcrylicGradient = ColorSequence.new(Color3.fromRGB(12, 12, 14), Color3.fromRGB(30, 30, 33)),
-		AcrylicNoise = 0.97,
-		TitleBarLine = Color3.fromRGB(60, 60, 64),
-		Tab = Color3.fromRGB(42, 42, 46),
-		Element = Color3.fromRGB(31, 31, 34),
-		ElementBorder = Color3.fromRGB(55, 55, 60),
-		InElementBorder = Color3.fromRGB(74, 74, 80),
-		ElementTransparency = 0.18,
-		ToggleSlider = Color3.fromRGB(52, 52, 57),
+		AcrylicMain = Color3.fromRGB(8, 8, 8),
+		AcrylicBorder = Color3.fromRGB(62, 62, 62),
+		AcrylicGradient = ColorSequence.new(Color3.fromRGB(6, 6, 6), Color3.fromRGB(13, 13, 13)),
+		AcrylicNoise = 1,
+		TitleBarLine = Color3.fromRGB(48, 48, 48),
+		Tab = Color3.fromRGB(18, 18, 18),
+		Element = Color3.fromRGB(20, 20, 20),
+		ElementBorder = Color3.fromRGB(52, 52, 52),
+		InElementBorder = Color3.fromRGB(64, 64, 64),
+		ElementTransparency = 1,
+		ToggleSlider = Color3.fromRGB(28, 28, 28),
 		ToggleToggled = Color3.fromRGB(255, 255, 255),
-		SliderRail = Color3.fromRGB(78, 78, 84),
-		DropdownFrame = Color3.fromRGB(40, 40, 44),
-		DropdownHolder = Color3.fromRGB(17, 17, 19),
-		DropdownBorder = Color3.fromRGB(65, 65, 70),
-		DropdownOption = Color3.fromRGB(36, 36, 40),
-		Keybind = Color3.fromRGB(45, 45, 49),
-		Input = Color3.fromRGB(38, 38, 42),
-		InputFocused = Color3.fromRGB(16, 16, 18),
-		InputIndicator = Color3.fromRGB(255, 255, 255),
+		SliderRail = Color3.fromRGB(58, 58, 58),
+		DropdownFrame = Color3.fromRGB(18, 18, 18),
+		DropdownHolder = Color3.fromRGB(10, 10, 10),
+		DropdownBorder = Color3.fromRGB(62, 62, 62),
+		DropdownOption = Color3.fromRGB(22, 22, 22),
+		Keybind = Color3.fromRGB(20, 20, 20),
+		Input = Color3.fromRGB(18, 18, 18),
+		InputFocused = Color3.fromRGB(8, 8, 8),
+		InputIndicator = Color3.fromRGB(105, 105, 105),
 		InputIndicatorFocus = Color3.fromRGB(255, 255, 255),
-		Dialog = Color3.fromRGB(22, 22, 24),
-		DialogHolder = Color3.fromRGB(15, 15, 17),
-		DialogHolderLine = Color3.fromRGB(55, 55, 60),
-		DialogButton = Color3.fromRGB(36, 36, 40),
-		DialogButtonBorder = Color3.fromRGB(76, 76, 82),
-		DialogBorder = Color3.fromRGB(64, 64, 70),
-		DialogInput = Color3.fromRGB(30, 30, 34),
-		DialogInputLine = Color3.fromRGB(215, 215, 220),
-		Text = Color3.fromRGB(255, 255, 255),
-		SubText = Color3.fromRGB(205, 205, 210),
-		Hover = Color3.fromRGB(72, 72, 78),
+		Dialog = Color3.fromRGB(10, 10, 10),
+		DialogHolder = Color3.fromRGB(13, 13, 13),
+		DialogHolderLine = Color3.fromRGB(48, 48, 48),
+		DialogButton = Color3.fromRGB(20, 20, 20),
+		DialogButtonBorder = Color3.fromRGB(65, 65, 65),
+		DialogBorder = Color3.fromRGB(70, 70, 70),
+		DialogInput = Color3.fromRGB(15, 15, 15),
+		DialogInputLine = Color3.fromRGB(90, 90, 90),
+		Text = Color3.fromRGB(245, 245, 245),
+		SubText = Color3.fromRGB(150, 150, 150),
+		Hover = Color3.fromRGB(32, 32, 32),
 		HoverChange = 0.06,
 	},
 	Gray = {
@@ -916,7 +916,7 @@ local Library = {
 	MinimizeKey = Enum.KeyCode.LeftControl,
 }
 
-local MAIN_GUI_CORNER_RADIUS = 10
+local MAIN_GUI_CORNER_RADIUS = 3
 
 local function ApplyMainGuiCornerRadius(acrylicPaint)
 	if not acrylicPaint or not acrylicPaint.Frame then
@@ -2540,31 +2540,26 @@ local Components = {
 Components.Element = (function()
 	local New = Creator.New
 
-	local Spring = Flipper.Spring.new
-
 	return function(Title, Desc, Parent, Hover, Options)
 		local Element = {}
-		local Options = Options or {}
+		Options = Options or {}
 
 		Element.TitleLabel = New("TextLabel", {
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
-			Text = Title,
-			TextColor3 = Color3.fromRGB(240, 240, 240),
-			TextSize = 13,
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+			Text = Title or "",
+			TextSize = 12,
 			TextXAlignment = Enum.TextXAlignment.Left,
-			Size = UDim2.new(1, 0, 0, 14),
-			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+			TextYAlignment = Enum.TextYAlignment.Center,
+			Size = UDim2.new(1, 0, 0, 15),
 			BackgroundTransparency = 1,
 			LayoutOrder = 2,
-			ThemeTag = {
-				TextColor3 = "Text",
-			},
+			ThemeTag = { TextColor3 = "Text" },
 		})
 
 		Element.Header = New("Frame", {
-			AutomaticSize = Enum.AutomaticSize.Y,
 			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 0, 14),
+			Size = UDim2.new(1, 0, 0, 15),
+			AutomaticSize = Enum.AutomaticSize.Y,
 		}, {
 			New("UIListLayout", {
 				Padding = UDim.new(0, 5),
@@ -2574,174 +2569,85 @@ Components.Element = (function()
 			}),
 		})
 
-		if Options and Options.Icon then
+		if Options.Icon then
 			local iconImage = Options.Icon
 			pcall(function()
-				if Library and Library.GetIcon then
-					local resolved = Library:GetIcon(Options.Icon)
-					if resolved then iconImage = resolved end
-				end
+				local resolved = Library:GetIcon(Options.Icon)
+				if resolved then iconImage = resolved end
 			end)
 			Element.IconImage = New("ImageLabel", {
 				Image = iconImage,
-				Size = UDim2.fromOffset(16, 16),
+				Size = UDim2.fromOffset(13, 13),
 				BackgroundTransparency = 1,
 				LayoutOrder = 1,
-				ThemeTag = {
-					ImageColor3 = "Text",
-				},
+				ThemeTag = { ImageColor3 = "SubText" },
 			})
 			Element.IconImage.Parent = Element.Header
 		end
-
 		Element.TitleLabel.Parent = Element.Header
 
 		Element.DescLabel = New("TextLabel", {
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
-			Text = Desc,
-			TextColor3 = Color3.fromRGB(200, 200, 200),
-			TextSize = 12,
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+			Text = Desc or "",
+			TextSize = 10,
 			TextWrapped = true,
 			TextXAlignment = Enum.TextXAlignment.Left,
-			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+			TextYAlignment = Enum.TextYAlignment.Top,
 			AutomaticSize = Enum.AutomaticSize.Y,
+			Size = UDim2.new(1, 0, 0, 12),
 			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 0, 14),
-			ThemeTag = {
-				TextColor3 = "SubText",
-			},
+			LayoutOrder = 3,
+			ThemeTag = { TextColor3 = "SubText" },
 		})
 
 		Element.LabelHolder = New("Frame", {
 			AutomaticSize = Enum.AutomaticSize.Y,
-			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
 			BackgroundTransparency = 1,
-			Position = UDim2.fromOffset(16, 0),
-			Size = UDim2.new(1, -34, 0, 0),
+			Position = UDim2.fromOffset(8, 0),
+			Size = UDim2.new(1, -16, 0, 0),
 		}, {
 			New("UIListLayout", {
 				SortOrder = Enum.SortOrder.LayoutOrder,
-				VerticalAlignment = Enum.VerticalAlignment.Center,
+				Padding = UDim.new(0, 1),
 			}),
 			New("UIPadding", {
-				PaddingBottom = UDim.new(0, 13),
-				PaddingTop = UDim.new(0, 13),
+				PaddingTop = UDim.new(0, 5),
+				PaddingBottom = UDim.new(0, 5),
 			}),
 			Element.Header,
 			Element.DescLabel,
 		})
 
 		Element.Border = New("UIStroke", {
-			Transparency = 0.85,
+			Transparency = 1,
+			Thickness = 1,
 			ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-			Color = Color3.fromRGB(0, 0, 0),
-			ThemeTag = {
-				Color = "ElementBorder",
-			},
+			ThemeTag = { Color = "ElementBorder" },
 		})
 
 		Element.Frame = New("TextButton", {
-			Visible = Options.Visible and Options.Visible or true,
-			Size = UDim2.new(1, 0, 0, 0),
-			BackgroundTransparency = 0.89,
-			BackgroundColor3 = Color3.fromRGB(130, 130, 130),
-			Parent = Parent,
+			Name = "Element",
+			Visible = Options.Visible ~= false,
+			Size = UDim2.new(1, 0, 0, 25),
 			AutomaticSize = Enum.AutomaticSize.Y,
+			BackgroundTransparency = 1,
+			Parent = Parent,
 			Text = "",
+			AutoButtonColor = false,
 			LayoutOrder = 7,
-			ThemeTag = {
-				BackgroundColor3 = "Element",
-				BackgroundTransparency = "ElementTransparency",
-			},
+			ThemeTag = { BackgroundColor3 = "Element" },
 		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
-			}),
+			New("UICorner", { CornerRadius = UDim.new(0, 2) }),
 			Element.Border,
-			New("Frame", {
-				Name = "AccentStrip",
-				Size = UDim2.new(0, 3, 1, -8),
-				Position = UDim2.new(0, 0, 0.5, 0),
-				AnchorPoint = Vector2.new(0, 0.5),
-				BorderSizePixel = 0,
-				ZIndex = 2,
-				ThemeTag = { BackgroundColor3 = "Accent" },
-			}, {
-				New("UICorner", { CornerRadius = UDim.new(0, 3) }),
-			}),
 			Element.LabelHolder,
 		})
 
 		function Element:SetTitle(Set)
+			Set = Set or ""
 			Element.TitleLabel.Text = Set
-			local hasTitle = (Set ~= nil and Set ~= "")
-			Element.Header.Visible = hasTitle
-
-			if not hasTitle then
-				if Element.IconImage then
-					if not Element.DescRow then
-						Element.DescRow = New("Frame", {
-							AutomaticSize = Enum.AutomaticSize.Y,
-							BackgroundTransparency = 1,
-							Size = UDim2.new(1, 0, 0, 14),
-							LayoutOrder = 2,
-						}, {
-							New("UIListLayout", {
-								Padding = UDim.new(0, 5),
-								FillDirection = Enum.FillDirection.Horizontal,
-								SortOrder = Enum.SortOrder.LayoutOrder,
-								VerticalAlignment = Enum.VerticalAlignment.Center,
-							}),
-						})
-						Element.DescRow.Parent = Element.LabelHolder
-					end
-
-					if not Element.DescIconImage then
-						Element.DescIconImage = New("ImageLabel", {
-							Image = Element.IconImage.Image,
-							Size = UDim2.fromOffset(16, 16),
-							BackgroundTransparency = 1,
-							LayoutOrder = 1,
-							ThemeTag = {
-								ImageColor3 = "Text",
-							},
-						})
-						Element.DescIconImage.Parent = Element.DescRow
-					else
-						Element.DescIconImage.Image = Element.IconImage.Image
-						Element.DescIconImage.Parent = Element.DescRow
-					end
-
-					Element.DescLabel.Parent = Element.DescRow
-					Element.DescLabel.LayoutOrder = 2
-					Element.DescLabel.Size = UDim2.new(1, -24, 0, 14)
-				else
-					if Element.DescRow then
-						Element.DescRow:Destroy()
-						Element.DescRow = nil
-						Element.DescIconImage = nil
-					end
-					Element.DescLabel.Parent = Element.LabelHolder
-					Element.DescLabel.LayoutOrder = 2
-					Element.DescLabel.Size = UDim2.new(1, 0, 0, 14)
-				end
-			else
-				if Element.DescRow then
-					Element.DescRow:Destroy()
-					Element.DescRow = nil
-					Element.DescIconImage = nil
-				end
-				Element.DescLabel.Parent = Element.LabelHolder
-				Element.DescLabel.LayoutOrder = 2
-				Element.DescLabel.Size = UDim2.new(1, 0, 0, 14)
-			end
+			Element.Header.Visible = Set ~= ""
 			if Library.Window and Library.Window.AllElements and Library.Window.AllElements[Element.Frame] then
 				Library.Window.AllElements[Element.Frame].title = Set
-			elseif Library.Windows and #Library.Windows > 0 then
-				local currentWindow = Library.Windows[#Library.Windows]
-				if currentWindow and currentWindow.AllElements and currentWindow.AllElements[Element.Frame] then
-					currentWindow.AllElements[Element.Frame].title = Set
-				end
 			end
 		end
 
@@ -2750,79 +2656,36 @@ Components.Element = (function()
 		end
 
 		function Element:SetDesc(Set)
-			if Set == nil then
-				Set = ""
-			end
-			if Set == "" then
-				Element.DescLabel.Visible = false
-			else
-				Element.DescLabel.Visible = true
-			end
+			Set = Set or ""
 			Element.DescLabel.Text = Set
+			Element.DescLabel.Visible = Set ~= ""
 			if Library.Window and Library.Window.AllElements and Library.Window.AllElements[Element.Frame] then
 				Library.Window.AllElements[Element.Frame].description = Set
-			elseif Library.Windows and #Library.Windows > 0 then
-				local currentWindow = Library.Windows[#Library.Windows]
-				if currentWindow and currentWindow.AllElements and currentWindow.AllElements[Element.Frame] then
-					currentWindow.AllElements[Element.Frame].description = Set
-				end
 			end
 		end
 
-		function Element:GetTitle()
-			return Element.TitleLabel.Text
-		end
+		function Element:GetTitle() return Element.TitleLabel.Text end
+		function Element:GetDesc() return Element.DescLabel.Text end
+		function Element:Destroy() Element.Frame:Destroy() end
 
-		function Element:GetDesc()
-			return Element.DescLabel.Text
-		end
-
-		function Element:Destroy()
-			Element.Frame:Destroy()
-		end
-
-		Element.Header.Visible = not (Title == nil or Title == "")
-
-		Element:SetTitle(Title or "")
+		Element:SetTitle(Title)
 		Element:SetDesc(Desc)
 
 		if Library.LanguageManager then
 			Library.LanguageManager:RegisterElement(Element.TitleLabel, Title)
-			if Desc then
-				Library.LanguageManager:RegisterElement(Element.DescLabel, Desc)
-			end
+			if Desc then Library.LanguageManager:RegisterElement(Element.DescLabel, Desc) end
 		end
 
 		if Library.Window and Library.Window.RegisterElement then
 			Library.Window.RegisterElement(Element.Frame, Title, "Element", Desc)
-		elseif Library.Windows and #Library.Windows > 0 then
-			local currentWindow = Library.Windows[#Library.Windows]
-			if currentWindow and currentWindow.RegisterElement then
-				currentWindow.RegisterElement(Element.Frame, Title, "Element", Desc)
-			end
 		end
 
 		if Hover then
-			local Themes = Library.Themes
-			local Motor, SetTransparency = Creator.SpringMotor(
-				Creator.GetThemeProperty("ElementTransparency"),
-				Element.Frame,
-				"BackgroundTransparency",
-				false,
-				true
-			)
-
 			Creator.AddSignal(Element.Frame.MouseEnter, function()
-				SetTransparency(Creator.GetThemeProperty("ElementTransparency") - Creator.GetThemeProperty("HoverChange"))
+				TweenService:Create(Element.Frame, TweenInfo.new(0.12), { BackgroundTransparency = 0.92 }):Play()
 			end)
 			Creator.AddSignal(Element.Frame.MouseLeave, function()
-				SetTransparency(Creator.GetThemeProperty("ElementTransparency"))
-			end)
-			Creator.AddSignal(Element.Frame.MouseButton1Down, function()
-				SetTransparency(Creator.GetThemeProperty("ElementTransparency") + Creator.GetThemeProperty("HoverChange"))
-			end)
-			Creator.AddSignal(Element.Frame.MouseButton1Up, function()
-				SetTransparency(Creator.GetThemeProperty("ElementTransparency") - Creator.GetThemeProperty("HoverChange"))
+				TweenService:Create(Element.Frame, TweenInfo.new(0.12), { BackgroundTransparency = 1 }):Play()
 			end)
 		end
 
@@ -2833,87 +2696,130 @@ Components.Section = (function()
 	local New = Creator.New
 
 	return function(Title, Parent, Icon)
-		local Section = {}
+		local Section = { Collapsed = false }
+		local resolvedIcon = Icon
+
+		if Icon and Library:GetIcon(Icon) then
+			resolvedIcon = Library:GetIcon(Icon)
+		end
 
 		Section.Layout = New("UIListLayout", {
-			Padding = UDim.new(0, 5),
+			Padding = UDim.new(0, 2),
+			SortOrder = Enum.SortOrder.LayoutOrder,
 		})
 
 		Section.Container = New("Frame", {
-			Size = UDim2.new(1, 0, 0, 26),
-			Position = UDim2.fromOffset(0, 24),
+			Name = "Container",
+			Size = UDim2.new(1, 0, 0, 8),
+			Position = UDim2.fromOffset(0, 27),
 			BackgroundTransparency = 1,
 		}, {
 			Section.Layout,
+			New("UIPadding", {
+				PaddingLeft = UDim.new(0, 5),
+				PaddingRight = UDim.new(0, 5),
+				PaddingTop = UDim.new(0, 4),
+				PaddingBottom = UDim.new(0, 5),
+			}),
 		})
 
-		local SectionHeader = New("Frame", {
-			Size = UDim2.new(1, -16, 0, 18),
-			Position = UDim2.fromOffset(0, 2),
+		local Chevron = New("ImageLabel", {
+			Image = Library:GetIcon("chevron-right") or "rbxassetid://10709791437",
+			Size = UDim2.fromOffset(13, 13),
+			AnchorPoint = Vector2.new(1, 0.5),
+			Position = UDim2.new(1, -7, 0.5, 0),
 			BackgroundTransparency = 1,
+			ImageTransparency = 0.05,
+			ThemeTag = { ImageColor3 = "Text" },
+		})
+
+		Section.HeaderButton = New("TextButton", {
+			Name = "SectionHeader",
+			Size = UDim2.new(1, 0, 0, 27),
+			BackgroundTransparency = 0.3,
+			Text = "",
+			AutoButtonColor = false,
+			ThemeTag = { BackgroundColor3 = "Element" },
 		}, {
-			New("UIListLayout", {
-				Padding = UDim.new(0, 5),
-				FillDirection = Enum.FillDirection.Horizontal,
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				VerticalAlignment = Enum.VerticalAlignment.Center,
+			New("Frame", {
+				Size = UDim2.new(1, 0, 0, 1),
+				Position = UDim2.new(0, 0, 1, -1),
+				BorderSizePixel = 0,
+				ThemeTag = { BackgroundColor3 = "TitleBarLine" },
 			}),
-			Icon and New("ImageLabel", {
-				Image = Icon,
-				Size = UDim2.fromOffset(16, 16),
+			resolvedIcon and New("ImageLabel", {
+				Image = resolvedIcon,
+				Size = UDim2.fromOffset(13, 13),
+				Position = UDim2.new(0, 7, 0.5, 0),
+				AnchorPoint = Vector2.new(0, 0.5),
 				BackgroundTransparency = 1,
-				LayoutOrder = 1,
-				ThemeTag = {
-					ImageColor3 = "Text",
-				},
+				ThemeTag = { ImageColor3 = "SubText" },
 			}) or nil,
 			New("TextLabel", {
 				RichText = true,
-				Text = Title,
-				TextTransparency = 0,
-				FontFace = Font.new("rbxassetid://12187365364", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal),
-				TextSize = 18,
-				TextXAlignment = "Left",
-				TextYAlignment = "Center",
-				Size = UDim2.fromScale(0, 1),
-				AutomaticSize = Enum.AutomaticSize.X,
+				Text = Title or "",
+				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+				TextSize = 12,
+				TextXAlignment = Enum.TextXAlignment.Left,
+				TextYAlignment = Enum.TextYAlignment.Center,
+				Position = UDim2.fromOffset(resolvedIcon and 25 or 7, 0),
+				Size = UDim2.new(1, resolvedIcon and -52 or -34, 1, 0),
 				BackgroundTransparency = 1,
-				LayoutOrder = 2,
-				ThemeTag = {
-					TextColor3 = "Text",
-				},
+				ThemeTag = { TextColor3 = "Text" },
 			}),
+			Chevron,
 		})
 
 		Section.Root = New("Frame", {
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 0, 26),
+			Name = "Section",
+			BackgroundTransparency = 0.08,
+			Size = UDim2.new(1, 0, 0, 36),
 			LayoutOrder = 7,
 			Parent = Parent,
+			ThemeTag = { BackgroundColor3 = "DialogHolder" },
 		}, {
-			SectionHeader,
+			New("UICorner", { CornerRadius = UDim.new(0, 2) }),
+			New("UIStroke", {
+				Thickness = 1,
+				Transparency = 0.18,
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+				ThemeTag = { Color = "ElementBorder" },
+			}),
+			Section.HeaderButton,
 			Section.Container,
 		})
 
-		Creator.AddSignal(Section.Layout:GetPropertyChangedSignal("AbsoluteContentSize"), function()
-			Section.Container.Size = UDim2.new(1, 0, 0, Section.Layout.AbsoluteContentSize.Y)
-			Section.Root.Size = UDim2.new(1, 0, 0, Section.Layout.AbsoluteContentSize.Y + 25)
-		end)
-
-		if Library.LanguageManager then
-			local textLabel = SectionHeader:FindFirstChildOfClass("TextLabel")
-			if textLabel then
-				Library.LanguageManager:RegisterElement(textLabel, Title)
+		local function UpdateSize()
+			if Section.Collapsed then
+				Section.Container.Visible = false
+				Section.Root.Size = UDim2.new(1, 0, 0, 27)
+				return
 			end
+			Section.Container.Visible = true
+			local contentHeight = Section.Layout.AbsoluteContentSize.Y + 9
+			Section.Container.Size = UDim2.new(1, 0, 0, contentHeight)
+			Section.Root.Size = UDim2.new(1, 0, 0, 27 + contentHeight)
 		end
 
+		function Section:SetCollapsed(Value)
+			Section.Collapsed = not not Value
+			UpdateSize()
+		end
+
+		Creator.AddSignal(Section.Layout:GetPropertyChangedSignal("AbsoluteContentSize"), function()
+			task.defer(UpdateSize)
+		end)
+		Creator.AddSignal(Section.HeaderButton.MouseButton1Click, function()
+			Section:SetCollapsed(not Section.Collapsed)
+		end)
+		task.defer(UpdateSize)
+
+		if Library.LanguageManager then
+			local label = Section.HeaderButton:FindFirstChildOfClass("TextLabel")
+			if label then Library.LanguageManager:RegisterElement(label, Title) end
+		end
 		if Library.Window and Library.Window.RegisterElement then
 			Library.Window.RegisterElement(Section.Root, Title, "Section")
-		elseif Library.Windows and #Library.Windows > 0 then
-			local currentWindow = Library.Windows[#Library.Windows]
-			if currentWindow and currentWindow.RegisterElement then
-				currentWindow.RegisterElement(Section.Root, Title, "Section")
-			end
 		end
 
 		return Section
@@ -2921,743 +2827,302 @@ Components.Section = (function()
 end)()
 Components.Tab = (function()
 	local New = Creator.New
-	local Spring = Flipper.Spring.new
-	local Instant = Flipper.Instant.new
-	local Components = Components
-
 	local TabModule = {
 		Window = nil,
 		Tabs = {},
 		Containers = {},
 		SelectedTab = 0,
 		TabCount = 0,
-		AnimationTask = nil,
-		CurrentAnimationTab = 0,
 	}
 
 	function TabModule:Init(Window)
-		TabModule.Window = Window
-		return TabModule
+		self.Window = Window
+		self.Tabs = {}
+		self.Containers = {}
+		self.SelectedTab = 0
+		self.TabCount = 0
+		return self
+	end
+
+	local function CreateColumns(ScrollFrame)
+		local Content = New("Frame", {
+			Name = "ColumnsContent",
+			Size = UDim2.new(1, -2, 0, 0),
+			Position = UDim2.fromOffset(1, 1),
+			BackgroundTransparency = 1,
+			Parent = ScrollFrame,
+		})
+		local LeftLayout = New("UIListLayout", { Padding = UDim.new(0, 5), SortOrder = Enum.SortOrder.LayoutOrder })
+		local RightLayout = New("UIListLayout", { Padding = UDim.new(0, 5), SortOrder = Enum.SortOrder.LayoutOrder })
+		local Left = New("Frame", {
+			Name = "LeftColumn",
+			Size = UDim2.new(0.5, -4, 0, 0),
+			AutomaticSize = Enum.AutomaticSize.Y,
+			BackgroundTransparency = 1,
+			Parent = Content,
+		}, { LeftLayout })
+		local Right = New("Frame", {
+			Name = "RightColumn",
+			Size = UDim2.new(0.5, -4, 0, 0),
+			Position = UDim2.new(0.5, 4, 0, 0),
+			AutomaticSize = Enum.AutomaticSize.Y,
+			BackgroundTransparency = 1,
+			Parent = Content,
+		}, { RightLayout })
+
+		local function UpdateCanvas()
+			local h = math.max(LeftLayout.AbsoluteContentSize.Y, RightLayout.AbsoluteContentSize.Y) + 4
+			Content.Size = UDim2.new(1, -2, 0, h)
+			ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, h + 2)
+		end
+		Creator.AddSignal(LeftLayout:GetPropertyChangedSignal("AbsoluteContentSize"), UpdateCanvas)
+		Creator.AddSignal(RightLayout:GetPropertyChangedSignal("AbsoluteContentSize"), UpdateCanvas)
+		task.defer(UpdateCanvas)
+		return Content, Left, Right, LeftLayout, RightLayout, UpdateCanvas
+	end
+
+	local function MakeScroll(Parent, yOffset)
+		yOffset = yOffset or 0
+		local Scroll = New("ScrollingFrame", {
+			Name = "ScrollFrame",
+			Size = UDim2.new(1, 0, 1, -yOffset),
+			Position = UDim2.fromOffset(0, yOffset),
+			BackgroundTransparency = 1,
+			Parent = Parent,
+			Visible = true,
+			BorderSizePixel = 0,
+			ScrollBarThickness = 2,
+			ScrollBarImageTransparency = 0.45,
+			ScrollingDirection = Enum.ScrollingDirection.Y,
+			CanvasSize = UDim2.fromScale(0, 0),
+			ThemeTag = { ScrollBarImageColor3 = "SubText" },
+		})
+		local Content, Left, Right, LeftLayout, RightLayout, UpdateCanvas = CreateColumns(Scroll)
+		return {
+			Scroll = Scroll,
+			Content = Content,
+			Left = Left,
+			Right = Right,
+			LeftLayout = LeftLayout,
+			RightLayout = RightLayout,
+			UpdateCanvas = UpdateCanvas,
+			Sections = {},
+		}
+	end
+
+	local function AttachSectionOwner(owner, SectionFrame)
+		table.insert(owner.Sections, SectionFrame.Root)
+		local reflowPending = false
+		local function Reflow()
+			if reflowPending then return end
+			reflowPending = true
+			task.defer(function()
+				reflowPending = false
+				local leftHeight, rightHeight = 0, 0
+				for _, root in ipairs(owner.Sections) do
+					if root and root.Parent then
+						local h = math.max(root.Size.Y.Offset, root.AbsoluteSize.Y, 27)
+						if leftHeight <= rightHeight then
+							root.Parent = owner.Left
+							leftHeight = leftHeight + h + 5
+						else
+							root.Parent = owner.Right
+							rightHeight = rightHeight + h + 5
+						end
+					end
+				end
+				owner.UpdateCanvas()
+			end)
+		end
+		Creator.AddSignal(SectionFrame.Root:GetPropertyChangedSignal("Size"), Reflow)
+		Reflow()
+	end
+
+	local function AddSectionToOwner(owner, SectionTitle, SectionIcon)
+		local Section = { Type = "Section" }
+		local SectionFrame = Components.Section(SectionTitle, owner.Left, SectionIcon)
+		Section.Container = SectionFrame.Container
+		Section.ScrollFrame = owner.Scroll
+		Section.Root = SectionFrame.Root
+		Section.SetCollapsed = function(_, value) SectionFrame:SetCollapsed(value) end
+		AttachSectionOwner(owner, SectionFrame)
+		setmetatable(Section, Library.Elements)
+		return Section
 	end
 
 	function TabModule:GetCurrentTabPos()
-		local TabHolderPos = TabModule.Window.TabHolder.AbsolutePosition.Y
-		local TabPos = TabModule.Tabs[TabModule.SelectedTab].Frame.AbsolutePosition.Y
-
-		return TabPos - TabHolderPos
+		return 0
 	end
 
 	function TabModule:New(Title, Icon, Parent)
-		local Window = TabModule.Window
-		local Elements = Library.Elements
+		local Window = self.Window
+		self.TabCount = self.TabCount + 1
+		local TabIndex = self.TabCount
+		local resolvedIcon = Icon
+		if Icon and Library:GetIcon(Icon) then resolvedIcon = Library:GetIcon(Icon) end
 
-		TabModule.TabCount = TabModule.TabCount + 1
-		local TabIndex = TabModule.TabCount
-
-		local Tab = {
-			Selected = false,
-			Name = Title,
-			Type = "Tab",
-		}
-
-		if not fischbypass then 
-			if Library:GetIcon(Icon) then
-				Icon = Library:GetIcon(Icon)
-			end
-
-			if Icon == "" or nil then
-				Icon = nil
-			end
-		end
-		Tab.Frame = New("TextButton", {
-			Size = UDim2.new(1, 0, 0, 34),
-			BackgroundTransparency = 0.92,
+		local textWidth = TextService:GetTextSize(tostring(Title), 11, Enum.Font.Gotham, Vector2.new(500, 20)).X
+		local width = math.max(48, textWidth + (resolvedIcon and 28 or 18))
+		local TextLabel = New("TextLabel", {
+			Text = Title,
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+			TextSize = 11,
+			TextXAlignment = Enum.TextXAlignment.Center,
+			BackgroundTransparency = 1,
+			Size = UDim2.fromScale(1, 1),
+			ThemeTag = { TextColor3 = "SubText" },
+		})
+		local Underline = New("Frame", {
+			Size = UDim2.new(1, -10, 0, 1),
+			Position = UDim2.new(0, 5, 1, -1),
+			BackgroundTransparency = 1,
+			ThemeTag = { BackgroundColor3 = "Accent" },
+		})
+		local TabFrame = New("TextButton", {
+			Name = "TabButton",
+			Size = UDim2.fromOffset(width, 28),
+			BackgroundTransparency = 1,
 			Parent = Parent,
-			ZIndex = 10,
-			ThemeTag = {
-				BackgroundColor3 = "Tab",
-			},
+			Text = "",
+			AutoButtonColor = false,
 		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(0, 6),
-			}),
-			New("TextLabel", {
+			resolvedIcon and New("ImageLabel", {
+				Image = resolvedIcon,
+				Size = UDim2.fromOffset(12, 12),
+				Position = UDim2.new(0, 6, 0.5, 0),
 				AnchorPoint = Vector2.new(0, 0.5),
-				Position = not fischbypass and Icon and UDim2.new(0, 30, 0.5, 0) or UDim2.new(0, 12, 0.5, 0),
-				Text = Title,
-				RichText = true,
-				TextColor3 = Color3.fromRGB(255, 255, 255),
-				TextTransparency = 0,
-				FontFace = Font.new(
-					"rbxasset://fonts/families/GothamSSm.json",
-					Enum.FontWeight.Regular,
-					Enum.FontStyle.Normal
-				),
-				TextSize = 12,
-				TextXAlignment = "Left",
-				TextYAlignment = "Center",
-				Size = UDim2.new(1, -12, 1, 0),
 				BackgroundTransparency = 1,
-				ZIndex = 11,
-				ThemeTag = {
-					TextColor3 = "Text",
-				},
-			}),
-			New("ImageLabel", {
-				AnchorPoint = Vector2.new(0, 0.5),
-				Size = UDim2.fromOffset(16, 16),
-				Position = UDim2.new(0, 8, 0.5, 0),
-				BackgroundTransparency = 1,
-				Image = Icon and Icon or nil,
-				ZIndex = 11,
-				ThemeTag = {
-					ImageColor3 = "Text",
-				},
-			}),
+				ThemeTag = { ImageColor3 = "SubText" },
+			}) or nil,
+			TextLabel,
+			Underline,
 		})
-
-		if Library.LanguageManager then
-			Library.LanguageManager:RegisterElement(Tab.Frame:FindFirstChildOfClass("TextLabel"), Title)
+		if resolvedIcon then
+			TextLabel.Position = UDim2.fromOffset(9, 0)
+			TextLabel.Size = UDim2.new(1, -9, 1, 0)
 		end
 
-		local ContainerLayout = New("UIListLayout", {
-			Padding = UDim.new(0, 5),
-			SortOrder = Enum.SortOrder.LayoutOrder,
-		})
-
-		Tab.ContainerAnim = New("CanvasGroup", {
+		local ContainerAnim = New("CanvasGroup", {
+			Name = "TabContainer",
 			Size = UDim2.fromScale(1, 1),
 			BackgroundTransparency = 1,
 			GroupTransparency = 0,
 			Parent = Window.ContainerHolder,
 			Visible = false,
-			Position = UDim2.fromOffset(0, 0),
 		})
+		local baseOwner = MakeScroll(ContainerAnim, 0)
 
-		Tab.ContainerFrame = New("ScrollingFrame", {
-			Size = UDim2.fromScale(1, 1),
-			BackgroundTransparency = 1,
-			Parent = Tab.ContainerAnim,
-			Visible = true,
-			BottomImage = "rbxassetid://6889812791",
-			MidImage = "rbxassetid://6889812721",
-			TopImage = "rbxassetid://6276641225",
-			ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255),
-			ScrollBarImageTransparency = 0.95,
-			ScrollBarThickness = 3,
-			BorderSizePixel = 0,
-			CanvasSize = UDim2.fromScale(0, 0),
-			ScrollingDirection = Enum.ScrollingDirection.Y,
-			ScrollingEnabled = true,
-		}, {
-			ContainerLayout,
-			New("UIPadding", {
-				PaddingRight = UDim.new(0, 10),
-				PaddingLeft = UDim.new(0, 1),
-				PaddingTop = UDim.new(0, 1),
-				PaddingBottom = UDim.new(0, 1),
-			}),
-		})
-
-		Tab.ContainerXMotor = Flipper.SingleMotor.new(0)
-		Tab.ContainerTransparencyMotor = Flipper.SingleMotor.new(0)
-
-		Tab.ContainerXMotor:onStep(function(Value)
-			if Tab.ContainerAnim and Tab.ContainerAnim.Parent then
-				Tab.ContainerAnim.Position = UDim2.fromOffset(Value, 0)
-			end
-		end)
-
-		Tab.ContainerTransparencyMotor:onStep(function(Value)
-			if Tab.ContainerAnim and Tab.ContainerAnim.Parent then
-				Tab.ContainerAnim.GroupTransparency = Value
-			end
-		end)
-
-		Creator.AddSignal(ContainerLayout:GetPropertyChangedSignal("AbsoluteContentSize"), function()
-			Tab.ContainerFrame.CanvasSize = UDim2.new(0, 0, 0, ContainerLayout.AbsoluteContentSize.Y + 2)
-		end)
-
-		Tab.Motor, Tab.SetTransparency = Creator.SpringMotor(0.92, Tab.Frame, "BackgroundTransparency")
-
-		Creator.AddSignal(Tab.Frame.MouseEnter, function()
-			Tab.SetTransparency(Tab.Selected and 0.58 or 0.78)
-			game:GetService("TweenService"):Create(Tab.Frame, TweenInfo.new(0.25), {BackgroundColor3 = Creator.GetThemeProperty("Accent")}):Play()
-		end)
-		Creator.AddSignal(Tab.Frame.MouseLeave, function()
-			Tab.SetTransparency(Tab.Selected and 0.68 or 0.92)
-			game:GetService("TweenService"):Create(Tab.Frame, TweenInfo.new(0.25), {BackgroundColor3 = Creator.GetThemeProperty("Tab")}):Play()
-		end)
-		Creator.AddSignal(Tab.Frame.MouseButton1Down, function()
-			Tab.SetTransparency(0.85)
-		end)
-		Creator.AddSignal(Tab.Frame.MouseButton1Up, function()
-			Tab.SetTransparency(Tab.Selected and 0.68 or 0.85)
-		end)
-		Creator.AddSignal(Tab.Frame.MouseButton1Click, function()
-			TabModule:SelectTab(TabIndex)
-		end)
-
-		TabModule.Containers[TabIndex] = Tab.ContainerAnim
-		TabModule.Tabs[TabIndex] = Tab
-
-		Tab.Container = Tab.ContainerFrame
-		Tab.ScrollFrame = Tab.Container
-
-		Tab.SubTabs = {}
-		Tab.SubTabContainers = {}
-		Tab.SelectedSubTab = 0
-		Tab.SubTabCount = 0
-		Tab.SubTabHolder = nil
-
-		function Tab:AddSubTab(Title, Icon)
-			self.SubTabCount = self.SubTabCount + 1
-			local SubTabIndex = self.SubTabCount
-
-			if not self.SubTabHolder then
-				local SubTabListLayout = New("UIListLayout", {
-					Padding = UDim.new(0, 6),
-					FillDirection = Enum.FillDirection.Horizontal,
-					SortOrder = Enum.SortOrder.LayoutOrder,
-					VerticalAlignment = Enum.VerticalAlignment.Center,
-				})
-
-				self.SubTabHolder = New("ScrollingFrame", {
-					Size = UDim2.new(1, -20, 0, 40),
-					Position = UDim2.fromOffset(1, 8),
-					BackgroundTransparency = 1,
-					Parent = self.ContainerFrame,
-					ScrollingDirection = Enum.ScrollingDirection.X,
-					ScrollBarThickness = 0,
-					ScrollBarImageTransparency = 1,
-					ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255),
-					CanvasSize = UDim2.fromScale(0, 1),
-					BorderSizePixel = 0,
-				}, {
-					SubTabListLayout,
-					New("UIPadding", {
-						PaddingLeft = UDim.new(0, 0),
-						PaddingRight = UDim.new(0, 0),
-						PaddingTop = UDim.new(0, 0),
-						PaddingBottom = UDim.new(0, 0),
-					}),
-				})
-
-				Creator.AddSignal(SubTabListLayout:GetPropertyChangedSignal("AbsoluteContentSize"), function()
-					self.SubTabHolder.CanvasSize = UDim2.new(0, SubTabListLayout.AbsoluteContentSize.X, 0, 40)
-				end)
-
-				local SubTabContainerHolder = New("Frame", {
-					Size = UDim2.new(1, -11, 1, -56),
-					Position = UDim2.fromOffset(1, 48),
-					BackgroundTransparency = 1,
-					ClipsDescendants = true,
-					Parent = self.ContainerFrame,
-				})
-
-				self.SubTabContainerHolder = SubTabContainerHolder
-			end
-
-			local SubTabIcon = Icon
-			if not fischbypass then 
-				if Library:GetIcon(Icon) then
-					SubTabIcon = Library:GetIcon(Icon)
-				end
-
-				if SubTabIcon == "" or nil then
-					SubTabIcon = nil
-				end
-			end
-
-			local SubTabButton = New("TextButton", {
-				Size = UDim2.new(0, 0, 0, 32),
-				AutomaticSize = Enum.AutomaticSize.X,
-				BackgroundTransparency = 0.92,
-				Parent = self.SubTabHolder,
-				Text = "",
-				ThemeTag = {
-					BackgroundColor3 = "Tab",
-				},
-			}, {
-				New("UICorner", {
-					CornerRadius = UDim.new(0, 6),
-				}),
-				New("UIStroke", {
-					Transparency = 1,
-					Thickness = 1,
-					ThemeTag = {
-						Color = "Accent",
-					},
-				}),
-				New("UIListLayout", {
-					Padding = UDim.new(0, 6),
-					FillDirection = Enum.FillDirection.Horizontal,
-					SortOrder = Enum.SortOrder.LayoutOrder,
-					VerticalAlignment = Enum.VerticalAlignment.Center,
-					HorizontalAlignment = Enum.HorizontalAlignment.Center,
-				}),
-				New("UIPadding", {
-					PaddingLeft = UDim.new(0, 12),
-					PaddingRight = UDim.new(0, 12),
-					PaddingTop = UDim.new(0, 6),
-					PaddingBottom = UDim.new(0, 6),
-				}),
-				SubTabIcon and New("ImageLabel", {
-					Size = UDim2.fromOffset(16, 16),
-					BackgroundTransparency = 1,
-					Image = SubTabIcon,
-					LayoutOrder = 1,
-					ThemeTag = {
-						ImageColor3 = "Text",
-					},
-				}) or nil,
-				New("TextLabel", {
-					Text = Title,
-					RichText = true,
-					TextColor3 = Color3.fromRGB(255, 255, 255),
-					TextTransparency = 0,
-					FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-					TextSize = 12,
-					TextXAlignment = "Left",
-					TextYAlignment = "Center",
-					Size = UDim2.new(0, 0, 1, 0),
-					AutomaticSize = Enum.AutomaticSize.X,
-					BackgroundTransparency = 1,
-					LayoutOrder = 2,
-					ThemeTag = {
-						TextColor3 = "Text",
-					},
-				}),
-			})
-
-			local SubTabContainerAnim = New("CanvasGroup", {
-				Size = UDim2.fromScale(1, 1),
-				BackgroundTransparency = 1,
-				GroupTransparency = 0,
-				Parent = self.SubTabContainerHolder,
-				Visible = false,
-				Position = UDim2.fromOffset(0, 0),
-			})
-
-			if Library.LanguageManager then
-				local textLabel = SubTabButton:FindFirstChildOfClass("TextLabel")
-				if textLabel then
-					Library.LanguageManager:RegisterElement(textLabel, Title)
-				end
-			end
-
-			local SubTabContainer = New("ScrollingFrame", {
-				Size = UDim2.fromScale(1, 1),
-				BackgroundTransparency = 1,
-				Parent = SubTabContainerAnim,
-				Visible = true,
-				BottomImage = "rbxassetid://6889812791",
-				MidImage = "rbxassetid://6889812721",
-				TopImage = "rbxassetid://6276641225",
-				ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255),
-				ScrollBarImageTransparency = 0.95,
-				ScrollBarThickness = 3,
-				BorderSizePixel = 0,
-				CanvasSize = UDim2.fromScale(0, 0),
-				ScrollingDirection = Enum.ScrollingDirection.Y,
-				ScrollingEnabled = true,
-			}, {
-				New("UIListLayout", {
-					Padding = UDim.new(0, 5),
-					SortOrder = Enum.SortOrder.LayoutOrder,
-				}),
-				New("UIPadding", {
-					PaddingRight = UDim.new(0, 10),
-					PaddingLeft = UDim.new(0, 1),
-					PaddingTop = UDim.new(0, 1),
-					PaddingBottom = UDim.new(0, 1),
-				}),
-			})
-
-			local SubTabLayout = SubTabContainer:FindFirstChild("UIListLayout")
-			Creator.AddSignal(SubTabLayout:GetPropertyChangedSignal("AbsoluteContentSize"), function()
-				SubTabContainer.CanvasSize = UDim2.new(0, 0, 0, SubTabLayout.AbsoluteContentSize.Y + 2)
-			end)
-
-			local SubTabXMotor = Flipper.SingleMotor.new(0)
-			local SubTabTransparencyMotor = Flipper.SingleMotor.new(0)
-
-			SubTabXMotor:onStep(function(Value)
-				if SubTabContainerAnim and SubTabContainerAnim.Parent then
-					SubTabContainerAnim.Position = UDim2.fromOffset(Value, 0)
-				end
-			end)
-
-			SubTabTransparencyMotor:onStep(function(Value)
-				if SubTabContainerAnim and SubTabContainerAnim.Parent then
-					SubTabContainerAnim.GroupTransparency = Value
-				end
-			end)
-
-			local SubTabMotor, SubTabSetTransparency = Creator.SpringMotor(0.92, SubTabButton, "BackgroundTransparency")
-			local SubTabStroke = SubTabButton:FindFirstChild("UIStroke")
-
-			local function UpdateSubTabAppearance()
-				if self.SelectedSubTab == SubTabIndex then
-					SubTabSetTransparency(0.75)
-					if SubTabStroke then
-						SubTabStroke.Transparency = 0
-					end
-				else
-					SubTabSetTransparency(0.92)
-					if SubTabStroke then
-						SubTabStroke.Transparency = 1
-					end
-				end
-			end
-
-			Creator.AddSignal(SubTabButton.MouseEnter, function()
-				if self.SelectedSubTab ~= SubTabIndex then
-					SubTabSetTransparency(0.87)
-				end
-			end)
-
-			Creator.AddSignal(SubTabButton.MouseLeave, function()
-				UpdateSubTabAppearance()
-			end)
-			Creator.AddSignal(SubTabButton.MouseButton1Down, function()
-				SubTabSetTransparency(0.92)
-			end)
-
-			Creator.AddSignal(SubTabButton.MouseButton1Up, function()
-				UpdateSubTabAppearance()
-			end)
-
-			UpdateSubTabAppearance()
-
-			Creator.AddSignal(SubTabButton.MouseButton1Click, function()
-				self:SelectSubTab(SubTabIndex)
-			end)
-
-			local SubTab = {
-				Type = "SubTab",
-				Name = Title,
-				Button = SubTabButton,
-				Container = SubTabContainer,
-				ContainerAnim = SubTabContainerAnim,
-				XMotor = SubTabXMotor,
-				TransparencyMotor = SubTabTransparencyMotor,
-				SetTransparency = SubTabSetTransparency,
-				Selected = false,
-			}
-
-			self.SubTabs[SubTabIndex] = SubTab
-			self.SubTabContainers[SubTabIndex] = SubTabContainerAnim
-
-			if self.SubTabCount == 1 then
-				self:SelectSubTab(SubTabIndex)
-			end
-
-			function SubTab:AddSection(SectionTitle, SectionIcon)
-				local Section = { Type = "Section" }
-
-				local Icon = SectionIcon
-				if not fischbypass then 
-					if Library:GetIcon(Icon) then
-						Icon = Library:GetIcon(Icon)
-					end
-
-					if Icon == "" or nil then
-						Icon = nil
-					end
-				end
-
-				local SectionFrame = Components.Section(SectionTitle, SubTab.Container, Icon)
-				Section.Container = SectionFrame.Container
-				Section.ScrollFrame = SubTab.Container
-				setmetatable(Section, Elements)
-				return Section
-			end
-
-			setmetatable(SubTab, Elements)
-			return SubTab
-		end
-
-		function Tab:SelectSubTab(SubTabIndex)
-			if self.SelectedSubTab == SubTabIndex then
-				return
-			end
-
-			local PreviousSubTab = self.SelectedSubTab
-			local Direction = (PreviousSubTab > 0 and SubTabIndex > PreviousSubTab) and 1 or -1
-			if PreviousSubTab == 0 then
-				Direction = 0
-			end
-
-			local ContainerSize = self.SubTabContainerHolder and self.SubTabContainerHolder.AbsoluteSize.X or 500
-			local SlideDistance = math.min(ContainerSize * 0.15, 60)
-
-			self.SelectedSubTab = SubTabIndex
-
-			for idx, SubTabObj in next, self.SubTabs do
-				SubTabObj.Selected = (idx == SubTabIndex)
-				local SubTabStroke = SubTabObj.Button:FindFirstChild("UIStroke")
-				if idx == SubTabIndex then
-					SubTabObj.SetTransparency(0.75)
-					if SubTabStroke then
-						SubTabStroke.Transparency = 0
-					end
-				else
-					SubTabObj.SetTransparency(0.92)
-					if SubTabStroke then
-						SubTabStroke.Transparency = 1
-					end
-				end
-			end
-
-			if PreviousSubTab > 0 and PreviousSubTab ~= SubTabIndex and self.SubTabs[PreviousSubTab] and self.SubTabs[SubTabIndex] then
-				local OldContainer = self.SubTabs[PreviousSubTab].ContainerAnim
-				local NewContainer = self.SubTabs[SubTabIndex].ContainerAnim
-				local OldSubTab = self.SubTabs[PreviousSubTab]
-				local NewSubTab = self.SubTabs[SubTabIndex]
-
-				for idx, Container in next, self.SubTabContainers do
-					if Container and idx ~= PreviousSubTab and idx ~= SubTabIndex then
-						Container.Visible = false
-						Container.Position = UDim2.fromOffset(0, 0)
-						Container.GroupTransparency = 0
-						if self.SubTabs[idx] then
-							pcall(function()
-								self.SubTabs[idx].XMotor:setGoal(Instant(0))
-								self.SubTabs[idx].TransparencyMotor:setGoal(Instant(0))
-							end)
-						end
-					end
-				end
-
-				OldContainer.Visible = true
-				OldContainer.Position = UDim2.fromOffset(0, 0)
-				OldContainer.GroupTransparency = 0
-				pcall(function()
-					OldSubTab.XMotor:setGoal(Instant(0))
-					OldSubTab.TransparencyMotor:setGoal(Instant(0))
-				end)
-
-				NewContainer.Visible = true
-				NewContainer.Position = UDim2.fromOffset(Direction * SlideDistance, 0)
-				NewContainer.GroupTransparency = 1
-				pcall(function()
-					NewSubTab.XMotor:setGoal(Instant(Direction * SlideDistance))
-					NewSubTab.TransparencyMotor:setGoal(Instant(1))
-				end)
-
-				task.wait()
-
-				pcall(function()
-					OldSubTab.XMotor:setGoal(Spring(-Direction * SlideDistance, { frequency = 4, dampingRatio = 0.7 }))
-					OldSubTab.TransparencyMotor:setGoal(Spring(1, { frequency = 4, dampingRatio = 0.7 }))
-				end)
-
-				pcall(function()
-					NewSubTab.XMotor:setGoal(Spring(0, { frequency = 4, dampingRatio = 0.7 }))
-					NewSubTab.TransparencyMotor:setGoal(Spring(0, { frequency = 4, dampingRatio = 0.7 }))
-				end)
-
-				task.spawn(function()
-					task.wait(0.5)
-					if self.SelectedSubTab == SubTabIndex and self.SubTabs[PreviousSubTab] then
-						local OldContainer = self.SubTabs[PreviousSubTab].ContainerAnim
-						local OldSubTab = self.SubTabs[PreviousSubTab]
-						if OldContainer and OldContainer.Parent then
-							OldContainer.Visible = false
-							OldContainer.Position = UDim2.fromOffset(0, 0)
-							OldContainer.GroupTransparency = 0
-						end
-						if OldSubTab and OldSubTab.XMotor and OldSubTab.TransparencyMotor then
-							pcall(function()
-								OldSubTab.XMotor:setGoal(Instant(0))
-								OldSubTab.TransparencyMotor:setGoal(Instant(0))
-							end)
-						end
-					end
-				end)
-			else
-				for idx, Container in next, self.SubTabContainers do
-					if Container then
-						Container.Visible = (idx == SubTabIndex)
-						Container.Position = UDim2.fromOffset(0, 0)
-						Container.GroupTransparency = 0
-						if self.SubTabs[idx] then
-							pcall(function()
-								self.SubTabs[idx].XMotor:setGoal(Instant(0))
-								self.SubTabs[idx].TransparencyMotor:setGoal(Instant(0))
-							end)
-						end
-					end
-				end
-			end
-		end
+		local Tab = {
+			Selected = false,
+			Name = Title,
+			Type = "Tab",
+			Frame = TabFrame,
+			Label = TextLabel,
+			Underline = Underline,
+			ContainerAnim = ContainerAnim,
+			ContainerFrame = baseOwner.Scroll,
+			Container = baseOwner.Left,
+			ScrollFrame = baseOwner.Scroll,
+			Owner = baseOwner,
+			SubTabs = {},
+			SubTabCount = 0,
+			SelectedSubTab = 0,
+		}
 
 		function Tab:AddSection(SectionTitle, SectionIcon)
 			if self.SelectedSubTab > 0 and self.SubTabs[self.SelectedSubTab] then
 				return self.SubTabs[self.SelectedSubTab]:AddSection(SectionTitle, SectionIcon)
 			end
-
-			local Section = { Type = "Section" }
-
-			local Icon = SectionIcon
-			if not fischbypass then 
-				if Library:GetIcon(Icon) then
-					Icon = Library:GetIcon(Icon)
-				end
-
-				if Icon == "" or nil then
-					Icon = nil
-				end
-			end
-
-			local SectionFrame = Components.Section(SectionTitle, Tab.Container, Icon)
-			Section.Container = SectionFrame.Container
-			Section.ScrollFrame = Tab.Container
-
-			setmetatable(Section, Elements)
-			return Section
+			return AddSectionToOwner(self.Owner, SectionTitle, SectionIcon)
 		end
 
-		setmetatable(Tab, Elements)
+		function Tab:AddSubTab(SubTitle, SubIcon)
+			self.SubTabCount = self.SubTabCount + 1
+			local idx = self.SubTabCount
+			if not self.SubTabHolder then
+				self.SubTabHolder = New("Frame", {
+					Name = "SubTabHolder",
+					Size = UDim2.new(1, 0, 0, 30),
+					BackgroundTransparency = 1,
+					Parent = self.ContainerAnim,
+				}, {
+					New("UIListLayout", {
+						FillDirection = Enum.FillDirection.Horizontal,
+						Padding = UDim.new(0, 4),
+						VerticalAlignment = Enum.VerticalAlignment.Center,
+					}),
+				})
+				self.Owner.Scroll.Visible = false
+			end
+			local subWidth = math.max(56, TextService:GetTextSize(tostring(SubTitle), 11, Enum.Font.Gotham, Vector2.new(500, 20)).X + 18)
+			local SubButton = New("TextButton", {
+				Size = UDim2.fromOffset(subWidth, 24),
+				BackgroundTransparency = 0.75,
+				Text = tostring(SubTitle),
+				TextSize = 11,
+				AutoButtonColor = false,
+				ThemeTag = { BackgroundColor3 = "Element", TextColor3 = "SubText" },
+			}, {
+				New("UICorner", { CornerRadius = UDim.new(0, 2) }),
+				New("UIStroke", { Transparency = 0.45, ThemeTag = { Color = "ElementBorder" } }),
+			})
+			SubButton.Parent = self.SubTabHolder
+			local owner = MakeScroll(self.ContainerAnim, 32)
+			owner.Scroll.Visible = false
+			local SubTab = {
+				Type = "SubTab",
+				Name = SubTitle,
+				Button = SubButton,
+				Owner = owner,
+				Container = owner.Left,
+				ScrollFrame = owner.Scroll,
+			}
+			function SubTab:AddSection(SectionTitle, SectionIcon)
+				return AddSectionToOwner(self.Owner, SectionTitle, SectionIcon)
+			end
+			setmetatable(SubTab, Library.Elements)
+			self.SubTabs[idx] = SubTab
+			Creator.AddSignal(SubButton.MouseButton1Click, function() self:SelectSubTab(idx) end)
+			if idx == 1 then self:SelectSubTab(1) end
+			return SubTab
+		end
+
+		function Tab:SelectSubTab(index)
+			self.SelectedSubTab = index
+			for i, sub in ipairs(self.SubTabs) do
+				local selected = i == index
+				sub.Owner.Scroll.Visible = selected
+				sub.Button.TextColor3 = selected and Creator.GetThemeProperty("Text") or Creator.GetThemeProperty("SubText")
+				sub.Button.BackgroundTransparency = selected and 0.4 or 0.75
+			end
+		end
+
+		setmetatable(Tab, Library.Elements)
+		self.Tabs[TabIndex] = Tab
+		self.Containers[TabIndex] = ContainerAnim
+		Creator.AddSignal(TabFrame.MouseButton1Click, function() self:SelectTab(TabIndex) end)
+		Creator.AddSignal(TabFrame.MouseEnter, function()
+			if not Tab.Selected then TextLabel.TextColor3 = Creator.GetThemeProperty("Text") end
+		end)
+		Creator.AddSignal(TabFrame.MouseLeave, function()
+			if not Tab.Selected then TextLabel.TextColor3 = Creator.GetThemeProperty("SubText") end
+		end)
+		if self.TabCount == 1 then task.defer(function() self:SelectTab(1) end) end
 		return Tab
 	end
 
-	function TabModule:SelectTab(Tab)
-		if TabModule.SelectedTab == Tab then
-			return
+	function TabModule:SelectTab(Index)
+		local Selected = self.Tabs[Index]
+		if not Selected then return end
+		self.SelectedTab = Index
+		for i, Tab in ipairs(self.Tabs) do
+			local on = i == Index
+			Tab.Selected = on
+			Tab.ContainerAnim.Visible = on
+			Tab.Label.TextColor3 = on and Creator.GetThemeProperty("Text") or Creator.GetThemeProperty("SubText")
+			Tab.Underline.BackgroundTransparency = on and 0 or 1
 		end
-		
-		if TabModule.AnimationTask then
-			task.cancel(TabModule.AnimationTask)
-			TabModule.AnimationTask = nil
-		end
-
-		local Window = TabModule.Window
-		local PreviousTab = TabModule.SelectedTab
-		
-		local Direction = (PreviousTab > 0 and Tab > PreviousTab) and 1 or -1
-		if PreviousTab == 0 then
-			Direction = 0
-		end
-		
-		local ContainerSize = Window.ContainerHolder and Window.ContainerHolder.AbsoluteSize.X or (Window.ContainerCanvas and Window.ContainerCanvas.AbsoluteSize.X or 500)
-		local SlideDistance = math.min(ContainerSize * 0.15, 60)
-
-		TabModule.SelectedTab = Tab
-		TabModule.CurrentAnimationTab = Tab
-
-		for _, TabObject in next, TabModule.Tabs do
-			TabObject.SetTransparency(0.92)
-			TabObject.Selected = false
-		end
-		TabModule.Tabs[Tab].SetTransparency(0.68)
-		TabModule.Tabs[Tab].Selected = true
-
-        
-		local tabName = TabModule.Tabs[Tab].Name
-		if Library.LanguageManager and Library.LanguageManager.Translations[Library.LanguageManager.CurrentLanguage] then
-			local translation = Library.LanguageManager.Translations[Library.LanguageManager.CurrentLanguage][tabName]
-			if translation then
-				tabName = translation
-			end
-		end
-		Window.TabDisplay.Text = tabName
-		Window.SelectorPosMotor:setGoal(Spring(TabModule:GetCurrentTabPos(), { frequency = 6 }))
-
-		if PreviousTab > 0 and PreviousTab ~= Tab and TabModule.Tabs[PreviousTab] and TabModule.Tabs[Tab] then
-			local OldContainer = TabModule.Tabs[PreviousTab].ContainerAnim
-			local NewContainer = TabModule.Tabs[Tab].ContainerAnim
-			local OldTab = TabModule.Tabs[PreviousTab]
-			local NewTab = TabModule.Tabs[Tab]
-
-			if not OldContainer or not NewContainer or not OldTab.ContainerXMotor or not OldTab.ContainerTransparencyMotor or not NewTab.ContainerXMotor or not NewTab.ContainerTransparencyMotor then
-				for idx, Container in next, TabModule.Containers do
-					if Container then
-						Container.Visible = (idx == Tab)
-						Container.Position = UDim2.fromOffset(0, 0)
-						Container.GroupTransparency = 0
-					end
-				end
-				return
-			end
-
-			for idx, Container in next, TabModule.Containers do
-				if Container and idx ~= PreviousTab and idx ~= Tab then
-					Container.Visible = false
-					Container.Position = UDim2.fromOffset(0, 0)
-					Container.GroupTransparency = 0
-					if TabModule.Tabs[idx] and TabModule.Tabs[idx].ContainerXMotor and TabModule.Tabs[idx].ContainerTransparencyMotor then
-						pcall(function()
-							TabModule.Tabs[idx].ContainerXMotor:setGoal(Instant(0))
-							TabModule.Tabs[idx].ContainerTransparencyMotor:setGoal(Instant(0))
-						end)
-					end
-				end
-			end
-
-			OldContainer.Visible = true
-			OldContainer.Position = UDim2.fromOffset(0, 0)
-			OldContainer.GroupTransparency = 0
-			pcall(function()
-				OldTab.ContainerXMotor:setGoal(Instant(0))
-				OldTab.ContainerTransparencyMotor:setGoal(Instant(0))
-			end)
-
-			NewContainer.Visible = true
-			NewContainer.Position = UDim2.fromOffset(Direction * SlideDistance, 0)
-			NewContainer.GroupTransparency = 1
-			pcall(function()
-				NewTab.ContainerXMotor:setGoal(Instant(Direction * SlideDistance))
-				NewTab.ContainerTransparencyMotor:setGoal(Instant(1))
-			end)
-
-			task.wait()
-
-			pcall(function()
-				OldTab.ContainerXMotor:setGoal(Spring(-Direction * SlideDistance, { frequency = 4, dampingRatio = 0.7 }))
-				OldTab.ContainerTransparencyMotor:setGoal(Spring(1, { frequency = 4, dampingRatio = 0.7 }))
-			end)
-
-			pcall(function()
-				NewTab.ContainerXMotor:setGoal(Spring(0, { frequency = 4, dampingRatio = 0.7 }))
-				NewTab.ContainerTransparencyMotor:setGoal(Spring(0, { frequency = 4, dampingRatio = 0.7 }))
-			end)
-
-			TabModule.AnimationTask = task.spawn(function()
-				task.wait(0.5)
-				if TabModule.CurrentAnimationTab == Tab and TabModule.Tabs[PreviousTab] then
-					local OldContainer = TabModule.Tabs[PreviousTab].ContainerAnim
-					local OldTab = TabModule.Tabs[PreviousTab]
-					if OldContainer and OldContainer.Parent then
-						OldContainer.Visible = false
-						OldContainer.Position = UDim2.fromOffset(0, 0)
-						OldContainer.GroupTransparency = 0
-					end
-					if OldTab and OldTab.ContainerXMotor and OldTab.ContainerTransparencyMotor then
-						pcall(function()
-							OldTab.ContainerXMotor:setGoal(Instant(0))
-							OldTab.ContainerTransparencyMotor:setGoal(Instant(0))
-						end)
-					end
-					TabModule.AnimationTask = nil
-				end
-			end)
-		else
-			for idx, Container in next, TabModule.Containers do
-				if Container then
-					Container.Visible = (idx == Tab)
-					Container.Position = UDim2.fromOffset(0, 0)
-					Container.GroupTransparency = 0
-					if TabModule.Tabs[idx] and TabModule.Tabs[idx].ContainerXMotor and TabModule.Tabs[idx].ContainerTransparencyMotor then
-						pcall(function()
-							TabModule.Tabs[idx].ContainerXMotor:setGoal(Instant(0))
-							TabModule.Tabs[idx].ContainerTransparencyMotor:setGoal(Instant(0))
-						end)
-					end
-				end
-			end
-		end
+		if self.Window.TabDisplay then self.Window.TabDisplay.Text = Selected.Name end
 	end
 
 	return TabModule
@@ -4157,7 +3622,7 @@ Components.Textbox = (function()
 		Textbox.Input = New("TextBox", {
 			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
 			TextColor3 = Color3.fromRGB(200, 200, 200),
-			TextSize = 14,
+			TextSize = 11,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			TextYAlignment = Enum.TextYAlignment.Center,
 			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
@@ -4191,7 +3656,7 @@ Components.Textbox = (function()
 		})
 
 		Textbox.Frame = New("Frame", {
-			Size = UDim2.new(0, 0, 0, 30),
+			Size = UDim2.new(0, 0, 0, 22),
 			BackgroundTransparency = Acrylic and 0.9 or 0,
 			Parent = Parent,
 			ThemeTag = {
@@ -4199,7 +3664,7 @@ Components.Textbox = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
+				CornerRadius = UDim.new(0, 2),
 			}),
 			New("UIStroke", {
 				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
@@ -4266,1418 +3731,389 @@ Components.Textbox = (function()
 	end
 end)()
 Components.TitleBar = (function()
-    local New = Creator.New
-    local AddSignal = Creator.AddSignal
-
-    local function parseColor(value)
-        if typeof(value) == "Color3" then return value end
-        if typeof(value) == "string" then
-            local hex = value:gsub("#","")
-            if #hex == 6 then
-                local r = tonumber(hex:sub(1,2), 16) or 255
-                local g = tonumber(hex:sub(3,4), 16) or 255
-                local b = tonumber(hex:sub(5,6), 16) or 255
-                return Color3.fromRGB(r,g,b)
-            end
-        end
-        return Themes[Library.Theme].SubText or Color3.fromRGB(170,170,170)
-    end
-    return function(Config)
-        local TitleBar = {}
-
-        local function BarButton(Icon, Pos, Parent, Callback)
-            local Button = {
-                Callback = Callback or function() end,
-            }
-
-            Button.Frame = New("TextButton", {
-                Size = UDim2.new(0, 34, 1, -8),
-                AnchorPoint = Vector2.new(1, 0),
-                BackgroundTransparency = 1,
-                Parent = Parent,
-                Position = Pos,
-                Text = "",
-                ThemeTag = {
-                    BackgroundColor3 = "Text",
-                },
-            }, {
-                New("UICorner", {
-                    CornerRadius = UDim.new(0, 7),
-                }),
-                New("ImageLabel", {
-                    Image = Icon,
-                    Size = UDim2.fromOffset(16, 16),
-                    Position = UDim2.fromScale(0.5, 0.5),
-                    AnchorPoint = Vector2.new(0.5, 0.5),
-                    BackgroundTransparency = 1,
-                    Name = "Icon",
-                    ThemeTag = {
-                        ImageColor3 = "Text",
-                    },
-                }),
-            })
-
-            local Motor, SetTransparency = Creator.SpringMotor(1, Button.Frame, "BackgroundTransparency")
-
-            AddSignal(Button.Frame.MouseEnter, function()
-                SetTransparency(0.94)
-            end)
-            AddSignal(Button.Frame.MouseLeave, function()
-                SetTransparency(1, true)
-            end)
-            AddSignal(Button.Frame.MouseButton1Down, function()
-                SetTransparency(0.96)
-            end)
-            AddSignal(Button.Frame.MouseButton1Up, function()
-                SetTransparency(0.94)
-            end)
-            AddSignal(Button.Frame.MouseButton1Click, Button.Callback)
-
-            Button.SetCallback = function(Func)
-                Button.Callback = Func
-            end
-
-            return Button
-        end
-
-        local LogoIcon = New("ImageLabel", {
-            Name = "Logo",
-            Size = UDim2.new(0, 45, 0, 45),
-            Position = UDim2.new(0, 2, 0.5, -21),
-            BackgroundTransparency = 1,
-            Image = "rbxassetid://113682947140762",
-            ImageColor3 = Color3.fromRGB(255, 255, 255),
-        })
-        local LogoGradient = New("UIGradient", {
-            Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0,    Color3.fromRGB(255, 255, 255)),
-                ColorSequenceKeypoint.new(0.25, Color3.fromRGB(200, 200, 200)),
-                ColorSequenceKeypoint.new(0.4,  Color3.fromRGB(160, 160, 160)),
-                ColorSequenceKeypoint.new(0.5,  Color3.fromRGB(130, 130, 130)),
-                ColorSequenceKeypoint.new(0.6,  Color3.fromRGB(160, 160, 160)),
-                ColorSequenceKeypoint.new(0.75, Color3.fromRGB(200, 200, 200)),
-                ColorSequenceKeypoint.new(1,    Color3.fromRGB(255, 255, 255)),
-            }),
-            Parent = LogoIcon,
-        })
-        task.spawn(function()
-            local ok, TS = pcall(game.GetService, game, "TweenService")
-            if ok and TS then
-                local tInfo = TweenInfo.new(4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, false)
-                LogoGradient.Offset = Vector2.new(-1.8, 0)
-                TS:Create(LogoGradient, tInfo, {Offset = Vector2.new(1.8, 0)}):Play()
-            end
-        end)
-
-        local SubtitleLabel
-        local ExpiryLabel
-
-        if Config.UserInfoSubtitle ~= false then
-            SubtitleLabel = New("TextLabel", {
-                Name = "UserSubtitle",
-                Text = (Config.UserInfoSubtitle ~= nil) and tostring(Config.UserInfoSubtitle) or "User",
-                TextTransparency = 0,
-                FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-                TextSize = 15,
-                TextXAlignment = Enum.TextXAlignment.Left,
-                Size = UDim2.new(0, 300, 0, 20),
-                Position = UDim2.new(0, 60, 0, 4), 
-                BackgroundTransparency = 1,
-                TextColor3 = Color3.fromRGB(255, 255, 255),
-            })
-            
-            ExpiryLabel = New("TextLabel", {
-                Name = "ExpirySubtitle",
-                Text = "",
-                TextTransparency = 0.4,
-                FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-                TextSize = 11,
-                TextXAlignment = Enum.TextXAlignment.Left,
-                Size = UDim2.new(0, 300, 0, 15),
-                Position = UDim2.new(0, 60, 0, 22), 
-                BackgroundTransparency = 1,
-                TextColor3 = Color3.fromRGB(255, 255, 255),
-            })
-
-            local CheckGradient = New("UIGradient", {
-                Color = ColorSequence.new({
-                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-                    ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 255, 255)),
-                    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(100, 100, 100)),
-                    ColorSequenceKeypoint.new(0.8, Color3.fromRGB(255, 255, 255)),
-                    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
-                }),
-                Parent = SubtitleLabel,
-            })
-
-            task.spawn(function()
-                local success, TweenService = pcall(game.GetService, game, "TweenService")
-                if success and TweenService then
-                    local tInfo = TweenInfo.new(3, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, false)
-                    CheckGradient.Offset = Vector2.new(-0.8, 0)
-                    local tween = TweenService:Create(CheckGradient, tInfo, {Offset = Vector2.new(0.8, 0)})
-                    tween:Play()
-                end
-            end)
-            
-            task.spawn(function()
-                repeat task.wait() until ExpiryLabel.Parent
-                
-                while ExpiryLabel and ExpiryLabel.Parent do
-                    local expiryTime = _G.NEXUS_EXPIRY_TIME
-                    local isPremium = _G.NEXUS_IS_PREMIUM
-                    
-                    if expiryTime then
-                        if expiryTime == -1 then
-                             ExpiryLabel.Text = "Lifetime"
-                        else
-                             local diff = expiryTime - os.time()
-                             if diff <= 0 then
-                                 ExpiryLabel.Text = "Expired"
-                             else
-                                 local d = math.floor(diff / 86400)
-                                 local h = math.floor((diff % 86400) / 3600)
-                                 local m = math.floor((diff % 3600) / 60)
-                                 local s = diff % 60
-                                 if d > 0 then
-                                     ExpiryLabel.Text = string.format("%d Days, %02d:%02d:%02d", d, h, m, s)
-                                 else
-                                     ExpiryLabel.Text = string.format("%02d:%02d:%02d", h, m, s)
-                                 end
-                             end
-                        end
-                    else
-                        ExpiryLabel.Text = ""
-                    end
-                    task.wait(1)
-                end
-            end)
-        end
-
-        TitleBar.Frame = New("Frame", {
-            Size = UDim2.new(1, 0, 0, 42),
-            BackgroundTransparency = 1,
-            Parent = Config.Parent,
-        }, {
-            
-            LogoIcon,
-
-            SubtitleLabel,
-            ExpiryLabel,
-
-            
-            New("Frame", {
-                Size = UDim2.new(1, 0, 1, 0),
-                BackgroundTransparency = 1,
-                Position = UDim2.new(0, 0, 0, 0),
-            }, {
-                New("UIListLayout", {
-					Padding = UDim.new(0, 0),
-                    FillDirection = Enum.FillDirection.Vertical,
-                    SortOrder = Enum.SortOrder.LayoutOrder,
-                    HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                    VerticalAlignment = Enum.VerticalAlignment.Center,
-                }),
-
-            
-                New("Frame", {
-                     Size = UDim2.fromScale(0, 0),
-                     AutomaticSize = Enum.AutomaticSize.XY,
-                     BackgroundTransparency = 1,
-                     LayoutOrder = 1,
-                }, {
-                     New("UIListLayout", {
-                        Padding = UDim.new(0, 0),
-                        FillDirection = Enum.FillDirection.Horizontal,
-                        SortOrder = Enum.SortOrder.LayoutOrder,
-                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                        VerticalAlignment = Enum.VerticalAlignment.Center,
-                     }),
-
-                
-					 New("TextLabel", {
-						RichText = true,
-						Text = "NEXUS",
-						Font = Enum.Font.Gotham,
-						TextSize = 14,
-						Size = UDim2.new(0, 0, 0, 16),
-						AutomaticSize = Enum.AutomaticSize.X,
-						BackgroundTransparency = 1,
-						LayoutOrder = 1,
-						ThemeTag = {
-							TextColor3 = "Text",
-						},
-					 }),
-                }),
-                
-                
-                Config.SubTitle and New("TextLabel", {
-                    RichText = true,
-                    Text = Config.SubTitle,
-                    TextTransparency = 0.4,
-                    FontFace = Font.new(
-                        "rbxasset://fonts/families/GothamSSm.json",
-                        Enum.FontWeight.Regular,
-                        Enum.FontStyle.Normal
-                    ),
-                    TextSize = 12, 
-                    TextXAlignment = "Center",
-                    TextYAlignment = "Top", 
-                    Size = UDim2.new(0, 0, 0, 14),
-                    AutomaticSize = Enum.AutomaticSize.X,
-                    BackgroundTransparency = 1,
-                    LayoutOrder = 2,
-                    ThemeTag = {
-                        TextColor3 = "Text",
-                    },
-                }) or nil,
-            }),
-
-            
-        })
-
-        TitleBar.CloseButton = BarButton(Components.Assets.Close, UDim2.new(1, -4, 0, 4), TitleBar.Frame, function()
-            Library.Window:Dialog({
-                Title = "Close",
-                Content = "Are you sure you want to unload the interface?",
-                Buttons = {
-                    {
-                        Title = "Yes",
-                        Callback = function()
-                            Library:Destroy()
-                        end,
-                    },
-                    {
-                        Title = "No",
-                    },
-                },
-            })
-        end)
-        TitleBar.MinButton = BarButton(Components.Assets.Min, UDim2.new(1, -40, 0, 4), TitleBar.Frame, function()
-            Library.Window:Minimize()
-        end)
-
-        return TitleBar
-    end
-end)()
-
-Components.Window = (function()
-	local Spring = Flipper.Spring.new
-	local Instant = Flipper.Instant.new
 	local New = Creator.New
+	return function(Config)
+		local TitleBar = {}
+		local NexusBadge = New("TextLabel", {
+			Name = "NexusLogo",
+			Text = "NEXUS",
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal),
+			TextSize = 8,
+			TextXAlignment = Enum.TextXAlignment.Center,
+			TextYAlignment = Enum.TextYAlignment.Center,
+			Position = UDim2.fromOffset(7, 6),
+			Size = UDim2.fromOffset(42, 16),
+			BackgroundTransparency = 0.65,
+			ThemeTag = { TextColor3 = "Text", BackgroundColor3 = "Element" },
+		}, {
+			New("UICorner", { CornerRadius = UDim.new(0, 2) }),
+			New("UIStroke", { Thickness = 1, Transparency = 0.35, ThemeTag = { Color = "ElementBorder" } }),
+		})
+
+		local PrimeLabel = New("TextLabel", {
+			Name = "PrimeTitle",
+			Text = "PRIME",
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+			TextSize = 11,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			Position = UDim2.fromOffset(56, 0),
+			Size = UDim2.fromOffset(52, 28),
+			BackgroundTransparency = 1,
+			ThemeTag = { TextColor3 = "Text" },
+		})
+
+		TitleBar.Frame = New("Frame", {
+			Name = "TitleBar",
+			Size = UDim2.new(1, 0, 0, 28),
+			BackgroundTransparency = 0.15,
+			Parent = Config.Parent,
+			ZIndex = 110,
+			ThemeTag = { BackgroundColor3 = "AcrylicMain" },
+		}, {
+			NexusBadge,
+			PrimeLabel,
+			New("Frame", {
+				Size = UDim2.new(1, 0, 0, 1),
+				Position = UDim2.new(0, 0, 1, -1),
+				BorderSizePixel = 0,
+				ThemeTag = { BackgroundColor3 = "TitleBarLine" },
+			}),
+		})
+		return TitleBar
+	end
+end)()
+Components.Window = (function()
+	local New = Creator.New
+	local Instant = Flipper.Instant.new
 
 	return function(Config)
 		local Window = {
 			Minimized = false,
-			Size = Config.Size,
-			CurrentPos = 0,
-			TabWidth = 0,
+			Size = Config.Size or UDim2.fromOffset(560, 390),
 			Position = UDim2.fromOffset(0, 0),
+			TabWidth = Config.TabWidth or 0,
 			DropdownsOutsideWindow = Config.DropdownsOutsideWindow == true,
+			AllElements = {},
 		}
-
 		Library.Window = Window
 
-		local Dragging, DragInput, MousePos, StartPos = false
-		local Resizing, ResizePos = false
-		local MinimizeNotif = false
-
-		Window.AcrylicPaint = Acrylic.AcrylicPaint({
-			CornerRadius = MAIN_GUI_CORNER_RADIUS,
-			SuppressSquareBlur = true,
-		})
+		Window.AcrylicPaint = Acrylic.AcrylicPaint({ CornerRadius = MAIN_GUI_CORNER_RADIUS, SuppressSquareBlur = true })
 		ApplyMainGuiCornerRadius(Window.AcrylicPaint)
 
-		-- Main GUI window background transparency.
-		local mainBackground = Window.AcrylicPaint
-			and Window.AcrylicPaint.Frame
-			and Window.AcrylicPaint.Frame:FindFirstChild("Background")
-		if mainBackground then
-			mainBackground.BackgroundTransparency = 0.2
+		local rootChildren = {}
+		if Config.BackgroundImage then
+			Window.BackgroundImage = New("ImageLabel", {
+				Name = "BackgroundImage",
+				Size = UDim2.fromScale(1, 1),
+				BackgroundTransparency = 1,
+				Image = Config.BackgroundImage,
+				ImageTransparency = Config.BackgroundImageTransparency or Config.BackgroundTransparency or 0.7,
+				ScaleType = Enum.ScaleType.Crop,
+				ZIndex = 0,
+			}, { New("UICorner", { CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS) }) })
+			table.insert(rootChildren, Window.BackgroundImage)
 		end
+		if Window.AcrylicPaint and Window.AcrylicPaint.Frame then
+			table.insert(rootChildren, Window.AcrylicPaint.Frame)
+		end
+		table.insert(rootChildren, New("UICorner", { CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS) }))
+		table.insert(rootChildren, New("UIStroke", {
+			Thickness = 1,
+			Transparency = 0.08,
+			ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+			ThemeTag = { Color = "AcrylicBorder" },
+		}))
+
+		Window.Root = New("Frame", {
+			Name = "PrimeWindow",
+			Size = Window.Size,
+			Position = Window.Position,
+			Parent = Config.Parent,
+			ZIndex = 100,
+			ClipsDescendants = true,
+			BackgroundTransparency = 0.05,
+			ThemeTag = { BackgroundColor3 = "AcrylicMain" },
+		}, rootChildren)
+
+		Window.TitleBar = Components.TitleBar({ Parent = Window.Root, Title = "PRIME" })
+
+		Window.TabFrame = New("Frame", {
+			Name = "TabFrame",
+			Size = UDim2.new(1, -116, 0, 28),
+			Position = UDim2.fromOffset(112, 0),
+			BackgroundTransparency = 1,
+			Parent = Window.Root,
+			ZIndex = 120,
+		})
+		local TabLayout = New("UIListLayout", {
+			FillDirection = Enum.FillDirection.Horizontal,
+			SortOrder = Enum.SortOrder.LayoutOrder,
+			Padding = UDim.new(0, 0),
+			VerticalAlignment = Enum.VerticalAlignment.Center,
+		})
+		Window.TabHolder = New("ScrollingFrame", {
+			Name = "TabHolder",
+			Size = UDim2.fromScale(1, 1),
+			BackgroundTransparency = 1,
+			BorderSizePixel = 0,
+			CanvasSize = UDim2.fromScale(0, 0),
+			ScrollBarThickness = 0,
+			ScrollingDirection = Enum.ScrollingDirection.X,
+			Parent = Window.TabFrame,
+		}, { TabLayout })
+
+		Window.ContainerCanvas = New("Frame", {
+			Name = "ContainerCanvas",
+			Size = UDim2.new(1, -12, 1, -66),
+			Position = UDim2.fromOffset(6, 34),
+			BackgroundTransparency = 1,
+			ClipsDescendants = true,
+			Parent = Window.Root,
+		})
+		Window.ContainerHolder = New("Frame", {
+			Name = "ContainerHolder",
+			Size = UDim2.fromScale(1, 1),
+			BackgroundTransparency = 1,
+			ClipsDescendants = true,
+			Parent = Window.ContainerCanvas,
+		})
+		Window.ContainerAnim = Window.ContainerHolder
+		Window.TabDisplay = New("TextLabel", {
+			Name = "TabDisplay",
+			Visible = false,
+			BackgroundTransparency = 1,
+			Parent = Window.Root,
+		})
+
+		local Footer = New("Frame", {
+			Name = "Footer",
+			Size = UDim2.new(1, 0, 0, 27),
+			Position = UDim2.new(0, 0, 1, -27),
+			BackgroundTransparency = 0.18,
+			Parent = Window.Root,
+			ZIndex = 140,
+			ThemeTag = { BackgroundColor3 = "AcrylicMain" },
+		}, {
+			New("Frame", {
+				Size = UDim2.new(1, 0, 0, 1),
+				BorderSizePixel = 0,
+				ThemeTag = { BackgroundColor3 = "TitleBarLine" },
+			}),
+		})
+		Window.Footer = Footer
+
+		local function FooterButton(name, iconName, xOffset, callback)
+			local Button = New("TextButton", {
+				Name = name,
+				Size = UDim2.fromOffset(23, 20),
+				Position = UDim2.new(1, xOffset, 0.5, 0),
+				AnchorPoint = Vector2.new(1, 0.5),
+				BackgroundTransparency = 1,
+				Text = "",
+				AutoButtonColor = false,
+				Parent = Footer,
+				ZIndex = 145,
+			}, {
+				New("UICorner", { CornerRadius = UDim.new(0, 2) }),
+				New("ImageLabel", {
+					Name = "Icon",
+					Image = Library:GetIcon(iconName) or "",
+					Size = UDim2.fromOffset(13, 13),
+					Position = UDim2.fromScale(0.5, 0.5),
+					AnchorPoint = Vector2.new(0.5, 0.5),
+					BackgroundTransparency = 1,
+					ThemeTag = { ImageColor3 = "Text" },
+				}),
+			})
+			Creator.AddSignal(Button.MouseEnter, function() Button.BackgroundTransparency = 0.84 end)
+			Creator.AddSignal(Button.MouseLeave, function() Button.BackgroundTransparency = 1 end)
+			Creator.AddSignal(Button.MouseButton1Click, callback)
+			return Button
+		end
+
+		Window.MinButton = FooterButton("HideButton", "minus", -30, function() Window:Minimize() end)
+		Window.CloseButton = FooterButton("CloseButton", "x", -5, function()
+			Window:Dialog({
+				Title = "Close",
+				Content = "Unload PRIME interface?",
+				Buttons = {
+					{ Title = "Yes", Callback = function() Library:Destroy() end },
+					{ Title = "No" },
+				},
+			})
+		end)
 
 		local function CenterWindow()
 			local vp = Camera.ViewportSize
 			local x = math.max(0, (vp.X - Window.Size.X.Offset) / 2)
 			local y = math.max(0, (vp.Y - Window.Size.Y.Offset) / 2)
 			Window.Position = UDim2.fromOffset(math.floor(x), math.floor(y))
-			if Window.Root then
-				Window.Root.Position = Window.Position
-			end
+			Window.Root.Position = Window.Position
 		end
-		Window.TabWidth = Config.TabWidth
-
-		local Selector = New("Frame", {
-			Size = UDim2.fromOffset(4, 0),
-			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-			Position = UDim2.fromOffset(0, (Window.TabHolderTop or 45) + 0),
-			AnchorPoint = Vector2.new(0, 0.5),
-			ZIndex = 1,
-			ThemeTag = {
-				BackgroundColor3 = "Accent",
-			},
-		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(0, 9),
-			}),
-		})
-
-		local ResizeStartFrame = New("Frame", {
-			Size = UDim2.fromOffset(20, 20),
-			BackgroundTransparency = 1,
-			Position = UDim2.new(1, -20, 1, -2),
-			Visible = (Config.Resizable ~= false),
-		})
-
-		local SearchElements = {}
-		local AllElements = {}
-
-		local function UpdateElementVisibility(searchTerm)
-			if not searchTerm then searchTerm = "" end
-			
-			local function normalizeText(text)
-				if not text then return "" end
-				text = tostring(text)
-				text = string.gsub(text, "^%s+", "")
-				text = string.gsub(text, "%s+$", "")
-				text = string.gsub(text, "%s+", " ")
-				return string.lower(text)
-			end
-			
-			local function getElementValues(elementFrame)
-				local values = {}
-				
-				local function addText(text)
-					if text and text ~= "" then
-						table.insert(values, tostring(text))
-					end
-				end
-				
-				local function findTextInDescendants(obj)
-					if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
-						addText(obj.Text)
-					end
-					for _, child in pairs(obj:GetChildren()) do
-						findTextInDescendants(child)
-					end
-				end
-				
-				findTextInDescendants(elementFrame)
-				
-				return values
-			end
-			
-			local function checkMatch(text, query)
-				if query == "" then
-					return true
-				end
-				
-				local normalizedText = normalizeText(text)
-				if normalizedText == "" then
-					return false
-				end
-				
-				local queryLower = normalizeText(query)
-				if queryLower == "" then
-					return true
-				end
-				
-				if string.find(queryLower, "%s", 1) then
-					local words = {}
-					for word in string.gmatch(queryLower, "%S+") do
-						if #word > 0 then
-							table.insert(words, word)
-						end
-					end
-					
-					if #words == 0 then
-						return true
-					end
-					
-					for _, word in ipairs(words) do
-						if not string.find(normalizedText, word, 1, true) then
-							return false
-						end
-					end
-					return true
-				else
-					return string.find(normalizedText, queryLower, 1, true) ~= nil
-				end
-			end
-			
-			local normalizedQuery = normalizeText(searchTerm)
-			
-			local matchedSectionFrames = {}
-			local elementsInMatchedSections = {}
-			
-			for element, data in pairs(AllElements) do
-				if element and element.Parent then
-					if data.type == "Section" then
-						local title = tostring(data.title or "")
-						if normalizedQuery ~= "" and checkMatch(title, normalizedQuery) then
-							matchedSectionFrames[element] = true
-							if element:FindFirstChild("Container") then
-								local container = element:FindFirstChild("Container")
-								for _, child in pairs(container:GetChildren()) do
-									if not child:IsA("UIListLayout") and not child:IsA("UIPadding") then
-										elementsInMatchedSections[child] = true
-									end
-								end
-							end
-						end
-					end
-				end
-			end
-			
-			for element, data in pairs(AllElements) do
-				if element and element.Parent then
-					if normalizedQuery == "" then
-						element.Visible = true
-					else
-						local title = tostring(data.title or "")
-						local desc = tostring(data.description or "")
-						local matchesTitle = checkMatch(title, normalizedQuery)
-						local matchesDesc = checkMatch(desc, normalizedQuery)
-						local matchesValues = false
-						
-						local elementValues = getElementValues(element)
-						for _, value in ipairs(elementValues) do
-							if checkMatch(value, normalizedQuery) then
-								matchesValues = true
-								break
-							end
-						end
-						
-						local matchesSection = elementsInMatchedSections[element] == true
-						
-						if not matchesSection and data.section then
-							for sectionFrame, _ in pairs(matchedSectionFrames) do
-								if data.section == sectionFrame then
-									matchesSection = true
-									break
-								end
-							end
-						end
-						
-						element.Visible = matchesTitle or matchesDesc or matchesValues or matchesSection
-					end
-				end
-			end
-
-			local searchTermForClosure = searchTerm
-			task.spawn(function()
-				task.wait(0.05)
-				
-				if not Window or not Window.ContainerHolder then return end
-				
-				for _, tabContainer in pairs(Window.ContainerHolder:GetChildren()) do
-					if tabContainer:IsA("ScrollingFrame") then
-						local containerLayout = tabContainer:FindFirstChild("UIListLayout")
-						if containerLayout then
-							local containerPadding = tabContainer:FindFirstChild("UIPadding")
-							local paddingTop = containerPadding and containerPadding.PaddingTop.Offset or 1
-							local paddingBottom = containerPadding and containerPadding.PaddingBottom.Offset or 1
-							local contentSize = containerLayout.AbsoluteContentSize.Y + paddingTop + paddingBottom
-							tabContainer.CanvasSize = UDim2.new(0, 0, 0, math.max(0, contentSize))
-						end
-						
-						for _, section in pairs(tabContainer:GetChildren()) do
-							if section:IsA("Frame") and section.Name ~= "UIPadding" then
-								local sectionContainer = section:FindFirstChild("Container")
-								
-								if sectionContainer and sectionContainer:IsA("Frame") then
-									local containerLayout = sectionContainer:FindFirstChild("UIListLayout")
-									if containerLayout then
-										local hasVisibleChild = false
-										for _, element in pairs(sectionContainer:GetChildren()) do
-											if not element:IsA("UIListLayout") and element.Visible then
-												hasVisibleChild = true
-												break
-											end
-										end
-										
-										if searchTermForClosure == "" or hasVisibleChild then
-											section.Visible = true
-											local containerPadding = sectionContainer:FindFirstChild("UIPadding")
-											local containerPaddingTop = containerPadding and containerPadding.PaddingTop.Offset or 0
-											local containerPaddingBottom = containerPadding and containerPadding.PaddingBottom.Offset or 0
-											local containerContentSize = containerLayout.AbsoluteContentSize.Y + containerPaddingTop + containerPaddingBottom
-											sectionContainer.Size = UDim2.new(1, 0, 0, math.max(0, containerContentSize))
-										else
-											section.Visible = false
-											sectionContainer.Size = UDim2.new(1, 0, 0, 0)
-										end
-									end
-								end
-								
-								local sectionLayout = section:FindFirstChild("UIListLayout")
-								if sectionLayout then
-									local sectionPadding = section:FindFirstChild("UIPadding")
-									local sectionPaddingTop = sectionPadding and sectionPadding.PaddingTop.Offset or 0
-									local sectionPaddingBottom = sectionPadding and sectionPadding.PaddingBottom.Offset or 0
-									local sectionContentSize = sectionLayout.AbsoluteContentSize.Y + sectionPaddingTop + sectionPaddingBottom
-									section.Size = UDim2.new(1, 0, 0, math.max(0, sectionContentSize + 25))
-								end
-							end
-						end
-					end
-				end
-			end)
-		end
-
-		local function RegisterElement(elementFrame, title, elementType, description)
-			if elementFrame then
-				local sectionFrame = nil
-				local parent = elementFrame.Parent
-				
-				while parent do
-					if parent:FindFirstChild("Container") then
-						local sectionRoot = parent
-						local sectionContainer = parent:FindFirstChild("Container")
-						if sectionContainer and elementFrame.Parent == sectionContainer then
-							sectionFrame = sectionRoot
-							break
-						end
-					end
-					parent = parent.Parent
-				end
-				
-				AllElements[elementFrame] = {
-					title = tostring(title or ""),
-					type = elementType or "Element",
-					description = tostring(description or ""),
-					section = sectionFrame
-				}
-			end
-		end
-
-		Window.ShowSearch = (Config.Search == nil) and true or (Config.Search and true or false)
-
-		local ImageAsset = Config.Image
-		local hasImage = ImageAsset and type(ImageAsset) == "string" and ImageAsset ~= ""
-		local imageSize = Window.TabWidth - 24
-		local topOffset = 0
-
-		local ImageFrame = hasImage and New("ImageLabel", {
-			Size = UDim2.new(0, imageSize, 0, imageSize),
-			Position = UDim2.new(0.5, 0, 0, topOffset),
-			AnchorPoint = Vector2.new(0.5, 0),
-			BackgroundTransparency = 1,
-			Image = ImageAsset,
-			ZIndex = 5,
-			Visible = true,
-		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(0, 6),
-			}),
-		}) or nil
-
-		Window.HasImage = hasImage
-		Window.ImageFrame = ImageFrame
-		Window.ImageSize = imageSize
-		Window.TopOffset = topOffset
-
-		local searchOffset = hasImage and (imageSize + 10 + topOffset) or topOffset
-		local searchHeight = 28
-
-		local tabHolderTop
-		if hasImage then
-			if Window.ShowSearch then
-				tabHolderTop = imageSize + 10 + topOffset + searchHeight + 6
-			else
-				tabHolderTop = imageSize + 10 + topOffset
-			end
-		else
-			if Window.ShowSearch then
-				tabHolderTop = topOffset + searchHeight + 6
-			else
-				tabHolderTop = 45
-			end
-		end
-		Window.TabHolderTop = tabHolderTop
-
-		Window.TabHolder = New("ScrollingFrame", {
-			Size = UDim2.new(1, 0, 1, -(tabHolderTop + 6)),
-			Position = UDim2.new(0, 0, 0, tabHolderTop),
-			BackgroundTransparency = 1,
-			ScrollBarImageTransparency = 1,
-			ScrollBarThickness = 0,
-			BorderSizePixel = 0,
-			CanvasSize = UDim2.fromScale(0, 0),
-			ScrollingDirection = Enum.ScrollingDirection.Y,
-		}, {
-			New("UIListLayout", {
-				Padding = UDim.new(0, 4),
-			}),
-		})
-
-		local SearchFrame = New("Frame", {
-			Size = UDim2.new(1, 0, 0, 28),
-			Position = UDim2.new(0, 0, 0, searchOffset),
-			BackgroundTransparency = 0.7,
-			ZIndex = 10,
-			Visible = Window.ShowSearch,
-			BackgroundColor3 = Color3.fromRGB(20, 20, 20),
-			ThemeTag = {
-				BackgroundColor3 = "Element",
-			},
-		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
-			}),
-		})
-
-		local SearchInput = New("TextBox", {
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
-			TextColor3 = Color3.fromRGB(200, 200, 200),
-			TextSize = 13,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			TextYAlignment = Enum.TextYAlignment.Center,
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1, -36, 1, 0),
-			Position = UDim2.new(0, 8, 0, 0),
-			PlaceholderText = "Search...",
-			PlaceholderColor3 = Color3.fromRGB(120, 120, 120),
-			ClearTextOnFocus = false,
-			Text = "",
-			Parent = SearchFrame,
-			ThemeTag = {
-				TextColor3 = "Text",
-				PlaceholderColor3 = "SubText",
-			},
-		})
-
-		local SearchIcon = New("ImageLabel", {
-			Size = UDim2.fromOffset(16, 16),
-			Position = UDim2.new(1, -13, 0.5, 0),
-			AnchorPoint = Vector2.new(0.5, 0.5),
-			BackgroundTransparency = 1,
-			Image = "rbxassetid://10734943674",
-			Parent = SearchFrame,
-			ImageTransparency = 0.3,
-			ThemeTag = {
-				ImageColor3 = "SubText",
-			},
-		})
-
-		local SearchTextbox = {
-			Input = SearchInput,
-			Frame = SearchFrame,
-		}
-
-		Creator.AddSignal(SearchTextbox.Input:GetPropertyChangedSignal("Text"), function()
-			local searchText = SearchTextbox.Input.Text or ""
-			UpdateElementVisibility(searchText)
-		end)
-
-		Creator.AddSignal(SearchTextbox.Input.FocusLost, function(enterPressed)
-		end)
-
-		Creator.AddSignal(UserInputService.InputBegan, function(input, gameProcessed)
-			if gameProcessed then return end
-			if input.KeyCode == Enum.KeyCode.Escape and SearchTextbox.Input:IsFocused() then
-				SearchTextbox.Input.Text = ""
-				SearchTextbox.Input:ReleaseFocus()
-			end
-		end)
-
-		Window.SearchElements = SearchElements
-		Window.AllElements = AllElements
-		Window.RegisterElement = RegisterElement
-		Window.UpdateElementVisibility = UpdateElementVisibility
-
-		local imageSize = Window.TabWidth - 24
-		local topOffset = Window.TopOffset or 25
-		local imageOffset = hasImage and (imageSize + 10 + topOffset) or topOffset
-		local searchHeight = 28
-		local totalOffset = (Window.ShowSearch and searchHeight or 0) + imageOffset
-		local TabFrame = New("Frame", {
-			Size = UDim2.new(0, Window.TabWidth, 1, Window.ShowSearch and -63 or -31),
-			Position = UDim2.new(0, 12, 0, Window.ShowSearch and 54 or 19),
-			BackgroundTransparency = 1,
-			ClipsDescendants = true,
-		}, {
-			ImageFrame,
-			SearchFrame,
-			Window.TabHolder,
-			Selector,
-		})
-
-		Window.TabFrame = TabFrame
-
-		Window.TabDisplay = New("TextLabel", {
-			RichText = true,
-			Text = "Tab",
-			TextTransparency = 1,
-			FontFace = Font.new("rbxassetid://12187365364", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal),
-			TextSize = 28,
-			TextXAlignment = "Center",
-			TextYAlignment = "Center",
-			Size = UDim2.new(1, -16, 0, 28),
-			Position = UDim2.fromOffset(Window.TabWidth + 26, 56),
-			BackgroundTransparency = 1,
-			ThemeTag = {
-				TextColor3 = "Text",
-			},
-		})
-
-		Window.ContainerHolder = New("Frame", {
-			Size = UDim2.fromScale(1, 1),
-			BackgroundTransparency = 1,
-			ClipsDescendants = true,
-		})
-
-		Window.ContainerAnim = New("CanvasGroup", {
-			Size = UDim2.fromScale(1, 1),
-			BackgroundTransparency = 1,
-		})
-        
-        local TabsTop = (Window.ShowSearch and 54 or 19) + Window.TabHolderTop
-
-Window.ContainerCanvas = New("Frame", {
-    Size = UDim2.new(1, -Window.TabWidth - 32, 1, -102 - (TabsTop - 54)),
-    Position = UDim2.fromOffset(Window.TabWidth + 26, TabsTop),
-    BackgroundTransparency = 1,
-    ClipsDescendants = true,
-}, {
-    Window.ContainerAnim,
-    Window.ContainerHolder
-})
-
-		local backgroundTransparency = Config.BackgroundTransparency
-		if backgroundTransparency == nil then
-			backgroundTransparency = 0.5
-		end
-		Window.BackgroundTransparency = backgroundTransparency
-
-		local backgroundImageTransparency = Config.BackgroundImageTransparency
-		if backgroundImageTransparency == nil then
-			backgroundImageTransparency = backgroundTransparency
-		end
-		Window.BackgroundImageTransparency = backgroundImageTransparency
-
-		local rootChildren = {}
-		
-		if Config.BackgroundImage then
-			local BackgroundImageFrame = New("ImageLabel", {
-				Name = "BackgroundImage",
-				Size = UDim2.fromScale(1, 1),
-				Position = UDim2.fromOffset(0, 0),
-				BackgroundTransparency = 1,
-				Image = Config.BackgroundImage,
-				ImageTransparency = math.max(0, math.min(1, backgroundImageTransparency)),
-				ZIndex = 0,
-				ScaleType = Enum.ScaleType.Stretch,
-			}, {
-				New("UICorner", { CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS) }),
-			})
-			Window.BackgroundImage = BackgroundImageFrame
-			table.insert(rootChildren, BackgroundImageFrame)
-			
-			if Window.AcrylicPaint and Window.AcrylicPaint.Frame then
-				if backgroundImageTransparency <= 0.1 then
-					Window.AcrylicPaint.Frame.BackgroundTransparency = 1
-					if Window.AcrylicPaint.Model then
-						Window.AcrylicPaint:SetModelTransparency(1)
-					end
-					local function makeTransparent(obj)
-						if obj:IsA("Frame") then
-							obj.BackgroundTransparency = 1
-						elseif obj:IsA("ImageLabel") then
-							obj.ImageTransparency = 1
-						end
-						for _, child in ipairs(obj:GetChildren()) do
-							if not child:IsA("UICorner") and not child:IsA("UIGradient") and not child:IsA("UIStroke") and not child:IsA("UIListLayout") and not child:IsA("UIPadding") then
-								makeTransparent(child)
-							end
-						end
-					end
-					makeTransparent(Window.AcrylicPaint.Frame)
-				elseif backgroundImageTransparency < 0.3 then
-					Window.AcrylicPaint.Frame.BackgroundTransparency = 0.99
-					if Window.AcrylicPaint.Model then
-						Window.AcrylicPaint:SetModelTransparency(0.99)
-					end
-				else
-					Window.AcrylicPaint.Frame.BackgroundTransparency = 0.98
-					if Window.AcrylicPaint.Model then
-						Window.AcrylicPaint:SetModelTransparency(0.98)
-					end
-				end
-			end
-		end
-		
-		table.insert(rootChildren, Window.AcrylicPaint.Frame)
-		table.insert(rootChildren, Window.TabDisplay)
-		table.insert(rootChildren, Window.ContainerCanvas)
-		table.insert(rootChildren, TabFrame)
-		table.insert(rootChildren, ResizeStartFrame)
-		table.insert(rootChildren, New("UICorner", {CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS)}))
-
-Window.Root = New("Frame", {
-    BackgroundTransparency = 1,
-    Size = Window.Size,
-    Position = Window.Position,
-    Parent = Config.Parent,
-    ZIndex = 100,
-    ClipsDescendants = true,
-}, rootChildren)
-
-		do
-			local _rs = game:GetService("RunService")
-			local StatsLabel = Instance.new("TextLabel")
-			StatsLabel.Name = "StatsLabel"
-			StatsLabel.Text = "FPS: 0 | Ping: 0ms | 00:00:00"
-			StatsLabel.Font = Enum.Font.GothamMedium
-			StatsLabel.TextSize = 11
-			StatsLabel.TextColor3 = Color3.fromRGB(230, 230, 230)
-			StatsLabel.TextTransparency = 0.3
-			StatsLabel.TextXAlignment = Enum.TextXAlignment.Left
-			StatsLabel.BackgroundTransparency = 1
-			StatsLabel.Size = UDim2.new(0, 200, 0, 18)
-			StatsLabel.AnchorPoint = Vector2.new(0, 1)
-			StatsLabel.Position = UDim2.new(0, 10, 1, -6)
-			StatsLabel.ZIndex = 200
-			StatsLabel.Parent = Window.Root
-			local _statsFrameCount = 0
-			_rs.RenderStepped:Connect(function()
-				_statsFrameCount = _statsFrameCount + 1
-			end)
-			task.spawn(function()
-				local GameStats = game:GetService("Stats")
-				while StatsLabel and StatsLabel.Parent do
-					local ping = 0
-					pcall(function() ping = math.floor(GameStats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
-					local fps = _statsFrameCount
-					_statsFrameCount = 0
-					StatsLabel.Text = string.format("FPS: %d | Ping: %dms | %s", fps, ping, os.date("%H:%M:%S"))
-					task.wait(1)
-				end
-			end)
-		end
-
 		CenterWindow()
-		Creator.AddSignal(Camera:GetPropertyChangedSignal("ViewportSize"), function()
-			CenterWindow()
-		end)
+		Creator.AddSignal(Camera:GetPropertyChangedSignal("ViewportSize"), CenterWindow)
 
+		local dragging, dragInput, mousePos, startPos = false, nil, nil, nil
+		local resizing, resizePos = false, nil
+		local SizeMotor = Flipper.GroupMotor.new({ X = Window.Size.X.Offset, Y = Window.Size.Y.Offset })
+		local PosMotor = Flipper.GroupMotor.new({ X = Window.Position.X.Offset, Y = Window.Position.Y.Offset })
+		SizeMotor:onStep(function(v) Window.Root.Size = UDim2.fromOffset(v.X, v.Y) end)
+		PosMotor:onStep(function(v) Window.Root.Position = UDim2.fromOffset(v.X, v.Y) end)
 
-		Window.TitleBar = Components.TitleBar({
-			Title = Config.Title,
-			SubTitle = Config.SubTitle,
-			Icon = Config.Icon,
+		local ResizeHandle = New("Frame", {
+			Name = "ResizeHandle",
+			Size = UDim2.fromOffset(13, 13),
+			Position = UDim2.new(0, 1, 1, -14),
+			BackgroundTransparency = 1,
+			Visible = Config.Resizable == true,
 			Parent = Window.Root,
-			Window = Window,
-			UserInfoTitle = Config.UserInfoTitle,
-			UserInfo = Config.UserInfo,
-			UserInfoSubtitle = Config.UserInfoSubtitle,
-			UserInfoSubtitleColor = Config.UserInfoSubtitleColor,
+			ZIndex = 150,
 		})
 
-		if false and Config.UserInfo then
-			local function parseColor(value)
-				if typeof(value) == "Color3" then return value end
-				return Themes[Library.Theme].SubText or Color3.fromRGB(170,170,170)
-			end
-
-			local userInfoHeight = 56
-			Window.UserInfoHeight = userInfoHeight
-			Window.UserInfoTop = Config.UserInfoTop
-			local UserInfoSection = New("Frame", {
-				Name = "UserInfoSection",
-				BackgroundTransparency = 1,
-				Size = UDim2.new(1, 0, 0, userInfoHeight),
-				Position = Config.UserInfoTop and UDim2.fromOffset(0, 0) or UDim2.new(0, 0, 1, -(userInfoHeight + 2)),
-				ZIndex = 15,
-				Parent = TabFrame,
-			})
-
-			New("Frame", {
-				Name = "UserInfoSeparator",
-				BackgroundTransparency = 0.5,
-				Size = UDim2.new(1, 0, 0, 1),
-				Position = Config.UserInfoTop and UDim2.fromOffset(0, userInfoHeight + 4) or UDim2.new(0, 0, 1, -(userInfoHeight + 4)),
-				ZIndex = 15,
-				Parent = TabFrame,
-				ThemeTag = {
-					BackgroundColor3 = "TitleBarLine",
-				},
-			})
-
-			local subtitleText = (Config.UserInfoSubtitle ~= nil) and tostring(Config.UserInfoSubtitle) or "Premium"
-
-			New("TextLabel", {
-				Name = "UserSubtitle",
-				BackgroundTransparency = 1,
-				TextXAlignment = Enum.TextXAlignment.Center,
-				TextYAlignment = Enum.TextYAlignment.Center,
-				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-				TextSize = 12,
-				TextTransparency = 0.2,
-				Text = subtitleText,
-				TextColor3 = parseColor(Config.UserInfoSubtitleColor),
-				Size = UDim2.new(1, 0, 1, 0),
-				Position = UDim2.new(0, 0, 0, 0),
-				Parent = UserInfoSection,
-			})
-
-			if Config.UserInfoTop then
-				local topOffset = Window.TopOffset or 0
-				local imageOffset = hasImage and (imageSize + 10 + topOffset) or topOffset
-				TabFrame.Position = UDim2.new(0, 12, 0, 39)
-				TabFrame.Size = UDim2.new(0, Window.TabWidth, 1, -(31 + imageOffset + userInfoHeight))
-				local searchOffset = hasImage and (imageSize + 10 + topOffset) or topOffset
-				SearchFrame.Position = UDim2.new(0, 0, 0, userInfoHeight + 6 + searchOffset)
-				if ImageFrame then
-					ImageFrame.Position = UDim2.new(0.5, 0, 0, userInfoHeight + topOffset)
-				end
-				local newTabHolderTop = userInfoHeight + 6 + (hasImage and (imageSize + 10 + topOffset) or topOffset) + (Window.ShowSearch and (searchHeight + 6) or 0)
-				Window.TabHolderTop = newTabHolderTop
-				Window.TabHolder.Position = UDim2.new(0, 0, 0, newTabHolderTop)
-				Window.TabHolder.Size = UDim2.new(1, 0, 1, -(newTabHolderTop + 6 + userInfoHeight))
-				if Window.UpdateTabHolderLayout then
-					Window:UpdateTabHolderLayout(newTabHolderTop)
-				end
-			else
-				Window.TabHolder.Size = UDim2.new(1, 0, 1, -(tabHolderTop + 6 + userInfoHeight))
-				if Window.UpdateTabHolderLayout then
-					Window:UpdateTabHolderLayout(tabHolderTop)
-				end
-			end
-		end
-
-		if Library.UseAcrylic then
-			Window.AcrylicPaint.AddParent(Window.Root)
-		end
-
-		local SizeMotor = Flipper.GroupMotor.new({
-			X = Window.Size.X.Offset,
-			Y = Window.Size.Y.Offset,
-		})
-
-		local PosMotor = Flipper.GroupMotor.new({
-			X = Window.Position.X.Offset,
-			Y = Window.Position.Y.Offset,
-		})
-
-		Library.__cd = 0
-		Window.SelectorPosMotor = Flipper.SingleMotor.new(17)
-		Window.SelectorSizeMotor = Flipper.SingleMotor.new(0)
-		Window.ContainerBackMotor = Flipper.SingleMotor.new(0)
-		Window.ContainerPosMotor = Flipper.SingleMotor.new(94)
-		Window.ContainerXMotor = Flipper.SingleMotor.new(0)
-
-		SizeMotor:onStep(function(values)
-			task.wait(Library.__cd / 10)
-			Window.Root.Size = UDim2.new(0, values.X, 0, values.Y)
-			task.spawn(function()
-				task.wait(0.01)
-				if Window.UpdateTabHolderLayout then
-					Window:UpdateTabHolderLayout()
-				end
-			end)
-		end)
-
-		PosMotor:onStep(function(values)
-			task.wait(Library.__cd / 10)
-			Window.Root.Position = UDim2.new(0, values.X, 0, values.Y)
-		end)
-
-		local LastValue = 0
-		local LastTime = 0
-		Window.SelectorPosMotor:onStep(function(Value)
-			local base = Window.TabHolderTop or 45
-			local verticalInset = 16
-			local selectorY = base + Value + verticalInset
-
-			local searchOffset = Window.HasImage and (Window.ImageSize + Window.TopOffset + 10) or Window.TopOffset
-			local searchTop = searchOffset
-			local searchBottom = searchTop + 28
-
-			if Window.HasImage and Window.ImageSize then
-				local imageBottom = Window.ImageSize + Window.TopOffset + 10
-				if selectorY < imageBottom then
-					Selector.Visible = false
-					return
-				end
-			end
-
-			if Window.ShowSearch then
-				if selectorY >= searchTop and selectorY <= searchBottom then
-					Selector.Visible = false
-					return
-				end
-			end
-
-			if Window.UserInfoHeight then
-				local tabFrameSize = Window.TabFrame and Window.TabFrame.Size.Y.Offset or 0
-				local userInfoTop = Window.UserInfoTop and 0 or (tabFrameSize - Window.UserInfoHeight - 2)
-				local userInfoBottom = userInfoTop + Window.UserInfoHeight
-				
-				if selectorY >= userInfoTop and selectorY <= userInfoBottom then
-					Selector.Visible = false
-					return
-				end
-			end
-
-			Selector.Visible = true
-			Selector.Position = UDim2.new(0, 0, 0, selectorY)
-			local Now = tick()
-			local DeltaTime = Now - LastTime
-
-			if LastValue ~= nil then
-				Window.SelectorSizeMotor:setGoal(Spring((math.abs(Value - LastValue) / (DeltaTime * 60)) + 16))
-				LastValue = Value
-			end
-			LastTime = Now
-		end)
-
-		Window.SelectorSizeMotor:onStep(function(Value)
-			Selector.Size = UDim2.new(0, 4, 0, Value)
-		end)
-
-		Window.ContainerBackMotor:onStep(function(Value)
-			Window.ContainerAnim.GroupTransparency = Value
-		end)
-
-		local ContainerXValue = 0
-		local ContainerYValue = 94
-
-		local function UpdateContainerPosition()
-			if Window.ContainerAnim then
-				Window.ContainerAnim.Position = UDim2.fromOffset(ContainerXValue, ContainerYValue)
-			end
-		end
-
-		Window.ContainerPosMotor:onStep(function(Value)
-			ContainerYValue = Value
-			UpdateContainerPosition()
-		end)
-
-		Window.ContainerXMotor:onStep(function(Value)
-			ContainerXValue = Value
-			UpdateContainerPosition()
-		end)
-
-		Creator.AddSignal(Window.TitleBar.Frame.InputBegan, function(Input)
-            if Config.Draggable == false then return end
-			if
-				Input.UserInputType == Enum.UserInputType.MouseButton1
-				or Input.UserInputType == Enum.UserInputType.Touch
-			then
-				Dragging = true
-				MousePos = Input.Position
-				StartPos = Window.Root.Position
-
-				Input.Changed:Connect(function()
-					if Input.UserInputState == Enum.UserInputState.End then
-						Dragging = false
-					end
+		Creator.AddSignal(Window.TitleBar.Frame.InputBegan, function(input)
+			if Config.Draggable == false then return end
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				dragging = true
+				mousePos = input.Position
+				startPos = Window.Root.Position
+				input.Changed:Connect(function()
+					if input.UserInputState == Enum.UserInputState.End then dragging = false end
 				end)
 			end
 		end)
-
-		Creator.AddSignal(Window.TitleBar.Frame.InputChanged, function(Input)
-			if
-				Input.UserInputType == Enum.UserInputType.MouseMovement
-				or Input.UserInputType == Enum.UserInputType.Touch
-			then
-				DragInput = Input
+		Creator.AddSignal(Window.TitleBar.Frame.InputChanged, function(input)
+			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end
+		end)
+		Creator.AddSignal(ResizeHandle.InputBegan, function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				resizing = true
+				resizePos = input.Position
 			end
 		end)
-
-		Creator.AddSignal(ResizeStartFrame.InputBegan, function(Input)
-			if Config.Resizable == false then return end
-			if
-				Input.UserInputType == Enum.UserInputType.MouseButton1
-				or Input.UserInputType == Enum.UserInputType.Touch
-			then
-				Resizing = true
-				ResizePos = Input.Position
+		Creator.AddSignal(UserInputService.InputChanged, function(input)
+			if dragging and input == dragInput then
+				local d = input.Position - mousePos
+				Window.Position = UDim2.fromOffset(startPos.X.Offset + d.X, startPos.Y.Offset + d.Y)
+				PosMotor:setGoal({ X = Instant(Window.Position.X.Offset), Y = Instant(Window.Position.Y.Offset) })
+			end
+			if resizing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+				local d = input.Position - resizePos
+				local target = Vector2.new(math.clamp(Window.Size.X.Offset + d.X, 430, 1600), math.clamp(Window.Size.Y.Offset + d.Y, 300, 1200))
+				SizeMotor:setGoal({ X = Instant(target.X), Y = Instant(target.Y) })
 			end
 		end)
-
-		Creator.AddSignal(UserInputService.InputChanged, function(Input)
-			if Input == DragInput and Dragging then
-				local Delta = Input.Position - MousePos
-				Window.Position = UDim2.fromOffset(StartPos.X.Offset + Delta.X, StartPos.Y.Offset + Delta.Y)
-				PosMotor:setGoal({
-					X = Instant(Window.Position.X.Offset),
-					Y = Instant(Window.Position.Y.Offset),
-				})
-			end
-
-			if
-				(Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch)
-				and Resizing
-			then
-				local Delta = Input.Position - ResizePos
-				local StartSize = Window.Size
-
-				local TargetSize = Vector3.new(StartSize.X.Offset, StartSize.Y.Offset, 0) + Vector3.new(1, 1, 0) * Delta
-				local TargetSizeClamped =
-					Vector2.new(math.clamp(TargetSize.X, 470, 2048), math.clamp(TargetSize.Y, 380, 2048))
-
-				SizeMotor:setGoal({
-					X = Flipper.Instant.new(TargetSizeClamped.X),
-					Y = Flipper.Instant.new(TargetSizeClamped.Y),
-				})
-			end
-		end)
-
-		Creator.AddSignal(UserInputService.InputEnded, function(Input)
-			if Resizing == true or Input.UserInputType == Enum.UserInputType.Touch then
-				Resizing = false
-				Window.Size = UDim2.fromOffset(SizeMotor:getValue().X, SizeMotor:getValue().Y)
-			end
-		end)
-
-		Creator.AddSignal(Window.TabHolder.UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"), function()
-			if Window.TabHolder and Window.TabHolder.UIListLayout then
-				local padding = Window.TabHolder:FindFirstChild("UIPadding")
-				local paddingTop = padding and padding.PaddingTop.Offset or 6
-				local paddingBottom = padding and padding.PaddingBottom.Offset or 6
-				local contentSize = Window.TabHolder.UIListLayout.AbsoluteContentSize.Y + paddingTop + paddingBottom
-				if contentSize > 0 then
-					Window.TabHolder.CanvasSize = UDim2.new(0, 0, 0, contentSize)
+		Creator.AddSignal(UserInputService.InputEnded, function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				if resizing then
+					resizing = false
+					local v = SizeMotor:getValue()
+					Window.Size = UDim2.fromOffset(v.X, v.Y)
 				end
 			end
 		end)
 
-		Creator.AddSignal(UserInputService.InputBegan, function(Input, gameProcessedEvent)
-			if gameProcessedEvent then return end
-			if
-				type(Library.MinimizeKeybind) == "table"
-				and Library.MinimizeKeybind.Type == "Keybind"
-			then
-				if Input.KeyCode.Name == Library.MinimizeKeybind.Value then
-					Window:Minimize()
+		function Window.UpdateTabHolderLayout()
+			local w = TabLayout.AbsoluteContentSize.X
+			Window.TabHolder.CanvasSize = UDim2.fromOffset(w, 0)
+		end
+		Creator.AddSignal(TabLayout:GetPropertyChangedSignal("AbsoluteContentSize"), Window.UpdateTabHolderLayout)
+
+		function Window.RegisterElement(elementFrame, title, elementType, description)
+			if elementFrame then
+				Window.AllElements[elementFrame] = { title = tostring(title or ""), type = elementType or "Element", description = tostring(description or "") }
+			end
+		end
+		function Window.UpdateElementVisibility(searchTerm)
+			local q = string.lower(tostring(searchTerm or ""))
+			for frame, data in pairs(Window.AllElements) do
+				if frame and frame.Parent then
+					if q == "" then frame.Visible = true
+					else
+						local hay = string.lower((data.title or "") .. " " .. (data.description or ""))
+						frame.Visible = string.find(hay, q, 1, true) ~= nil
+					end
 				end
-			elseif Input.KeyCode == Library.MinimizeKey then
+			end
+		end
+		Window.ShowSearch = false
+		function Window:ToggleSearch() self.ShowSearch = false end
+
+		Creator.AddSignal(UserInputService.InputBegan, function(input, processed)
+			if processed then return end
+			if type(Library.MinimizeKeybind) == "table" and Library.MinimizeKeybind.Type == "Keybind" then
+				if input.KeyCode.Name == Library.MinimizeKeybind.Value then Window:Minimize() end
+			elseif input.KeyCode == Library.MinimizeKey then
 				Window:Minimize()
 			end
 		end)
 
-		function Window:ToggleSearch()
-			Window.ShowSearch = not Window.ShowSearch
-			SearchFrame.Visible = Window.ShowSearch
-			local topOffset = Window.TopOffset or 25
-			local searchOffset = Window.HasImage and (Window.ImageSize + 10 + topOffset) or topOffset
-			SearchFrame.Position = UDim2.new(0, 0, 0, searchOffset)
-			local imageOffset = Window.HasImage and (Window.ImageSize + 10 + topOffset) or topOffset
-			local searchHeight = 28
-			local totalOffset = (Window.ShowSearch and searchHeight or 0) + imageOffset
-			TabFrame.Size = UDim2.new(0, Window.TabWidth, 1, -(totalOffset + 31))
-
-			if Window.UpdateTabHolderLayout then
-				Window:UpdateTabHolderLayout()
-			end
-		end
-
 		function Window:Minimize()
 			Window.Minimized = not Window.Minimized
 			Window.Root.Visible = not Window.Minimized
-
 			InterfaceManager:UpdateCursorUnlock()
-
-			for _, Option in next, Library.Options do
-				if Option and Option.Type == "Dropdown" and Option.Opened then
-					pcall(function()
-						Option:Close()
-					end)
-				end
-			end
-			if not MinimizeNotif then
-				MinimizeNotif = true
-				local Key = Library.MinimizeKeybind and Library.MinimizeKeybind.Value or Library.MinimizeKey.Name
-				if not Mobile then Library:Notify({
-					Title = "Interface",
-					Content = "Press " .. Key .. " to toggle the interface.",
-					Duration = 6
-					})
-				else 
-					Library:Notify({
-						Title = "Interface",
-						Content = "Tap to the button to toggle the interface.",
-						Duration = 6
-					})
-				end
-			end
-
-			if not RunService:IsStudio() and Library.Minimizer then
-				pcall(function()
-					if not Mobile then
-						local desktopButton = Library.Minimizer:FindFirstChild("TextButton")
-						if desktopButton then
-							local imageLabel = desktopButton:FindFirstChild("ImageLabel")
-							if imageLabel then
-								imageLabel.Image = Window.Minimized and "rbxassetid://10734896384" or "rbxassetid://10734897102"
-							end
-						end
-					end
-				end)
+			for _, option in next, Library.Options do
+				if option and option.Type == "Dropdown" and option.Opened and option.Close then pcall(function() option:Close() end) end
 			end
 		end
 
 		function Window:Destroy()
 			InterfaceManager:DisableCursorUnlock()
-			if Library.UseAcrylic then
-				Window.AcrylicPaint.Model:Destroy()
-			end
+			if Window.AcrylicPaint and Window.AcrylicPaint.Model then pcall(function() Window.AcrylicPaint.Model:Destroy() end) end
 			Window.Root:Destroy()
 		end
 
 		function Window:SetBackgroundImage(imageUrl, imageTransparency)
 			if not Window.BackgroundImage then
-				local imgTransparency = imageTransparency or Window.BackgroundImageTransparency or Window.BackgroundTransparency or 0.5
-				local BackgroundImageFrame = New("ImageLabel", {
+				Window.BackgroundImage = New("ImageLabel", {
 					Name = "BackgroundImage",
 					Size = UDim2.fromScale(1, 1),
-					Position = UDim2.fromOffset(0, 0),
 					BackgroundTransparency = 1,
 					Image = imageUrl,
-					ImageTransparency = math.max(0, math.min(1, imgTransparency)),
-					ZIndex = 0,
-					ScaleType = Enum.ScaleType.Stretch,
+					ImageTransparency = imageTransparency or 0.7,
+					ScaleType = Enum.ScaleType.Crop,
 					Parent = Window.Root,
-				}, {
-					New("UICorner", {
-						CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS),
-					}),
-				})
-				Window.BackgroundImage = BackgroundImageFrame
-				if imageTransparency ~= nil then
-					Window.BackgroundImageTransparency = imageTransparency
-				end
+					ZIndex = 0,
+				}, { New("UICorner", { CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS) }) })
 			else
 				Window.BackgroundImage.Image = imageUrl
-				Window.BackgroundImage.ScaleType = Enum.ScaleType.Stretch
-				if imageTransparency ~= nil then
-					Window.BackgroundImageTransparency = imageTransparency
-					Window.BackgroundImage.ImageTransparency = math.max(0, math.min(1, imageTransparency))
-				end
+				if imageTransparency ~= nil then Window.BackgroundImage.ImageTransparency = imageTransparency end
 			end
 		end
-
 		function Window:SetBackgroundTransparency(transparency)
-			transparency = transparency or 0.5
-			Window.BackgroundTransparency = transparency
+			Window.BackgroundTransparency = transparency or 0.05
+			Window.Root.BackgroundTransparency = Window.BackgroundTransparency
 		end
-
 		function Window:SetBackgroundImageTransparency(transparency)
-			transparency = transparency or 0.5
-			Window.BackgroundImageTransparency = transparency
-			if Window.BackgroundImage then
-				Window.BackgroundImage.ImageTransparency = math.max(0, math.min(1, transparency))
-			end
-			if Window.AcrylicPaint and Window.AcrylicPaint.Frame then
-				if transparency <= 0.1 then
-					Window.AcrylicPaint.Frame.BackgroundTransparency = 1
-					if Window.AcrylicPaint.Model then
-						Window.AcrylicPaint:SetModelTransparency(1)
-					end
-					local function makeTransparent(obj)
-						if obj:IsA("Frame") then
-							obj.BackgroundTransparency = 1
-						elseif obj:IsA("ImageLabel") then
-							obj.ImageTransparency = 1
-						end
-						for _, child in ipairs(obj:GetChildren()) do
-							if not child:IsA("UICorner") and not child:IsA("UIGradient") and not child:IsA("UIStroke") and not child:IsA("UIListLayout") and not child:IsA("UIPadding") then
-								makeTransparent(child)
-							end
-						end
-					end
-					makeTransparent(Window.AcrylicPaint.Frame)
-				elseif transparency < 0.3 then
-					Window.AcrylicPaint.Frame.BackgroundTransparency = 0.99
-					if Window.AcrylicPaint.Model then
-						Window.AcrylicPaint:SetModelTransparency(0.99)
-					end
-				else
-					Window.AcrylicPaint.Frame.BackgroundTransparency = 0.98
-					if Window.AcrylicPaint.Model then
-						Window.AcrylicPaint:SetModelTransparency(0.98)
-					end
-				end
-			end
+			if Window.BackgroundImage then Window.BackgroundImage.ImageTransparency = transparency or 0.7 end
 		end
 
 		local DialogModule = Components.Dialog:Init(Window)
-		function Window:Dialog(Config)
+		function Window:Dialog(DialogConfig)
 			local Dialog = DialogModule:Create()
-			Dialog.Title.Text = Config.Title
-
-			local ContentHolder = New("ScrollingFrame", {
-				BackgroundTransparency = 1,
-				ScrollBarImageTransparency = 0.7,
-				ScrollBarThickness = 4,
-				BottomImage = "rbxassetid://6889812791",
-				MidImage = "rbxassetid://6889812721",
-				TopImage = "rbxassetid://6276641225",
-				Position = UDim2.fromOffset(20, 60),
-				Size = UDim2.new(1, -40, 1, -110),
-				CanvasSize = UDim2.fromOffset(0, 0),
-				AutomaticCanvasSize = Enum.AutomaticSize.Y,
-				Parent = Dialog.Root,
-			})
-
+			Dialog.Title.Text = DialogConfig.Title or "PRIME"
 			local Content = New("TextLabel", {
 				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
-				Text = Config.Content,
-				TextColor3 = Color3.fromRGB(240, 240, 240),
-				TextSize = 14,
+				Text = DialogConfig.Content or "",
+				TextSize = 12,
 				TextXAlignment = Enum.TextXAlignment.Left,
 				TextYAlignment = Enum.TextYAlignment.Top,
-				AutomaticSize = Enum.AutomaticSize.Y,
 				TextWrapped = true,
-				Size = UDim2.new(1, -8, 0, 0),
+				Size = UDim2.new(1, -32, 1, -90),
+				Position = UDim2.fromOffset(16, 50),
 				BackgroundTransparency = 1,
-				Parent = ContentHolder,
+				Parent = Dialog.Root,
 				ThemeTag = { TextColor3 = "Text" },
 			})
-
-			New("UISizeConstraint", {
-				MinSize = Vector2.new(300, 165),
-				MaxSize = Vector2.new(620, math.huge),
-				Parent = Dialog.Root,
-			})
-
-			local maxWidth = math.min(620, Window.Size.X.Offset - 120)
-			local baseWidth = math.max(300, math.min(maxWidth, Content.TextBounds.X + 40))
-			Dialog.Root.Size = UDim2.fromOffset(baseWidth, 165)
-			ContentHolder.Size = UDim2.new(1, -40, 1, -110)
-			task.defer(function()
-				local contentHeight = Content.TextBounds.Y
-				local desired = math.clamp(contentHeight + 110, 165, 420)
-				Dialog.Root.Size = UDim2.fromOffset(baseWidth, desired)
-				ContentHolder.CanvasSize = UDim2.fromOffset(0, contentHeight)
-			end)
-
-			for _, Button in next, Config.Buttons do
-				Dialog:Button(Button.Title, Button.Callback)
-			end
-
+			Dialog.Root.Size = UDim2.fromOffset(340, 165)
+			for _, button in next, DialogConfig.Buttons or {} do Dialog:Button(button.Title, button.Callback) end
 			Dialog:Open()
 		end
 
 		local TabModule = Components.Tab:Init(Window)
-		function Window:AddTab(TabConfig)
-			local tab = TabModule:New(TabConfig.Title, TabConfig.Icon, Window.TabHolder)
-			return tab
-		end
+		function Window:AddTab(TabConfig) return TabModule:New(TabConfig.Title, TabConfig.Icon, Window.TabHolder) end
+		function Window:SelectTab(Index) TabModule:SelectTab(Index) end
 
-		function Window:SelectTab(Tab)
-			TabModule:SelectTab(Tab)
-		end
-
-		Creator.AddSignal(Window.TabHolder:GetPropertyChangedSignal("CanvasPosition"), function()
-			LastValue = TabModule:GetCurrentTabPos() + 16
-			LastTime = 0
-			Window.SelectorPosMotor:setGoal(Instant(TabModule:GetCurrentTabPos()))
-		end)
-
-
+		if Library.UseAcrylic and Window.AcrylicPaint then Window.AcrylicPaint.AddParent(Window.Root) end
 		return Window
 	end
 end)()
@@ -5696,10 +4132,10 @@ ElementsTable.Button = (function()
 		local ButtonFrame = Components.Element(Config.Title, Config.Description, self.Container, true, Config)
 
 		local ButtonIco = New("ImageLabel", {
-			Image = "rbxassetid://10709791437",
-			Size = UDim2.fromOffset(16, 16),
+			Image = Library:GetIcon("arrow-right") or "rbxassetid://10709791437",
+			Size = UDim2.fromOffset(13, 13),
 			AnchorPoint = Vector2.new(1, 0.5),
-			Position = UDim2.new(1, -10, 0.5, 0),
+			Position = UDim2.new(1, -8, 0.5, 0),
 			BackgroundTransparency = 1,
 			Parent = ButtonFrame.Frame,
 			ThemeTag = {
@@ -5723,218 +4159,78 @@ ElementsTable.Toggle = (function()
 
 	function Element:New(Idx, Config)
 		assert(Config.Title, "Toggle - Missing Title")
-
 		local Toggle = {
-			Value = Config.Default or false,
-			Callback = Config.Callback or function(Value) end,
+			Value = Config.Default == true,
+			Callback = Config.Callback or function() end,
 			Type = "Toggle",
 			_dependents = {},
+			Disabled = false,
 		}
-
 		local ToggleFrame = Components.Element(Config.Title, Config.Description, self.Container, true, Config)
-		ToggleFrame.DescLabel.Size = UDim2.new(1, -45, 0, 14)
-
+		ToggleFrame.LabelHolder.Position = UDim2.fromOffset(25, 0)
+		ToggleFrame.LabelHolder.Size = UDim2.new(1, -31, 0, 0)
 		Toggle.SetTitle = ToggleFrame.SetTitle
 		Toggle.SetDesc = ToggleFrame.SetDesc
 		Toggle.Visible = ToggleFrame.Visible
 		Toggle.Elements = ToggleFrame
 
-		local DisabledOverlay = New("Frame", {
-			Size = UDim2.new(1, 0, 1, 0),
-			BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+		local Box = New("Frame", {
+			Name = "Checkbox",
+			Size = UDim2.fromOffset(12, 12),
+			Position = UDim2.new(0, 7, 0.5, 0),
+			AnchorPoint = Vector2.new(0, 0.5),
+			Parent = ToggleFrame.Frame,
+			BackgroundTransparency = 0.65,
+			ThemeTag = { BackgroundColor3 = "Element" },
+		}, {
+			New("UICorner", { CornerRadius = UDim.new(0, 2) }),
+			New("UIStroke", { Name = "Stroke", Thickness = 1, Transparency = 0.15, ThemeTag = { Color = "InElementBorder" } }),
+		})
+		local Check = New("ImageLabel", {
+			Name = "Check",
+			Image = Library:GetIcon("check") or "rbxassetid://10709790644",
+			Size = UDim2.fromOffset(9, 9),
+			Position = UDim2.fromScale(0.5, 0.5),
+			AnchorPoint = Vector2.new(0.5, 0.5),
 			BackgroundTransparency = 1,
-			ZIndex = 80,
-			Active = true,
+			Parent = Box,
+			ImageColor3 = Color3.fromRGB(8, 8, 8),
 			Visible = false,
-			Parent = ToggleFrame.Frame,
-		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
-			}),
 		})
 
-		local originalTitleColor = ToggleFrame.TitleLabel.TextColor3
-		local originalDescColor = ToggleFrame.DescLabel.TextColor3
-
-		local ToggleTrack = New("Frame", {
-			Size = UDim2.fromOffset(44, 13),
-			AnchorPoint = Vector2.new(1, 0.5),
-			Position = UDim2.new(1, -10, 0.5, 0),
-			Parent = ToggleFrame.Frame,
-			BorderSizePixel = 0,
-			BackgroundColor3 = Color3.fromRGB(34, 34, 38),
-			BackgroundTransparency = 0.12,
-		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(1, 0),
-			}),
-		})
-
-		local ToggleStroke = New("UIStroke", {
-			ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-			Color = Color3.fromRGB(110, 110, 116),
-			Transparency = 0.55,
-			Thickness = 1,
-			Parent = ToggleTrack,
-		})
-
-		local ToggleGlassGradient = New("UIGradient", {
-			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(54, 54, 60)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 24)),
-			}),
-			Rotation = 90,
-			Enabled = true,
-			Parent = ToggleTrack,
-		})
-
-		local ToggleThumb = New("Frame", {
-			Size = UDim2.fromOffset(7, 7),
-			Position = UDim2.fromOffset(3, 3),
-			BackgroundColor3 = Color3.fromRGB(235, 235, 240),
-			BackgroundTransparency = 0.1,
-			BorderSizePixel = 0,
-			ZIndex = ToggleTrack.ZIndex + 1,
-			Parent = ToggleTrack,
-		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(1, 0),
-			}),
-			New("UIGradient", {
-				Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(205, 205, 210)),
-				}),
-				Rotation = 90,
-			}),
-		})
-
-		local function UpdateToggleVisual(animated)
-			local disabled = Toggle.Disabled == true
-			local fillTransparency
-			local strokeTransparency
-			local fillColor
-			local strokeColor
-			local thumbColor
-			local thumbTransparency
-			local thumbPosition
-
-			if Toggle.Value then
-				fillColor = Color3.fromRGB(235, 235, 240)
-				strokeColor = Color3.fromRGB(255, 255, 255)
-				thumbColor = Color3.fromRGB(20, 20, 24)
-				fillTransparency = disabled and 0.5 or 0.15
-				strokeTransparency = disabled and 0.7 or 0.35
-				thumbTransparency = disabled and 0.55 or 0
-				thumbPosition = UDim2.fromOffset(34, 3)
-				ToggleGlassGradient.Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(185, 185, 190)),
-				})
-			else
-				fillColor = Color3.fromRGB(34, 34, 38)
-				strokeColor = Color3.fromRGB(110, 110, 116)
-				thumbColor = Color3.fromRGB(230, 230, 235)
-				fillTransparency = disabled and 0.68 or 0.30
-				strokeTransparency = disabled and 0.82 or 0.55
-				thumbTransparency = disabled and 0.65 or 0.1
-				thumbPosition = UDim2.fromOffset(3, 3)
-				ToggleGlassGradient.Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(54, 54, 60)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 24)),
-				})
+		local function Update(animated)
+			local props = Toggle.Value and { BackgroundColor3 = Creator.GetThemeProperty("Accent"), BackgroundTransparency = Toggle.Disabled and 0.55 or 0 } or { BackgroundColor3 = Creator.GetThemeProperty("Element"), BackgroundTransparency = Toggle.Disabled and 0.82 or 0.65 }
+			Check.Visible = Toggle.Value
+			if animated then TweenService:Create(Box, TweenInfo.new(0.12), props):Play() else
+				Box.BackgroundColor3 = props.BackgroundColor3
+				Box.BackgroundTransparency = props.BackgroundTransparency
 			end
-
-			ToggleGlassGradient.Enabled = true
-
-			local trackProperties = {
-				BackgroundColor3 = fillColor,
-				BackgroundTransparency = fillTransparency,
-			}
-			local strokeProperties = {
-				Color = strokeColor,
-				Transparency = strokeTransparency,
-			}
-			local thumbProperties = {
-				Position = thumbPosition,
-				BackgroundColor3 = thumbColor,
-				BackgroundTransparency = thumbTransparency,
-			}
-
-			if animated then
-				local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-				TweenService:Create(ToggleTrack, tweenInfo, trackProperties):Play()
-				TweenService:Create(ToggleStroke, tweenInfo, strokeProperties):Play()
-				TweenService:Create(ToggleThumb, tweenInfo, thumbProperties):Play()
-			else
-				ToggleTrack.BackgroundColor3 = trackProperties.BackgroundColor3
-				ToggleTrack.BackgroundTransparency = trackProperties.BackgroundTransparency
-				ToggleStroke.Color = strokeProperties.Color
-				ToggleStroke.Transparency = strokeProperties.Transparency
-				ToggleThumb.Position = thumbProperties.Position
-				ToggleThumb.BackgroundColor3 = thumbProperties.BackgroundColor3
-				ToggleThumb.BackgroundTransparency = thumbProperties.BackgroundTransparency
-			end
+			ToggleFrame.Frame.BackgroundTransparency = Toggle.Disabled and 0.96 or 1
 		end
 
-		function Toggle:SetDisabled(disabled)
-			Toggle.Disabled = not not disabled
+		function Toggle:SetDisabled(value)
+			Toggle.Disabled = not not value
 			ToggleFrame.Frame.Active = not Toggle.Disabled
-			ToggleFrame.Frame.AutoButtonColor = not Toggle.Disabled
-			if ToggleFrame.Frame:IsA("TextButton") then
-				ToggleFrame.Frame.Selectable = not Toggle.Disabled
-			end
-
-			DisabledOverlay.Visible = Toggle.Disabled
-			local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-			TweenService:Create(DisabledOverlay, tweenInfo, {
-				BackgroundTransparency = Toggle.Disabled and 0.55 or 1,
-			}):Play()
-			ToggleFrame.TitleLabel.TextColor3 = Toggle.Disabled and Color3.fromRGB(140, 140, 140) or originalTitleColor
-			ToggleFrame.DescLabel.TextColor3 = Toggle.Disabled and Color3.fromRGB(115, 115, 115) or originalDescColor
-			UpdateToggleVisual(true)
+			ToggleFrame.TitleLabel.TextTransparency = Toggle.Disabled and 0.45 or 0
+			ToggleFrame.DescLabel.TextTransparency = Toggle.Disabled and 0.55 or 0
+			Update(true)
 		end
-
-		function Toggle:OnChanged(Func)
-			Toggle.Changed = Func
-			Func(Toggle.Value)
-		end
-
-		function Toggle:SetValue(Value)
-			Value = not not Value
-			if Value == Toggle.Value then
-				return
-			end
-			Toggle.Value = Value
-
-			UpdateToggleVisual(true)
-
+		function Toggle:OnChanged(Func) Toggle.Changed = Func; Func(Toggle.Value) end
+		function Toggle:SetValue(value)
+			value = not not value
+			if value == Toggle.Value then return end
+			Toggle.Value = value
+			Update(true)
 			Library:SafeCallback(Toggle.Callback, Toggle.Value)
 			Library:SafeCallback(Toggle.Changed, Toggle.Value)
-			if type(Toggle._dependents) == "table" then
-				for _, fn in ipairs(Toggle._dependents) do
-					pcall(fn, Toggle.Value)
-				end
-			end
+			for _, fn in ipairs(Toggle._dependents) do pcall(fn, Toggle.Value) end
 		end
-
-		function Toggle:Destroy()
-			ToggleFrame:Destroy()
-			Library.Options[Idx] = nil
-		end
-
-		Creator.AddSignal(ToggleFrame.Frame.Activated, function()
-			if Toggle.Disabled then return end
-			Toggle:SetValue(not Toggle.Value)
-		end)
-
-		Toggle:SetDisabled(false)
-		UpdateToggleVisual(false)
-
+		function Toggle:Destroy() ToggleFrame:Destroy(); Library.Options[Idx] = nil end
+		Creator.AddSignal(ToggleFrame.Frame.Activated, function() if not Toggle.Disabled then Toggle:SetValue(not Toggle.Value) end end)
+		Update(false)
 		Library.Options[Idx] = Toggle
 		return Toggle
 	end
-
 	return Element
 end)()
 ElementsTable.Dropdown = (function()
@@ -5989,7 +4285,7 @@ ElementsTable.Dropdown = (function()
 			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
 			Text = "",
 			TextColor3 = Color3.fromRGB(240, 240, 240),
-			TextSize = 14,
+			TextSize = 11,
 			AutomaticSize = Enum.AutomaticSize.Y,
 			TextYAlignment = Enum.TextYAlignment.Center,
 			TextXAlignment = Enum.TextXAlignment.Left,
@@ -6008,8 +4304,8 @@ ElementsTable.Dropdown = (function()
 		local closeRotation = 180
 
 		local DropdownIco = New("ImageLabel", {
-			Image = "rbxassetid://10709790948",
-			Size = UDim2.fromOffset(16, 16),
+			Image = Library:GetIcon("chevron-down") or "rbxassetid://10709790948",
+			Size = UDim2.fromOffset(13, 13),
 			AnchorPoint = Vector2.new(1, 0.5),
 			Position = UDim2.new(1, -8, 0.5, 0),
 			BackgroundTransparency = 1,
@@ -6020,17 +4316,17 @@ ElementsTable.Dropdown = (function()
 		})
 
 		local DropdownInner = New("TextButton", {
-			Size = UDim2.fromOffset(160, 30),
+			Size = UDim2.fromOffset(150, 22),
 			Position = UDim2.new(1, -10, 0.5, 0),
 			AnchorPoint = Vector2.new(1, 0.5),
-			BackgroundTransparency = 0.9,
+			BackgroundTransparency = 0.35,
 			Parent = DropdownFrame.Frame,
 			ThemeTag = {
 				BackgroundColor3 = "DropdownFrame",
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 5),
+				CornerRadius = UDim.new(0, 2),
 			}),
 			New("UIStroke", {
 				Transparency = 0.5,
@@ -6837,408 +5133,124 @@ ElementsTable.Slider = (function()
 
 	function Element:New(Idx, Config)
 		assert(Config.Title, "Slider - Missing Title.")
-		assert(Config.Default, "Slider - Missing default value.")
-		assert(Config.Min, "Slider - Missing minimum value.")
-		assert(Config.Max, "Slider - Missing maximum value.")
-		assert(Config.Rounding, "Slider - Missing rounding value.")
+		assert(Config.Default ~= nil, "Slider - Missing default value.")
+		assert(Config.Min ~= nil, "Slider - Missing minimum value.")
+		assert(Config.Max ~= nil, "Slider - Missing maximum value.")
+		assert(Config.Rounding ~= nil, "Slider - Missing rounding value.")
 
 		local Slider = {
-			Value = nil,
+			Value = Config.Default,
 			Min = Config.Min,
 			Max = Config.Max,
 			Rounding = Config.Rounding,
-			Callback = Config.Callback or function(Value) end,
+			Callback = Config.Callback or function() end,
 			Type = "Slider",
+			Disabled = false,
 		}
-
-		local Dragging = false
-		local isDisabled = false
-
 		local SliderFrame = Components.Element(Config.Title, Config.Description, self.Container, false, Config)
-		SliderFrame.DescLabel.Size = UDim2.new(1, -170, 0, 14)
-
+		SliderFrame.Frame.AutomaticSize = Enum.AutomaticSize.None
+		SliderFrame.Frame.Size = UDim2.new(1, 0, 0, Config.Description and 51 or 38)
+		SliderFrame.LabelHolder.Size = UDim2.new(1, -58, 0, 0)
 		Slider.Elements = SliderFrame
 		Slider.SetTitle = SliderFrame.SetTitle
 		Slider.SetDesc = SliderFrame.SetDesc
 		Slider.Visible = SliderFrame.Visible
 
-		local SliderDot = New("Frame", {
-			AnchorPoint = Vector2.new(0.5, 0.5),
-			Position = UDim2.new(0, 0, 0.5, 0),
-			Size = UDim2.fromOffset(3, 18),
-			BorderSizePixel = 0,
-			ThemeTag = {
-				BackgroundColor3 = "Accent",
-			},
-		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(1, 0),
-			}),
-		})
-
-		local SliderRail = New("Frame", {
-			BackgroundTransparency = 1,
-			Position = UDim2.fromOffset(0, 0),
-			Size = UDim2.new(1, 0, 1, 0),
-		}, {
-			SliderDot,
-		})
-
-		local SliderFill = New("Frame", {
-			Size = UDim2.new(0, 0, 1, 0),
-			ThemeTag = {
-				BackgroundColor3 = "Accent",
-			},
-		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(1, 0),
-			}),
-		})
-
-		local SliderDisplay = New("TextLabel", {
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
-			Text = "Value",
-			TextSize = 12,
-			TextWrapped = true,
+		local ValueBox = New("TextBox", {
+			Name = "Value",
+			Text = tostring(Config.Default),
+			TextSize = 10,
 			TextXAlignment = Enum.TextXAlignment.Right,
-			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+			Size = UDim2.fromOffset(50, 16),
+			Position = UDim2.new(1, -7, 0, 4),
+			AnchorPoint = Vector2.new(1, 0),
 			BackgroundTransparency = 1,
-			Size = UDim2.new(0, 100, 0, 14),
-			Position = UDim2.new(0, -4, 0.5, 0),
-			AnchorPoint = Vector2.new(1, 0.5),
-			ThemeTag = {
-				TextColor3 = "SubText",
-			},
-		})
-
-		local SliderInput = New("TextBox", {
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
-			Text = "",
-			TextSize = 12,
-			TextXAlignment = Enum.TextXAlignment.Right,
-			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-			BackgroundTransparency = 0.8,
-			Size = UDim2.new(0, 0, 0, 14),
-			Position = UDim2.new(0, -4, 0.5, 0),
-			AnchorPoint = Vector2.new(1, 0.5),
-			PlaceholderText = "Value",
 			ClearTextOnFocus = false,
-			Visible = true,
-			TextWrapped = false,
-			TextTransparency = 1,
-			BackgroundTransparency = 1,
-			ThemeTag = {
-				TextColor3 = "SubText",
-				BackgroundColor3 = "Element",
-			},
-		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(0, 3),
-			}),
-			New("UIStroke", {
-				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-				Color = Color3.fromRGB(0, 0, 0),
-				Transparency = 1,
-				Thickness = 1,
-			}),
-		})
-
-		local SliderInner = New("Frame", {
-			Size = UDim2.new(1, 0, 0, 4),
-			AnchorPoint = Vector2.new(1, 0.5),
-			Position = UDim2.new(1, -10, 0.5, 0),
-			BackgroundTransparency = 0.4,
 			Parent = SliderFrame.Frame,
-			ThemeTag = {
-				BackgroundColor3 = "SliderRail",
-			},
-		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(1, 0),
-			}),
-			New("UISizeConstraint", {
-				MaxSize = Vector2.new(150, math.huge),
-			}),
-			SliderDisplay,
-			SliderInput,
-			SliderFill,
-			SliderRail,
+			ThemeTag = { TextColor3 = "SubText" },
 		})
-
-		local DisabledOverlay = New("Frame", {
-			Size = UDim2.new(1, 0, 1, 0),
-			BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-			BackgroundTransparency = 1,
-			ZIndex = 50,
+		local Rail = New("TextButton", {
+			Name = "Rail",
+			Size = UDim2.new(1, -14, 0, 4),
+			Position = UDim2.new(0, 7, 1, -8),
+			BackgroundTransparency = 0.15,
+			Text = "",
+			AutoButtonColor = false,
 			Parent = SliderFrame.Frame,
+			ThemeTag = { BackgroundColor3 = "SliderRail" },
 		}, {
-			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
-			}),
+			New("UICorner", { CornerRadius = UDim.new(0, 1) }),
+		})
+		local Fill = New("Frame", {
+			Name = "Fill",
+			Size = UDim2.fromScale(0, 1),
+			BackgroundTransparency = 0,
+			Parent = Rail,
+			ThemeTag = { BackgroundColor3 = "Accent" },
+		}, { New("UICorner", { CornerRadius = UDim.new(0, 1) }) })
+		local Handle = New("Frame", {
+			Name = "Handle",
+			Size = UDim2.fromOffset(3, 8),
+			Position = UDim2.new(0, 0, 0.5, 0),
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			BackgroundTransparency = 0,
+			Parent = Rail,
+			ThemeTag = { BackgroundColor3 = "Accent" },
 		})
 
-		local isHovering = false
-		local inputVisible = false
-		local currentWidthTween = nil
-
-		local function calculateInputWidth(text)
-			local textSize = game:GetService("TextService"):GetTextSize(
-				text or "0",
-				12,
-				Enum.Font.SourceSans,
-				Vector2.new(1000, 14)
-			)
-			local padding = 8
-			local minWidth = 25
-			local maxWidth = 80
-			return math.max(minWidth, math.min(maxWidth, textSize.X + padding))
+		local dragging = false
+		local function SetFromX(x)
+			if Slider.Disabled or Rail.AbsoluteSize.X <= 0 then return end
+			local alpha = math.clamp((x - Rail.AbsolutePosition.X) / Rail.AbsoluteSize.X, 0, 1)
+			Slider:SetValue(Slider.Min + (Slider.Max - Slider.Min) * alpha)
 		end
+		Creator.AddSignal(Rail.InputBegan, function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true; SetFromX(input.Position.X) end
+		end)
+		Creator.AddSignal(UserInputService.InputChanged, function(input)
+			if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then SetFromX(input.Position.X) end
+		end)
+		Creator.AddSignal(UserInputService.InputEnded, function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
+		end)
+		Creator.AddSignal(ValueBox.FocusLost, function()
+			local value = tonumber(ValueBox.Text)
+			if value then Slider:SetValue(value) else ValueBox.Text = tostring(Slider.Value) end
+		end)
 
-		local function updateInputWidth(text, animate)
-			if currentWidthTween then
-				currentWidthTween:Cancel()
-				currentWidthTween = nil
-			end
-
-			local targetWidth = calculateInputWidth(text)
-			local currentWidth = SliderInput.Size.X.Offset
-
-			if animate and math.abs(targetWidth - currentWidth) > 0.5 then
-				currentWidthTween = TweenService:Create(SliderInput, TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-					Size = UDim2.new(0, targetWidth, 0, 14)
-				})
-				currentWidthTween:Play()
-				currentWidthTween.Completed:Connect(function()
-					currentWidthTween = nil
-				end)
-			else
-				SliderInput.Size = UDim2.new(0, targetWidth, 0, 14)
-			end
+		function Slider:OnChanged(Func) Slider.Changed = Func; Func(Slider.Value) end
+		function Slider:SetDisabled(value)
+			Slider.Disabled = not not value
+			Rail.Active = not Slider.Disabled
+			SliderFrame.Frame.BackgroundTransparency = Slider.Disabled and 0.96 or 1
+			Fill.BackgroundTransparency = Slider.Disabled and 0.55 or 0
+			Handle.BackgroundTransparency = Slider.Disabled and 0.55 or 0
 		end
-
-		Creator.AddSignal(SliderFrame.Frame.MouseEnter, function()
-			isHovering = true
-			if isDisabled then return end
-			if not SliderInput:IsFocused() then
-				SliderDisplay.Visible = false
-				SliderInput.Text = tostring(Slider.Value)
-
-				updateInputWidth(tostring(Slider.Value), false)
-				inputVisible = true
-
-				local tweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-
-				TweenService:Create(SliderInput, tweenInfo, {
-					TextTransparency = 0,
-					BackgroundTransparency = 0.8
-				}):Play()
-
-				TweenService:Create(SliderInput.UIStroke, tweenInfo, {
-					Transparency = 0.7
-				}):Play()
-			end
-		end)
-
-		Creator.AddSignal(SliderFrame.Frame.MouseLeave, function()
-			isHovering = false
-			if not SliderInput:IsFocused() and inputVisible then
-				local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
-
-				TweenService:Create(SliderInput, tweenInfo, {
-					TextTransparency = 1,
-					BackgroundTransparency = 1
-				}):Play()
-
-				TweenService:Create(SliderInput.UIStroke, tweenInfo, {
-					Transparency = 1
-				}):Play()
-
-				task.wait(0.2)
-				SliderDisplay.Visible = true
-				inputVisible = false
-			end
-		end)
-
-		Creator.AddSignal(SliderInput.Changed, function(property)
-			if property == "Text" then
-				local text = SliderInput.Text
-				local cleanText = text:gsub("[^%d%.%-]", "")
-				if cleanText:find("%-") and cleanText:find("%-") ~= 1 then
-					cleanText = cleanText:gsub("%-", "")
-				end
-				local dotCount = 0
-				cleanText = cleanText:gsub("%.", function()
-					dotCount = dotCount + 1
-					return dotCount == 1 and "." or ""
-				end)
-
-				if cleanText ~= text then
-					SliderInput.Text = cleanText
-					return
-				end
-
-				if inputVisible or SliderInput:IsFocused() then
-					updateInputWidth(cleanText, true)
-				end
-			end
-		end)
-
-		Creator.AddSignal(SliderInput.FocusLost, function(enterPressed)
-			local inputValue = tonumber(SliderInput.Text)
-			if inputValue then
-				Slider:SetValue(inputValue)
-			else
-				SliderInput.Text = tostring(Slider.Value)
-				updateInputWidth(tostring(Slider.Value), true)
-			end
-
-			if not isHovering then
-				local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
-
-				TweenService:Create(SliderInput, tweenInfo, {
-					TextTransparency = 1,
-					BackgroundTransparency = 1
-				}):Play()
-
-				TweenService:Create(SliderInput.UIStroke, tweenInfo, {
-					Transparency = 1
-				}):Play()
-
-				task.wait(0.2)
-				SliderDisplay.Visible = true
-				inputVisible = false
-			end
-		end)
-
-		Creator.AddSignal(SliderInput.Focused, function()
-			if isDisabled then SliderInput:ReleaseFocus() return end
-			SliderInput.Text = tostring(Slider.Value)
-			updateInputWidth(tostring(Slider.Value), false)
-		end)
-
-		Creator.AddSignal(SliderInput.InputBegan, function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-				Dragging = false
-			end
-		end)
-
-		Creator.AddSignal(SliderDot.InputBegan, function(Input)
-			if isDisabled then return end
-			if
-				Input.UserInputType == Enum.UserInputType.MouseButton1
-				or Input.UserInputType == Enum.UserInputType.Touch
-			then
-				Dragging = true
-			end
-		end)
-
-		Creator.AddSignal(SliderDot.InputEnded, function(Input)
-			if
-				Input.UserInputType == Enum.UserInputType.MouseButton1
-				or Input.UserInputType == Enum.UserInputType.Touch
-			then
-				Dragging = false
-			end
-		end)
-
-		Creator.AddSignal(UserInputService.InputChanged, function(Input)
-			if Dragging then
-				local position = nil
-				if Input.UserInputType == Enum.UserInputType.MouseMovement then
-					position = Input.Position
-				elseif Input.UserInputType == Enum.UserInputType.Touch then
-					position = Input.Position
-				end
-
-				if position then
-					local SizeScale = math.clamp((position.X - SliderRail.AbsolutePosition.X) / SliderRail.AbsoluteSize.X, 0, 1)
-					Slider:SetValue(Slider.Min + ((Slider.Max - Slider.Min) * SizeScale))
-				end
-			end
-		end)
-
-		Creator.AddSignal(SliderRail.InputBegan, function(Input)
-			if isDisabled then return end
-			if Input.UserInputType == Enum.UserInputType.Touch then
-				Dragging = true
-				local SizeScale = math.clamp((Input.Position.X - SliderRail.AbsolutePosition.X) / SliderRail.AbsoluteSize.X, 0, 1)
-				Slider:SetValue(Slider.Min + ((Slider.Max - Slider.Min) * SizeScale))
-			end
-		end)
-
-		Creator.AddSignal(SliderRail.InputEnded, function(Input)
-			if Input.UserInputType == Enum.UserInputType.Touch then
-				Dragging = false
-			end
-		end)
-
-		function Slider:OnChanged(Func)
-			Slider.Changed = Func
-			Func(Slider.Value)
+		function Slider:SetValue(value)
+			Slider.Value = Library:Round(math.clamp(value, Slider.Min, Slider.Max), Slider.Rounding)
+			local range = Slider.Max - Slider.Min
+			local alpha = range == 0 and 0 or (Slider.Value - Slider.Min) / range
+			Fill.Size = UDim2.fromScale(alpha, 1)
+			Handle.Position = UDim2.new(alpha, 0, 0.5, 0)
+			ValueBox.Text = tostring(Slider.Value)
+			Library:SafeCallback(Slider.Callback, Slider.Value)
+			Library:SafeCallback(Slider.Changed, Slider.Value)
 		end
-
-		function Slider:SetDisabled(disabled)
-			isDisabled = disabled
-			if disabled then Dragging = false end
-			local tweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-			TweenService:Create(DisabledOverlay, tweenInfo, {
-				BackgroundTransparency = disabled and 0.55 or 1,
-			}):Play()
-			TweenService:Create(SliderDot, tweenInfo, {
-				BackgroundTransparency = disabled and 0.65 or 0,
-			}):Play()
-			TweenService:Create(SliderFill, tweenInfo, {
-				BackgroundTransparency = disabled and 0.7 or 0,
-			}):Play()
-			TweenService:Create(SliderInner, tweenInfo, {
-				BackgroundTransparency = disabled and 0.8 or 0.4,
-			}):Play()
-		end
-
-		function Slider:SetValue(Value)
-			self.Value = Library:Round(math.clamp(Value, Slider.Min, Slider.Max), Slider.Rounding)
-			SliderDot.Position = UDim2.new((self.Value - Slider.Min) / (Slider.Max - Slider.Min), 0, 0.5, 0)
-			SliderFill.Size = UDim2.fromScale((self.Value - Slider.Min) / (Slider.Max - Slider.Min), 1)
-			SliderDisplay.Text = tostring(self.Value)
-
-			if inputVisible or SliderInput:IsFocused() then
-				SliderInput.Text = tostring(self.Value)
-				updateInputWidth(tostring(self.Value), not SliderInput:IsFocused())
-			end
-			if not inputVisible and not SliderInput:IsFocused() then
-				SliderInput.Text = tostring(self.Value)
-			end
-
-			Library:SafeCallback(Slider.Callback, self.Value)
-			Library:SafeCallback(Slider.Changed, self.Value)
-		end
-
-		function Slider:Destroy()
-			SliderFrame:Destroy()
-			Library.Options[Idx] = nil
-		end
-
+		function Slider:Destroy() SliderFrame:Destroy(); Library.Options[Idx] = nil end
 		Slider:SetValue(Config.Default)
-
 		Library.Options[Idx] = Slider
-
 		if Config.DependsOn then
-			task.spawn(function()
-				task.wait()
-				local depToggle = Library.Options[Config.DependsOn]
-				if depToggle and depToggle.Type == "Toggle" then
-					Slider:SetDisabled(not depToggle.Value)
-					if not depToggle._dependents then depToggle._dependents = {} end
-					table.insert(depToggle._dependents, function(value)
-						Slider:SetDisabled(not value)
-					end)
+			task.defer(function()
+				local dep = Library.Options[Config.DependsOn]
+				if dep and dep.Type == "Toggle" then
+					Slider:SetDisabled(not dep.Value)
+					dep._dependents = dep._dependents or {}
+					table.insert(dep._dependents, function(v) Slider:SetDisabled(not v) end)
 				end
 			end)
 		end
-
 		return Slider
 	end
-
 	return Element
 end)()
 ElementsTable.Keybind = (function()
@@ -7273,7 +5285,7 @@ ElementsTable.Keybind = (function()
 			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
 			Text = Config.Default,
 			TextColor3 = Color3.fromRGB(240, 240, 240),
-			TextSize = 13,
+			TextSize = 11,
 			TextXAlignment = Enum.TextXAlignment.Center,
 			Size = UDim2.new(0, 0, 0, 14),
 			Position = UDim2.new(0, 0, 0.5, 0),
@@ -7287,7 +5299,7 @@ ElementsTable.Keybind = (function()
 		})
 
 		local KeybindDisplayFrame = New("TextButton", {
-			Size = UDim2.fromOffset(0, 30),
+			Size = UDim2.fromOffset(0, 22),
 			Position = UDim2.new(1, -10, 0.5, 0),
 			AnchorPoint = Vector2.new(1, 0.5),
 			BackgroundTransparency = 0.9,
@@ -7298,11 +5310,11 @@ ElementsTable.Keybind = (function()
 			},
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 5),
+				CornerRadius = UDim.new(0, 2),
 			}),
 			New("UIPadding", {
-				PaddingLeft = UDim.new(0, 8),
-				PaddingRight = UDim.new(0, 8),
+				PaddingLeft = UDim.new(0, 6),
+				PaddingRight = UDim.new(0, 6),
 			}),
 			New("UIStroke", {
 				Transparency = 0.5,
@@ -7499,12 +5511,12 @@ ElementsTable.Colorpicker = (function()
 			Parent = ColorpickerFrame.Frame,
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
+				CornerRadius = UDim.new(0, 2),
 			}),
 		})
 
 		local DisplayFrame = New("ImageLabel", {
-			Size = UDim2.fromOffset(26, 26),
+			Size = UDim2.fromOffset(24, 18),
 			Position = UDim2.new(1, -10, 0.5, 0),
 			AnchorPoint = Vector2.new(1, 0.5),
 			Parent = ColorpickerFrame.Frame,
@@ -7514,7 +5526,7 @@ ElementsTable.Colorpicker = (function()
 			TileSize = UDim2.fromOffset(40, 40),
 		}, {
 			New("UICorner", {
-				CornerRadius = UDim.new(0, 4),
+				CornerRadius = UDim.new(0, 2),
 			}),
 			DisplayFrameColor,
 		})
@@ -7990,7 +6002,7 @@ ElementsTable.Input = (function()
 		local Textbox = Components.Textbox(InputFrame.Frame, true)
 		Textbox.Frame.Position = UDim2.new(1, -10, 0.5, 0)
 		Textbox.Frame.AnchorPoint = Vector2.new(1, 0.5)
-		Textbox.Frame.Size = UDim2.fromOffset(160, 30)
+		Textbox.Frame.Size = UDim2.fromOffset(150, 22)
 		Textbox.Input.Text = Config.Default or ""
 		Textbox.Input.PlaceholderText = Config.Placeholder or ""
 
@@ -9869,7 +7881,7 @@ end
 local InterfaceManager = {} do
 
 
-	InterfaceManager.Folder = "FluentSettings"
+	InterfaceManager.Folder = "PRIME Settings"
 
 
 	InterfaceManager.Settings = {
@@ -9887,7 +7899,6 @@ local InterfaceManager = {} do
 		AutoCursorUnlock = false,
 
 
-		Snowfall = true,
 
 
 	}
@@ -10258,21 +8269,6 @@ end
 
 		})
 
-		section:AddToggle("SnowfallToggle", {
-			Title = "Falling Petals",
-			Description = "Enable or disable falling petals in the GUI.",
-			Default = Settings.Snowfall == nil and true or Settings.Snowfall,
-			Callback = function(Value)
-				Settings.Snowfall = Value
-				InterfaceManager:SaveSettings()
-				if Value and not Library.Snowfall and type(Library.AddPetalsToWindow) == "function" then
-					Library:AddPetalsToWindow({ Count = 30, Speed = 15 })
-				end
-				if Library.Snowfall then
-					Library.Snowfall:SetVisible(Value)
-				end
-			end
-		})
 
 		if game.GameId == 93978595733734 then
 			section:AddToggle("AutoCursorUnlock", {
@@ -10317,7 +8313,11 @@ end
 
 Library.CreateWindow = function(self, Config)
 
-	assert(Config.Title, "Window - Missing Title")
+	Config = Config or {}
+	Config.Title = "PRIME"
+	Config.SubTitle = nil
+	Config.Size = Config.Size or UDim2.fromOffset(560, 390)
+	Config.TabWidth = Config.TabWidth or 0
 
 	if Library.Window then
 		print("You cannot create more than one window.")
@@ -10339,24 +8339,9 @@ Library.CreateWindow = function(self, Config)
 
 	Library.Theme = "Slate"
 
-	if Config.BackgroundImage == nil then
-		Config.BackgroundImage = "rbxassetid://13196113628"
-	end
-
 	if Config.BackgroundTransparency == nil then
-		Config.BackgroundTransparency = 0.08
+		Config.BackgroundTransparency = 0.05
 	end
-
-    if Config.Snowfall ~= false then
-        Library.WindowSnowfallEnabled = true
-        Library.WindowSnowfallConfig = Config.SnowfallConfig or {
-            Count = 40,
-            Speed = 9.5
-        }
-
-    else
-        Library.WindowSnowfallEnabled = false
-    end
 
 
 	if Config.Acrylic then
@@ -10426,7 +8411,7 @@ Library.CreateWindow = function(self, Config)
 		BackgroundImageTransparency = Config.BackgroundImageTransparency,
 
 
-		SubTitle = Config.SubTitle,
+		SubTitle = nil,
 
 
 		TabWidth = Config.TabWidth,
@@ -10451,46 +8436,8 @@ Library.CreateWindow = function(self, Config)
 		Resizable = Config.Resizable,
 	})
 
-
-    if Config.Snowfall ~= false then
-        Library.WindowSnowfallEnabled = true
-        Library.WindowSnowfallConfig = Config.SnowfallConfig or {
-            Count = 40,
-            Speed = 9.5
-        }
-    else
-        Library.WindowSnowfallEnabled = false
-    end
-
 	InterfaceManager:SetTheme("Slate")
 	Library:SetTheme("Slate")
-    
-    task.spawn(function()
-        task.wait(1)
-        if Library.Window and Library.Window.Root then
-            local userWantsSnow = InterfaceManager.Settings.Snowfall
-            if userWantsSnow == nil then userWantsSnow = true end
-            
-            local configAllowsSnow = Library.WindowSnowfallEnabled
-            local snowfallEnabled = configAllowsSnow and userWantsSnow
-            
-            
-            if configAllowsSnow and snowfallEnabled then
-                 local petals = Library:AddPetalsToWindow({
-                    Count = 30,
-                    Speed = 15
-                })
-                 if petals then
-                     petals:SetVisible(true)
-                 end
-            else
-                
-                if Library.Snowfall then
-                    Library.Snowfall:SetVisible(false)
-                end
-            end
-        end
-    end)
     
     return Window
 end
@@ -11112,17 +9059,15 @@ end
 
 
 function Library:ToggleTransparency(Value)
-
-
-	if Library.Window then
-
-
-		Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = Value and 0.1 or 0
-
-
+	Library.Transparency = Value == true
+	if Library.Window and Library.Window.Root then
+		Library.Window.Root.BackgroundTransparency = Value and 0.08 or 0
 	end
-
-
+	pcall(function()
+		if Library.Window and Library.Window.AcrylicPaint and Library.Window.AcrylicPaint.Frame and Library.Window.AcrylicPaint.Frame:FindFirstChild("Background") then
+			Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = Value and 0.1 or 0
+		end
+	end)
 end
 
 
@@ -11803,199 +9748,12 @@ AddSignal(MobileMinimizeButton.MouseButton1Click, function()
 end)
 
 function Library:AddSnowfallToWindow(Config)
-    if not Library.Window then return end
-    if not Library.Window.Root then return end
-    
-    if Library.Snowfall then
-        return Library.Snowfall
-    end
-    
-    local snowfall = {}
-    Config = Config or {}
-    
-    local SnowModule = {}
-    
-    function SnowModule:Init(Parent, Config)
-        local innerContainer = Instance.new("Frame")
-        innerContainer.Name = "Effect"
-        innerContainer.Size = UDim2.new(1, 0, 1, 0)
-        innerContainer.BackgroundTransparency = 1
-        innerContainer.ClipsDescendants = true
-        innerContainer.Parent = Parent
-        
-            local snowflakeCount = Config.Count or 30
-            local fallSpeed = Config.Speed or 40
-            
-            local snowflakes = {}
-            local connections = {}
-    
-            for i = 1, snowflakeCount do
-                local petal = Instance.new("Frame")
-                petal.Name = "Petal"..i
-                petal.BackgroundColor3 = Color3.fromRGB(235, 235, 240)
-                local baseTransparency = math.random(30, 70) / 100 -- more transparent
-                petal.BackgroundTransparency = baseTransparency
-                petal.BorderSizePixel = 0
-                
-                local corner = Instance.new("UICorner")
-                corner.CornerRadius = UDim.new(0.5, 0)
-                corner.Parent = petal
-                
-                local width = math.random(2, 5) -- smaller
-                local height = width * 1.3 -- slightly less elongated
-                petal.Size = UDim2.new(0, width, 0, height)
-                
-                petal.Position = UDim2.new(
-                    math.random() * 0.95, 
-                    0, 
-                    math.random() * 1.5 - 0.5,
-                    0
-                )
-                petal.Rotation = math.random(-15, 15) -- Very subtle tilt, looks nice
-                petal.Parent = innerContainer
-                
-                local speed = math.random(fallSpeed * 0.5, fallSpeed * 1.2) -- slightly more uniform falling
-                local swaySpeed = math.random(1, 3) / 10 -- very, very slow swaying (0.1 - 0.3 instead of 1 - 3)
-                local swayOffset = math.random(0, 100)
-                
-                snowflakes[i] = {
-                    frame = petal,
-                    speed = speed,
-                    width = width,
-                    height = height,
-                    swaySpeed = swaySpeed,
-                    swayOffset = swayOffset,
-                    baseX = petal.Position.X.Scale,
-                    baseTransparency = baseTransparency
-                }
-            end
-            
-            local containerBounds = {
-                left = -0.1,
-                right = 1.1,
-                top = -0.2,
-                bottom = 1.1
-            }
-            
-            local lastUpdate = tick()
-            local connection = game:GetService("RunService").Heartbeat:Connect(function()
-                local currentTime = tick()
-                local deltaTime = currentTime - lastUpdate
-                lastUpdate = currentTime
-                
-                for _, snowflake in ipairs(snowflakes) do
-                    local frame = snowflake.frame
-                    local currentPos = frame.Position
-    
-                    local newY = currentPos.Y.Scale + (snowflake.speed * deltaTime / 100)
-                    local newX = snowflake.baseX + math.sin(currentTime * snowflake.swaySpeed + snowflake.swayOffset) * 0.012 -- extremely tiny horizontal sway
-                    
-                    if newY > 1 then
-                        newY = containerBounds.top
-                        snowflake.baseX = math.random() * 0.95
-                        newX = snowflake.baseX
-                        
-                        local newWidth = math.random(2, 5)
-                        local newHeight = newWidth * 1.3
-                        frame.Size = UDim2.new(0, newWidth, 0, newHeight)
-                        snowflake.width = newWidth
-                        snowflake.height = newHeight
-                    end
-                    
-                    frame.Position = UDim2.new(
-                        newX,
-                        0,
-                        newY,
-                        0
-                    )
-                    
-                    if newY > 0.8 then
-                        local fadeProgress = (newY - 0.8) / 0.2
-                        fadeProgress = math.clamp(fadeProgress, 0, 1)
-                        frame.BackgroundTransparency = snowflake.baseTransparency + (1 - snowflake.baseTransparency) * fadeProgress
-                    else
-                        frame.BackgroundTransparency = snowflake.baseTransparency
-                    end
-                end
-            end)
-            
-            table.insert(connections, connection)
-            
-            local SnowInstance = {}
-            
-            function SnowInstance:SetIntensity(intensity)
-                intensity = math.clamp(intensity, 0, 1)
-            end
-            
-            function SnowInstance:SetSpeed(speed)
-                for _, snowflake in ipairs(snowflakes) do
-                    snowflake.speed = speed * math.random(0.5, 1.5)
-                end
-            end
-            
-            function SnowInstance:Destroy()
-                for _, conn in ipairs(connections) do
-                    conn:Disconnect()
-                end
-                innerContainer:Destroy()
-            end
-            
-            return SnowInstance
-        end
-        
-        local snowContainer = Instance.new("Frame")
-        snowContainer.Name = "Container"
-        snowContainer.Size = UDim2.new(1, 0, 1, 0)
-        snowContainer.BackgroundTransparency = 1
-        snowContainer.ZIndex = 1
-        snowContainer.ClipsDescendants = true
-        snowContainer.Parent = Library.Window.Root
-        
-        snowfall.instance = SnowModule:Init(snowContainer, {
-            Count = Config.Count or 38,
-            Speed = Config.Speed or 9.5
-        })
-    
-        function snowfall:SetVisible(visible)
-            snowContainer.Visible = visible
-        end
-        
-         function snowfall:SetIntensity(intensity)
-    end
-    
-    Library.Snowfall = snowfall
-    return snowfall
+	-- PRIME style intentionally has no particle layer.
+	return nil
 end
 
 function Library:AddPetalsToWindow(Config)
-    return self:AddSnowfallToWindow(Config)
+	return nil
 end
 
-if RunService:IsStudio() then task.wait(0.01) end
-task.spawn(function()
-	local hue = 0
-	RunService.Heartbeat:Connect(function(dt)
-		if Library.Theme == "RGB" then
-			hue = hue + dt * 0.1
-			if hue > 1 then hue = 0 end
-			local rgbColor = Color3.fromHSV(hue, 0.8, 1)
-			local rgbColor2 = Color3.fromHSV((hue + 0.5) % 1, 0.8, 1)
-			local theme = Themes["RGB"]
-			if theme then
-				theme.Accent = rgbColor
-				theme.TitleBarLine = rgbColor
-				theme.Tab = rgbColor 
-				theme.ElementBorder = rgbColor
-				theme.ToggleToggled = rgbColor
-				theme.SliderRail = rgbColor
-				theme.DropdownFrame = rgbColor
-				theme.InputIndicatorFocus = rgbColor
-				theme.Text = Color3.new(1,1,1)
-				if Library.Window then
-					Library:SetTheme("Slate") 
-				end
-			end
-		end
-	end)
-end)
 return Library, SaveManager, InterfaceManager, Mobile
