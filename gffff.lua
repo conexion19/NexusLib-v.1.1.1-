@@ -916,7 +916,7 @@ local Library = {
 	MinimizeKey = Enum.KeyCode.LeftControl,
 }
 
-local MAIN_GUI_CORNER_RADIUS = 7
+local MAIN_GUI_CORNER_RADIUS = 9
 
 local function ApplyMainGuiCornerRadius(acrylicPaint)
 	if not acrylicPaint or not acrylicPaint.Frame then
@@ -924,23 +924,27 @@ local function ApplyMainGuiCornerRadius(acrylicPaint)
 	end
 
 	local function ApplyTo(guiObject)
+		if not guiObject or not guiObject:IsA("GuiObject") then
+			return
+		end
+
 		local corner = guiObject:FindFirstChildOfClass("UICorner")
 		if not corner then
 			corner = Instance.new("UICorner")
+			corner.Name = "PrimeMainCorner"
 			corner.Parent = guiObject
 		end
+
 		corner.CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS)
 	end
 
+	-- The acrylic stack contains several overlapping frames/image layers.
+	-- Rounding only the root still leaves square pixels from child layers.
 	ApplyTo(acrylicPaint.Frame)
 
-	for _, child in ipairs(acrylicPaint.Frame:GetChildren()) do
-		if child:IsA("GuiObject")
-			and child.Size.X.Scale == 1
-			and child.Size.X.Offset == 0
-			and child.Size.Y.Scale == 1
-			and child.Size.Y.Offset == 0 then
-			ApplyTo(child)
+	for _, descendant in ipairs(acrylicPaint.Frame:GetDescendants()) do
+		if descendant:IsA("GuiObject") then
+			ApplyTo(descendant)
 		end
 	end
 end
@@ -2974,30 +2978,29 @@ Components.Tab = (function()
 
 	local function AttachSectionOwner(owner, SectionFrame)
 		table.insert(owner.Sections, SectionFrame.Root)
-		local reflowPending = false
-		local function Reflow()
-			if reflowPending then return end
-			reflowPending = true
+
+		-- Keep each section in a fixed column. The previous balancing algorithm
+		-- re-parented sections every time their animated height changed, making
+		-- expansion look like the card jumped around. Settings appeared correct
+		-- only because it normally had a single section.
+		local sectionIndex = #owner.Sections
+		SectionFrame.Root.Parent = (sectionIndex % 2 == 1) and owner.Left or owner.Right
+
+		local updatePending = false
+		local function UpdateLayout()
+			if updatePending then
+				return
+			end
+
+			updatePending = true
 			task.defer(function()
-				reflowPending = false
-				local leftHeight, rightHeight = 0, 0
-				for _, root in ipairs(owner.Sections) do
-					if root and root.Parent then
-						local h = math.max(root.Size.Y.Offset, root.AbsoluteSize.Y, 27)
-						if leftHeight <= rightHeight then
-							root.Parent = owner.Left
-							leftHeight = leftHeight + h + 5
-						else
-							root.Parent = owner.Right
-							rightHeight = rightHeight + h + 5
-						end
-					end
-				end
+				updatePending = false
 				owner.UpdateCanvas()
 			end)
 		end
-		Creator.AddSignal(SectionFrame.Root:GetPropertyChangedSignal("Size"), Reflow)
-		Reflow()
+
+		Creator.AddSignal(SectionFrame.Root:GetPropertyChangedSignal("Size"), UpdateLayout)
+		UpdateLayout()
 	end
 
 	local function AddSectionToOwner(owner, SectionTitle, SectionIcon)
@@ -3027,27 +3030,27 @@ Components.Tab = (function()
 		local resolvedIcon = Icon
 		if Icon and Library:GetIcon(Icon) then resolvedIcon = Library:GetIcon(Icon) end
 
-		local textWidth = TextService:GetTextSize(tostring(Title), 11, Enum.Font.Gotham, Vector2.new(500, 20)).X
-		local width = math.max(48, textWidth + (resolvedIcon and 28 or 18))
+		local textWidth = TextService:GetTextSize(tostring(Title), 12, Enum.Font.GothamBold, Vector2.new(500, 20)).X
+		local width = math.max(58, textWidth + (resolvedIcon and 32 or 22))
 		local TextLabel = New("TextLabel", {
 			Text = Title,
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-			TextSize = 11,
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal),
+			TextSize = 12,
 			TextXAlignment = Enum.TextXAlignment.Center,
 			BackgroundTransparency = 1,
 			Size = UDim2.fromScale(1, 1),
 			ThemeTag = { TextColor3 = "SubText" },
 		})
 		local Underline = New("Frame", {
-			Size = UDim2.new(1, -10, 0, 1),
-			Position = UDim2.new(0, 5, 1, -1),
+			Size = UDim2.new(1, -12, 0, 2),
+			Position = UDim2.new(0, 6, 1, -2),
 			BackgroundTransparency = 1,
 			ThemeTag = { BackgroundColor3 = "Accent" },
 		})
 		local TabIcon = resolvedIcon and New("ImageLabel", {
 			Image = resolvedIcon,
-			Size = UDim2.fromOffset(12, 12),
-			Position = UDim2.new(0, 6, 0.5, 0),
+			Size = UDim2.fromOffset(13, 13),
+			Position = UDim2.new(0, 7, 0.5, 0),
 			AnchorPoint = Vector2.new(0, 0.5),
 			BackgroundTransparency = 1,
 			ThemeTag = { ImageColor3 = "SubText" },
@@ -3062,7 +3065,7 @@ Components.Tab = (function()
 			AutoButtonColor = false,
 			ThemeTag = { BackgroundColor3 = "Element" },
 		}, {
-			New("UICorner", { CornerRadius = UDim.new(0, 5) }),
+			New("UICorner", { CornerRadius = UDim.new(0, 6) }),
 			TabIcon,
 			TextLabel,
 			Underline,
@@ -3192,7 +3195,7 @@ Components.Tab = (function()
 		Creator.AddSignal(TabFrame.MouseButton1Click, function() self:SelectTab(TabIndex) end)
 		Creator.AddSignal(TabFrame.MouseEnter, function()
 			if not Tab.Selected then
-				TweenService:Create(TabFrame, TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { BackgroundTransparency = 0.78 }):Play()
+				TweenService:Create(TabFrame, TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { BackgroundTransparency = 0.68 }):Play()
 				TweenService:Create(TextLabel, TweenInfo.new(0.14), { TextColor3 = Creator.GetThemeProperty("Text") }):Play()
 				if TabIcon then TweenService:Create(TabIcon, TweenInfo.new(0.14), { ImageColor3 = Creator.GetThemeProperty("Text") }):Play() end
 			end
@@ -3217,7 +3220,7 @@ Components.Tab = (function()
 			Tab.Selected = on
 			Tab.ContainerAnim.Visible = on
 			local info = TweenInfo.new(0.16, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-			TweenService:Create(Tab.Frame, info, { BackgroundTransparency = on and 0.82 or 1 }):Play()
+			TweenService:Create(Tab.Frame, info, { BackgroundTransparency = on and 0.70 or 1 }):Play()
 			TweenService:Create(Tab.Label, info, { TextColor3 = on and Creator.GetThemeProperty("Text") or Creator.GetThemeProperty("SubText") }):Play()
 			TweenService:Create(Tab.Underline, info, { BackgroundTransparency = on and 0 or 1 }):Play()
 			if Tab.Icon then
@@ -3852,12 +3855,12 @@ Components.TitleBar = (function()
 		local PrimeLabel = New("TextLabel", {
 			Name = "PrimeTitle",
 			Text = "PRIME",
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
-			TextSize = 17,
+			FontFace = Font.fromEnum(Enum.Font.ArialBold),
+			TextSize = 18,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			TextYAlignment = Enum.TextYAlignment.Center,
-			Position = UDim2.fromOffset(6, 0),
-			Size = UDim2.fromOffset(82, 29),
+			Position = UDim2.fromOffset(5, 0),
+			Size = UDim2.fromOffset(88, 29),
 			BackgroundTransparency = 1,
 			TextColor3 = Color3.fromRGB(255, 255, 255),
 		}, {
@@ -3872,6 +3875,7 @@ Components.TitleBar = (function()
 			ZIndex = 110,
 			ThemeTag = { BackgroundColor3 = "AcrylicMain" },
 		}, {
+			New("UICorner", { CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS) }),
 			PrimeLabel,
 			New("Frame", {
 				Size = UDim2.new(1, 0, 0, 1),
@@ -3951,8 +3955,8 @@ Components.Window = (function()
 
 		Window.TabFrame = New("Frame", {
 			Name = "TabFrame",
-			Size = UDim2.new(1, -96, 0, 29),
-			Position = UDim2.fromOffset(92, 0),
+			Size = UDim2.new(1, -104, 0, 29),
+			Position = UDim2.fromOffset(100, 0),
 			BackgroundTransparency = 1,
 			Parent = Window.Root,
 			ZIndex = 120,
@@ -3960,7 +3964,8 @@ Components.Window = (function()
 		local TabLayout = New("UIListLayout", {
 			FillDirection = Enum.FillDirection.Horizontal,
 			SortOrder = Enum.SortOrder.LayoutOrder,
-			Padding = UDim.new(0, 0),
+			Padding = UDim.new(0, 2),
+			HorizontalAlignment = Enum.HorizontalAlignment.Right,
 			VerticalAlignment = Enum.VerticalAlignment.Center,
 		})
 		Window.TabHolder = New("ScrollingFrame", {
@@ -4006,6 +4011,7 @@ Components.Window = (function()
 			ZIndex = 140,
 			ThemeTag = { BackgroundColor3 = "AcrylicMain" },
 		}, {
+			New("UICorner", { CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS) }),
 			New("Frame", {
 				Size = UDim2.new(1, 0, 0, 1),
 				BorderSizePixel = 0,
